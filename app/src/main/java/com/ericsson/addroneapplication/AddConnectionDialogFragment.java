@@ -5,12 +5,20 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.Spanned;
+import android.text.method.CharacterPickerDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Toast;
+
+import java.util.Arrays;
 
 /**
  * Created by Kamil on 8/22/2016.
@@ -22,6 +30,10 @@ public class AddConnectionDialogFragment extends DialogFragment {
     }
 
     private AddConnectionDialogListener listener = null;
+
+    private EditText editTextName;
+    private EditText editTextIp;
+    private EditText editTextPort;
 
     @Override
     public void onAttach(Activity activity) {
@@ -43,26 +55,94 @@ public class AddConnectionDialogFragment extends DialogFragment {
         final ViewGroup root = new FrameLayout(getActivity());
 
         builder.setView(inflater.inflate(R.layout.dialog_add_connection, root))
-                .setPositiveButton(R.string.add, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                .setTitle(R.string.add_new_connection)
+                .setPositiveButton(R.string.add, null)
+                .setNegativeButton(R.string.cancel, null);
 
-                        EditText editTextName = (EditText) root.findViewById(R.id.edit_text_name);
-                        EditText editTextIP = (EditText) root.findViewById(R.id.edit_text_ip_address);
-                        EditText editTextPort = (EditText) root.findViewById(R.id.edit_text_port);
-
-                        listener.onAddConnection(
-                                editTextName.getText().toString(),
-                                editTextIP.getText().toString(),
-                                Integer.parseInt(editTextPort.getText().toString()));
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+        final AlertDialog alertDialog = builder.create();
+        // override default hiding of dialog after button click
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        AddConnectionDialogFragment.this.getDialog().cancel();
+                    public void onClick(View v) {
+
+                        if(editTextName.length() > 0 && editTextIp.length() > 0 && editTextPort.length() > 0) {
+                            listener.onAddConnection(
+                                    editTextName.getText().toString(),
+                                    editTextIp.getText().toString(),
+                                    Integer.parseInt(editTextPort.getText().toString())
+                            );
+                            alertDialog.dismiss();
+                        } else {
+                            Toast.makeText(AddConnectionDialogFragment.this.getActivity(), R.string.fill_all_fields, Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
-        return builder.create();
+            }
+        });
+
+        editTextName = (EditText) root.findViewById(R.id.edit_text_name);
+        editTextIp = (EditText) root.findViewById(R.id.edit_text_ip_address);
+        editTextPort = (EditText) root.findViewById(R.id.edit_text_port);
+
+        editTextIp.setFilters(new InputFilter[] { ipFilter });
+        editTextPort.setFilters(new InputFilter[] { portFilter });
+
+        return alertDialog;
     }
+
+    InputFilter ipFilter = new InputFilter() {
+        @Override
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+
+            StringBuilder stringBuilder = new StringBuilder(editTextIp.getText());
+            for (int i = 0; i < source.length(); i++) {
+                char c = source.charAt(i);
+                if(!(Character.isDigit(c) || c == '.'))
+                    return "";
+                stringBuilder.append(c);
+            }
+
+            String[] parts = stringBuilder.toString().split("\\.");
+            if(parts.length <= 4) {
+                for(String part: parts) {
+                    try {
+                        if(Integer.parseInt(part) > 255) {
+                            return "";
+                        }
+                    } catch (NumberFormatException e) {
+                        return "";
+                    }
+                }
+            } else {
+                return "";
+            }
+
+            return null;
+        }
+    };
+
+    private InputFilter portFilter = new InputFilter() {
+        @Override
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+            StringBuilder stringBuilder = new StringBuilder(editTextPort.getText());
+            for (int i = 0; i < source.length(); i++) {
+                char c = source.charAt(i);
+                if(!(Character.isDigit(c)))
+                    return "";
+                stringBuilder.append(c);
+            }
+
+            try {
+                if(Integer.parseInt(stringBuilder.toString()) > 65535) {
+                    return "";
+                }
+            } catch (NumberFormatException e) {
+                return "";
+            }
+            return null;
+        }
+    };
 }

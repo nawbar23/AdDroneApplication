@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -71,6 +73,7 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         // fill spinner with options
         updateSpinner();
 
+        // handle UI buttons
         buttonConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
