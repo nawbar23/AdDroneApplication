@@ -2,6 +2,7 @@ package com.ericsson.addroneapplication.viewmodel;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 
@@ -25,7 +26,7 @@ public class StartViewModel implements ViewModel {
     private JSONArray jsonArray;
 
     public StartViewModel(Context context) {
-        preferences = context.getSharedPreferences(context.getApplicationInfo().name, Context.MODE_PRIVATE);
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
         connectionInfoMap = new HashMap<>();
 
         try {

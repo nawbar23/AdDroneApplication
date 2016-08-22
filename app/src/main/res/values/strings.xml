@@ -11,4 +11,12 @@
     <string name="fill_all_fields">Fill all fields to continue.</string>
     <string name="choose_connection">Choose Connection</string>
     <string name="add_new">Add new</string>
+    <string name="pref_msg_retrans_rate">Message retransmission rate</string>
+    <string name="pref_connection_settings">Connection settings</string>
+    <string name="pref_msg_retrans_rate_summ">Set the frequency at which messages are retransmitted</string>
+    <string name="pref_msg_retrans_num">Message retransmission number</string>
+    <string name="pref_msg_retrans_num_summ">No idea what to put here</string>
+    <string name="pref_enable_little_endian">Enable little endian</string>
+    <string name="pref_enable_little_endian_summ">Set the bit encoding type to little endian</string>
+    <string name="settings">Settings</string>
 </resources>
