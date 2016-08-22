@@ -23,13 +23,7 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
         CONNECTING,
         CONNECTED,
         DISCONNECTING,
-        DISCONNECTED;
-
-
-        @Override
-        public String toString() {
-            return super.toString();
-        }
+        DISCONNECTED,
     }
 
     private final IBinder mBinder = new LocalBinder();
@@ -45,6 +39,8 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
         Log.e(DEBUG_TAG, "onCreate");
 
         this.communicationHandler = new CommunicationHandler();
+
+        this.state = State.DISABLED;
     }
 
     @Override
@@ -61,16 +57,18 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
 
     public void attemptConnection(ConnectionInfo connectionInfo)
     {
-        Log.e(DEBUG_TAG, "attemptConnection at state: " + state.toString());
         switch (state) {
             case CONNECTED:
+                Log.e(DEBUG_TAG, "attemptConnection at CONNECTED, starting activity");
                 startControlActivity();
                 break;
 
             case CONNECTING:
+                Log.e(DEBUG_TAG, "attemptConnection at CONNECTING, skipping");
                 break;
 
             default:
+                Log.e(DEBUG_TAG, "attemptConnection at default, connecting...");
                 communicationHandler.connect(connectionInfo);
                 break;
         }
