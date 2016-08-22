@@ -28,6 +28,14 @@
         android:gravity="center_vertical"
         android:orientation="vertical">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/choose_connection"
+            android:textSize="32sp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/margin_lg"/>
+
         <Spinner
             android:id="@+id/spinner_connection"
             android:layout_width="match_parent"
@@ -52,7 +60,7 @@
                 android:id="@+id/button_add"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/add"
+                android:text="@string/add_new"
                 android:layout_weight="0.5"/>
 
         </LinearLayout>

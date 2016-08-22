@@ -9,4 +9,6 @@
     <string name="cancel">Cancel</string>
     <string name="add_new_connection">Add new connection</string>
     <string name="fill_all_fields">Fill all fields to continue.</string>
+    <string name="choose_connection">Choose Connection</string>
+    <string name="add_new">Add new</string>
 </resources>
