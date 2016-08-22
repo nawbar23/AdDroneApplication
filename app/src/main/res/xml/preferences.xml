@@ -9,13 +9,15 @@
             android:key="pref_msg_retrans_rate"
             android:title="@string/pref_msg_retrans_rate"
             android:summary="@string/pref_msg_retrans_rate_summ"
-            android:defaultValue="50" />
+            android:defaultValue="50"
+            android:inputType="number"/>
 
         <EditTextPreference
             android:key="pref_msg_retrans_num"
             android:title="@string/pref_msg_retrans_num"
             android:summary="@string/pref_msg_retrans_num_summ"
-            android:defaultValue="200" />
+            android:defaultValue="200"
+            android:inputType="number"/>
 
         <CheckBoxPreference
             android:key="pref_enable_little_endian"
