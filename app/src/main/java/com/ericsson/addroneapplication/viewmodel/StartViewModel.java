@@ -65,7 +65,11 @@ public class StartViewModel implements ViewModel {
     }
 
     public ArrayList<String> getConnectionInfoNames() {
-        return new ArrayList<>(connectionInfoMap.keySet());
+        ArrayList<String> names = new ArrayList<>();
+        for(Map.Entry<String, ConnectionInfo> entry: connectionInfoMap.entrySet()) {
+            names.add(entry.getKey() + " (" + entry.getValue().toString() + ")");
+        }
+        return names;
     }
 
     public ConnectionInfo getConnectionInfo(String s) {

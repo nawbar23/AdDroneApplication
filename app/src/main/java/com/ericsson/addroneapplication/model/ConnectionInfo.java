@@ -26,7 +26,7 @@ public class ConnectionInfo {
 
     @Override
     public String toString() {
-        return "ConnectionInfo: " + ipAddress + ":" + String.valueOf(port);
+        return ipAddress + ":" + String.valueOf(port);
     }
 
     public int getPort() {
