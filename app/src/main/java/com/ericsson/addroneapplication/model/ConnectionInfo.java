@@ -8,26 +8,16 @@ package com.ericsson.addroneapplication.model;
 public class ConnectionInfo {
     private String ipAddress;
     private int port;
-    private String name;
 
-    public ConnectionInfo(String ipAddress, int port, String name)
+    public ConnectionInfo(String ipAddress, int port)
     {
         this.ipAddress = ipAddress;
         this.port = port;
-        this.name = name;
     }
 
     @Override
     public String toString() {
-        return "ConnectionInfo: " + ipAddress + ":" + String.valueOf(port) + ", user name: \"" + name + "\"";
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+        return "ConnectionInfo: " + ipAddress + ":" + String.valueOf(port);
     }
 
     public int getPort() {

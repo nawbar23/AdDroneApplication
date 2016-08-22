@@ -6,15 +6,15 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.CheckBox;
-import android.widget.Toast;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Spinner;
 
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 import com.ericsson.addroneapplication.service.AdDroneService;
@@ -22,7 +22,7 @@ import com.ericsson.addroneapplication.viewmodel.StartViewModel;
 
 import java.util.ArrayList;
 
-public class StartActivity extends AppCompatActivity implements StartViewModel.DataListener {
+public class StartActivity extends AppCompatActivity {
 
     private static final String DEBUG_TAG = "AdDrone:" + StartActivity.class.getSimpleName();
 
@@ -38,7 +38,7 @@ public class StartActivity extends AppCompatActivity implements StartViewModel.D
         public void onServiceConnected(ComponentName className, IBinder binderService) {
             AdDroneService.LocalBinder binder = (AdDroneService.LocalBinder) binderService;
             service = binder.getService();
-            service.attemptConnection(startViewModel.getChosenConnectionInfo());
+            service.attemptConnection(getSelectedConnection());
         }
 
         @Override
@@ -46,6 +46,10 @@ public class StartActivity extends AppCompatActivity implements StartViewModel.D
             Log.e(DEBUG_TAG, "Disconnected !!!");
         }
     };
+
+    private Spinner spinnerConnection;
+    private Button buttonConnect;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,20 +59,24 @@ public class StartActivity extends AppCompatActivity implements StartViewModel.D
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        startViewModel = new StartViewModel(this, this);
+        // find views
+        spinnerConnection = (Spinner) findViewById(R.id.spinner_connection);
+        buttonConnect = (Button) findViewById(R.id.button_connect);
+
+        startViewModel = new StartViewModel();
 
         // start service
         startService(new Intent(this, AdDroneService.class));
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        if (fab != null) {
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    onConnect(startViewModel.getChosenConnectionInfo());
-                }
-            });
-        }
+        // fill spinner with options
+        initSpinner();
+
+        buttonConnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onConnect(getSelectedConnection());
+            }
+        });
     }
 
     private void onConnect(ConnectionInfo connectionInfo) {
@@ -80,14 +88,15 @@ public class StartActivity extends AppCompatActivity implements StartViewModel.D
         }
     }
 
-    @Override
-    public void onChosenConnectionInfoUpdated(ConnectionInfo chosenConnectionInfo) {
-        // TODO update view
+    private void initSpinner() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, startViewModel.getConnectionInfoNames());
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerConnection.setAdapter(adapter);
     }
 
-    @Override
-    public void onConnectionInformationListUpdated(ArrayList<ConnectionInfo> connectionInformationList) {
-        // TODO update view
+    private ConnectionInfo getSelectedConnection() {
+        return startViewModel.getConnectionInfo(spinnerConnection.getSelectedItem().toString());
     }
 
     @Override
