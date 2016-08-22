@@ -15,7 +15,7 @@ import com.ericsson.addroneapplication.model.ConnectionInfo;
  * Service that contains CommunicationHandler
  * Can be stopped only when state is DISCONNECTED
  */
-public class AdDroneService extends Service implements CommunicationHandler.CommunicationLisener {
+public class AdDroneService extends Service implements CommunicationHandler.CommunicationListener {
     private static final String DEBUG_TAG = "AdDrone:" + AdDroneService.class.getSimpleName();
 
     private enum State {
@@ -39,6 +39,7 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
         Log.e(DEBUG_TAG, "onCreate");
 
         this.communicationHandler = new CommunicationHandler();
+        this.communicationHandler.registerListener(this);
 
         this.state = State.DISABLED;
     }

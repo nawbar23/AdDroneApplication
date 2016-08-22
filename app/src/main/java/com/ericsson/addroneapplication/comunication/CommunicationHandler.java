@@ -5,6 +5,9 @@ import android.util.Log;
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 /**
  * Created by nbar on 2016-08-19.
  * Class used by AdDroneService
@@ -26,7 +29,7 @@ public class CommunicationHandler {
         AUTOPILOT_DATA_TIMEOUT,
     }
 
-    public interface CommunicationLisener {
+    public interface CommunicationListener {
         void onConnected();
         void onDisconnected();
         void onTimeout(TimeoutId timeoutId);
@@ -34,14 +37,64 @@ public class CommunicationHandler {
         void onPingUpdated(double pingDelay);
     }
 
+    ArrayList<CommunicationListener> listeners;
+
     public CommunicationHandler() {
+        this.listeners = new ArrayList<>();
     }
 
     public void connect(ConnectionInfo connectionInfo) {
         Log.e(DEBUG_TAG, "connecting...");
+
+        // TODO implement connection algorithm
+
+        notifyOnConnected();
     }
 
     public void disconnect(){
 
+    }
+
+    public void notifyOnConnected(){
+        Log.e(DEBUG_TAG, "notifyOnConnected");
+        for (CommunicationListener listener : listeners) {
+            listener.onConnected();
+        }
+    }
+
+    public void notifyOnDisconnected(){
+        Log.e(DEBUG_TAG, "notifyOnConnected");
+        for (CommunicationListener listener : listeners) {
+            listener.onDisconnected();
+        }
+    }
+
+    public void notifyOnConnect(TimeoutId timeoutId){
+        Log.e(DEBUG_TAG, "notifyOnConnect");
+        for (CommunicationListener listener : listeners) {
+            listener.onTimeout(timeoutId);
+        }
+    }
+
+    public void notifyOnMessageReceived(CommunicationMessage message){
+        Log.e(DEBUG_TAG, "notifyOnMessageReceived");
+        for (CommunicationListener listener : listeners) {
+            listener.onMessageReceived(message);
+        }
+    }
+
+    public void notifyOnonPingUpdated(double pingDelay){
+        Log.e(DEBUG_TAG, "notifyOnonPingUpdated");
+        for (CommunicationListener listener : listeners) {
+            listener.onPingUpdated(pingDelay);
+        }
+    }
+
+    public void registerListener(CommunicationListener listener) {
+        listeners.add(listener);
+    }
+
+    public void unregisterListener(CommunicationListener listener) {
+        listeners.remove(listener);
     }
 }
