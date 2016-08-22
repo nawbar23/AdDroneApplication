@@ -7,6 +7,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.ericsson.addroneapplication.comunication.CommunicationHandler;
+import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 
 /**
@@ -14,13 +15,21 @@ import com.ericsson.addroneapplication.model.ConnectionInfo;
  * Service that contains CommunicationHandler
  * Can be stopped only when state is DISCONNECTED
  */
-public class AdDroneService extends Service {
+public class AdDroneService extends Service implements CommunicationHandler.CommunicationLisener {
     private static final String DEBUG_TAG = "AdDrone:" + AdDroneService.class.getSimpleName();
 
     private enum State {
         DISABLED,
+        CONNECTING,
         CONNECTED,
-        DISCONNECTED,
+        DISCONNECTING,
+        DISCONNECTED;
+
+
+        @Override
+        public String toString() {
+            return super.toString();
+        }
     }
 
     private final IBinder mBinder = new LocalBinder();
@@ -52,11 +61,18 @@ public class AdDroneService extends Service {
 
     public void attemptConnection(ConnectionInfo connectionInfo)
     {
-        if (isConnected()) {
-            Log.e(DEBUG_TAG, "Service connected in state CONNECTED");
-            startControlActivity();
-        } else {
-            communicationHandler.connect(connectionInfo);
+        Log.e(DEBUG_TAG, "attemptConnection at state: " + state.toString());
+        switch (state) {
+            case CONNECTED:
+                startControlActivity();
+                break;
+
+            case CONNECTING:
+                break;
+
+            default:
+                communicationHandler.connect(connectionInfo);
+                break;
         }
     }
 
@@ -68,18 +84,35 @@ public class AdDroneService extends Service {
         return state;
     }
 
-    public void setState(State state) {
-        this.state = state;
-    }
-
-    public boolean isConnected()
-    {
-        return state == State.CONNECTED;
-    }
-
     public class LocalBinder extends Binder {
         public AdDroneService getService() {
             return AdDroneService.this;
         }
+    }
+
+    @Override
+    public void onPingUpdated(double pingDelay) {
+
+    }
+
+    @Override
+    public void onMessageReceived(CommunicationMessage message) {
+
+    }
+
+    @Override
+    public void onTimeout(CommunicationHandler.TimeoutId timeoutId) {
+
+    }
+
+    @Override
+    public void onDisconnected() {
+        this.state = State.DISCONNECTED;
+    }
+
+    @Override
+    public void onConnected() {
+        this.state = State.CONNECTED;
+        startControlActivity();
     }
 }
