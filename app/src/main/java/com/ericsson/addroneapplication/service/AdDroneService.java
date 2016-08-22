@@ -54,6 +54,8 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
     public void onDestroy() {
         super.onDestroy();
         Log.e(DEBUG_TAG, "onDestroy");
+
+        this.communicationHandler.unregisterListener(this);
     }
 
     public void attemptConnection(ConnectionInfo connectionInfo)

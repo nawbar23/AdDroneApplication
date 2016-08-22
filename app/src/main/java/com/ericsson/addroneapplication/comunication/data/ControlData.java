@@ -54,7 +54,7 @@ public class ControlData implements CommunicationMessageValue {
     private float throttle;
 
     short command;
-    char mode;
+    byte mode;
 
     public ControlData() {
         this.eulerX = 0.0f;
@@ -65,6 +65,54 @@ public class ControlData implements CommunicationMessageValue {
 
     public ControlData(ControlMessage message){
 
+    }
+
+    public float getEulerX() {
+        return eulerX;
+    }
+
+    public void setEulerX(float eulerX) {
+        this.eulerX = eulerX;
+    }
+
+    public float getEulerY() {
+        return eulerY;
+    }
+
+    public void setEulerY(float eulerY) {
+        this.eulerY = eulerY;
+    }
+
+    public float getThrottle() {
+        return throttle;
+    }
+
+    public void setThrottle(float throttle) {
+        this.throttle = throttle;
+    }
+
+    public float getEulerZ() {
+        return eulerZ;
+    }
+
+    public void setEulerZ(float eulerZ) {
+        this.eulerZ = eulerZ;
+    }
+
+    public short getCommand() {
+        return command;
+    }
+
+    public void setCommand(short command) {
+        this.command = command;
+    }
+
+    public byte getMode() {
+        return mode;
+    }
+
+    public void setMode(byte mode) {
+        this.mode = mode;
     }
 
     @Override
