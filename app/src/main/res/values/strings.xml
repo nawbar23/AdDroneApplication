@@ -6,4 +6,5 @@
     <string name="connect">Connect</string>
     <string name="add">Add</string>
     <string name="name">Name</string>
+    <string name="cancel">Cancel</string>
 </resources>

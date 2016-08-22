@@ -1,5 +1,6 @@
 package com.ericsson.addroneapplication;
 
+import android.app.DialogFragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -20,9 +21,7 @@ import com.ericsson.addroneapplication.model.ConnectionInfo;
 import com.ericsson.addroneapplication.service.AdDroneService;
 import com.ericsson.addroneapplication.viewmodel.StartViewModel;
 
-import java.util.ArrayList;
-
-public class StartActivity extends AppCompatActivity {
+public class StartActivity extends AppCompatActivity implements AddConnectionDialogFragment.AddConnectionDialogListener {
 
     private static final String DEBUG_TAG = "AdDrone:" + StartActivity.class.getSimpleName();
 
@@ -49,7 +48,7 @@ public class StartActivity extends AppCompatActivity {
 
     private Spinner spinnerConnection;
     private Button buttonConnect;
-
+    private Button buttonAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +61,7 @@ public class StartActivity extends AppCompatActivity {
         // find views
         spinnerConnection = (Spinner) findViewById(R.id.spinner_connection);
         buttonConnect = (Button) findViewById(R.id.button_connect);
+        buttonAdd = (Button) findViewById(R.id.button_add);
 
         startViewModel = new StartViewModel(this);
 
@@ -69,12 +69,20 @@ public class StartActivity extends AppCompatActivity {
         startService(new Intent(this, AdDroneService.class));
 
         // fill spinner with options
-        initSpinner();
+        updateSpinner();
 
         buttonConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onConnect(getSelectedConnection());
+            }
+        });
+
+        buttonAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment addDialogFragment = new AddConnectionDialogFragment();
+                addDialogFragment.show(getFragmentManager(), "ADD_DIALOG");
             }
         });
     }
@@ -88,7 +96,7 @@ public class StartActivity extends AppCompatActivity {
         }
     }
 
-    private void initSpinner() {
+    private void updateSpinner() {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, startViewModel.getConnectionInfoNames());
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -121,5 +129,12 @@ public class StartActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onAddConnection(String name, String ip, int port) {
+        Log.i(DEBUG_TAG, "Adding new connection " + name + ": " + ip + ":" + port);
+        startViewModel.addConnection(name, ip, port);
+        updateSpinner();
     }
 }

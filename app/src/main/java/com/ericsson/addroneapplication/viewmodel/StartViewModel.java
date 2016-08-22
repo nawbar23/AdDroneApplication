@@ -45,7 +45,7 @@ public class StartViewModel implements ViewModel {
         }
     }
 
-    public void addConnectionInfo(String name, String ip, int port) {
+    public void addConnection(String name, String ip, int port) {
         ConnectionInfo connectionInfo = new ConnectionInfo(ip, port);
         connectionInfoMap.put(name, connectionInfo);
 
