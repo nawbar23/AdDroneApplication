@@ -5,4 +5,5 @@
     <string name="port">Port</string>
     <string name="connect">Connect</string>
     <string name="add">Add</string>
+    <string name="name">Name</string>
 </resources>

@@ -63,7 +63,7 @@ public class StartActivity extends AppCompatActivity {
         spinnerConnection = (Spinner) findViewById(R.id.spinner_connection);
         buttonConnect = (Button) findViewById(R.id.button_connect);
 
-        startViewModel = new StartViewModel();
+        startViewModel = new StartViewModel(this);
 
         // start service
         startService(new Intent(this, AdDroneService.class));

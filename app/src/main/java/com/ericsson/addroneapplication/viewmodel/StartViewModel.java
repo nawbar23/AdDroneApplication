@@ -1,6 +1,13 @@
 package com.ericsson.addroneapplication.viewmodel;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.ericsson.addroneapplication.model.ConnectionInfo;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,23 +19,48 @@ import java.util.Map;
  * Contains list of saved configurations and handles loading them from internal repo
  */
 public class StartViewModel implements ViewModel {
+
+    private SharedPreferences preferences;
     private Map<String, ConnectionInfo> connectionInfoMap;
+    private JSONArray jsonArray;
 
-    public StartViewModel() {
-
+    public StartViewModel(Context context) {
+        preferences = context.getSharedPreferences(context.getApplicationInfo().name, Context.MODE_PRIVATE);
         connectionInfoMap = new HashMap<>();
-        loadConnectionInformationMap();
+
+        try {
+            jsonArray = new JSONArray(preferences.getString("saved_connections", "[]"));
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                String name = jsonObject.getString("name");
+                ConnectionInfo connectionInfo = new ConnectionInfo(jsonObject.getJSONObject("connectionInfo"));
+
+                connectionInfoMap.put(name, connectionInfo);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void loadConnectionInformationMap() {
-        connectionInfoMap.put("Connection 1", new ConnectionInfo("111.111.111.111", 3333));
-        connectionInfoMap.put("Connection 2", new ConnectionInfo("111.111.111.111", 3333));
-        connectionInfoMap.put("Connection 3", new ConnectionInfo("111.111.111.111", 3333));
-        connectionInfoMap.put("Connection 4", new ConnectionInfo("111.111.111.111", 3333));
-    }
+    public void addConnectionInfo(String name, String ip, int port) {
+        ConnectionInfo connectionInfo = new ConnectionInfo(ip, port);
+        connectionInfoMap.put(name, connectionInfo);
 
-    public Map<String, ConnectionInfo> getConnectionInfoMap() {
-        return connectionInfoMap;
+        try {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("name", name);
+            jsonObject.put("connectionInfo", connectionInfo.serialize());
+
+            jsonArray.put(jsonObject);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("saved_connections", jsonArray.toString());
+            editor.apply();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public ArrayList<String> getConnectionInfoNames() {

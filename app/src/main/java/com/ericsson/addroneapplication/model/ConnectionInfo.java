@@ -1,5 +1,10 @@
 package com.ericsson.addroneapplication.model;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.Serializable;
+
 /**
  * Created by nbar on 2016-08-19.
  * Container for connection information
@@ -9,10 +14,14 @@ public class ConnectionInfo {
     private String ipAddress;
     private int port;
 
-    public ConnectionInfo(String ipAddress, int port)
-    {
+    public ConnectionInfo(String ipAddress, int port) {
         this.ipAddress = ipAddress;
         this.port = port;
+    }
+
+    public ConnectionInfo(JSONObject object) throws JSONException {
+        this.ipAddress = object.getString("ipAddress");
+        this.port = object.getInt("port");
     }
 
     @Override
@@ -34,5 +43,12 @@ public class ConnectionInfo {
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    public JSONObject serialize() throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("ipAddress", ipAddress);
+        jsonObject.put("port", port);
+        return jsonObject;
     }
 }

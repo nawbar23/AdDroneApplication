@@ -5,21 +5,21 @@
     android:orientation="vertical">
 
     <EditText
-        android:hint="@string/ip_address"
-        android:id="@+id/edit_text_ip_name"
+        android:hint="@string/name"
+        android:id="@+id/edit_text_name"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content" />
+        android:layout_width="match_parent" />
 
     <EditText
         android:hint="@string/ip_address"
         android:id="@+id/edit_text_ip_address"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content" />
+        android:layout_width="match_parent" />
 
     <EditText
         android:hint="@string/port"
         android:id="@+id/edit_text_port"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content" />
+        android:layout_width="match_parent" />
 
 </LinearLayout>
