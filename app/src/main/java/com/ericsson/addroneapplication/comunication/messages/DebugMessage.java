@@ -28,11 +28,6 @@ public class DebugMessage extends CommunicationMessage {
     }
 
     @Override
-    public int getMessageSize() {
-        return PREAMBLE_SIZE + getPayloadSize() + CRC_SIZE;
-    }
-
-    @Override
     public CommunicationMessageValue getValue() {
         return new DebugData(this);
     }

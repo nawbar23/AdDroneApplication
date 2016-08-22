@@ -83,8 +83,8 @@ public class CommunicationHandler {
         }
     }
 
-    public void notifyOnonPingUpdated(double pingDelay){
-        Log.e(DEBUG_TAG, "notifyOnonPingUpdated");
+    public void notifyOnPingUpdated(double pingDelay){
+        Log.e(DEBUG_TAG, "notifyOnPingUpdated");
         for (CommunicationListener listener : listeners) {
             listener.onPingUpdated(pingDelay);
         }

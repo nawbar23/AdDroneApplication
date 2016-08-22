@@ -1,35 +1,35 @@
 package com.ericsson.addroneapplication.comunication.messages;
 
+import com.ericsson.addroneapplication.comunication.data.AutopilotData;
 import com.ericsson.addroneapplication.comunication.data.CommunicationMessageValue;
-import com.ericsson.addroneapplication.comunication.data.PingPongData;
 
 /**
  * Created by nbar on 2016-08-22.
  */
-public class PingPongMessage extends CommunicationMessage {
+public class AutopilotMessage extends CommunicationMessage {
 
-    public PingPongMessage(PingPongData pingPongData){
+    public AutopilotMessage(AutopilotData autopilotData) {
 
     }
 
     @Override
     MessageId getMessageId() {
-        return MessageId.PING_MESSAGE;
+        return MessageId.AUTOPILOT_MESSAGE;
     }
 
     @Override
     byte[] getPreamble() {
-        return new byte[]{'%', '%', '%', '%'};
+        return new byte[]{'#', '#', '#', '#'};
     }
 
     @Override
     int getPayloadSize() {
-        return 4;
+        return 24;
     }
 
     @Override
     CommunicationMessageValue getValue() {
-        return new PingPongData(this);
+        return new AutopilotData(this);
     }
 
     @Override

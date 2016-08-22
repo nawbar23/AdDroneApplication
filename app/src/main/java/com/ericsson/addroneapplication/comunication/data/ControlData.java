@@ -50,16 +50,16 @@ public class ControlData implements CommunicationMessageValue {
         HEADLESS;
     }
 
-    private float eulerX, eulerY, eulerZ;
+    private float roll, pitch, yaw;
     private float throttle;
 
     short command;
     byte mode;
 
     public ControlData() {
-        this.eulerX = 0.0f;
-        this.eulerY = 0.0f;
-        this.eulerZ = 0.0f;
+        this.roll = 0.0f;
+        this.pitch = 0.0f;
+        this.yaw = 0.0f;
         this.throttle = 0.0f;
     }
 
@@ -67,20 +67,28 @@ public class ControlData implements CommunicationMessageValue {
 
     }
 
-    public float getEulerX() {
-        return eulerX;
+    public float getRoll() {
+        return roll;
     }
 
-    public void setEulerX(float eulerX) {
-        this.eulerX = eulerX;
+    public void setRoll(float roll) {
+        this.roll = roll;
     }
 
-    public float getEulerY() {
-        return eulerY;
+    public float getPitch() {
+        return pitch;
     }
 
-    public void setEulerY(float eulerY) {
-        this.eulerY = eulerY;
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
+    }
+
+    public float getYaw() {
+        return yaw;
+    }
+
+    public void setYaw(float yaw) {
+        this.yaw = yaw;
     }
 
     public float getThrottle() {
@@ -89,14 +97,6 @@ public class ControlData implements CommunicationMessageValue {
 
     public void setThrottle(float throttle) {
         this.throttle = throttle;
-    }
-
-    public float getEulerZ() {
-        return eulerZ;
-    }
-
-    public void setEulerZ(float eulerZ) {
-        this.eulerZ = eulerZ;
     }
 
     public short getCommand() {

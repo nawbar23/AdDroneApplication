@@ -28,11 +28,6 @@ public class ControlMessage extends CommunicationMessage {
     }
 
     @Override
-    public int getMessageSize() {
-        return PREAMBLE_SIZE + getPayloadSize() + CRC_SIZE;
-    }
-
-    @Override
     public CommunicationMessageValue getValue() {
         return new ControlData(this);
     }

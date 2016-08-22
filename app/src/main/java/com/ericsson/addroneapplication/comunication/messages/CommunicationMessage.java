@@ -24,8 +24,11 @@ public abstract class CommunicationMessage {
 
     abstract MessageId getMessageId();
     abstract byte[] getPreamble();
-    abstract int getMessageSize();
     abstract int getPayloadSize();
+
+    public int getMessageSize() {
+        return PREAMBLE_SIZE + getPayloadSize() + CRC_SIZE;
+    }
 
     abstract CommunicationMessageValue getValue();
 
