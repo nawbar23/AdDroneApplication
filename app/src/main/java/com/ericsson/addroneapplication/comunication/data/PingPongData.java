@@ -18,6 +18,10 @@ public class PingPongData implements CommunicationMessageValue {
 
     }
 
+    public int getKey() {
+        return key;
+    }
+
     @Override
     public CommunicationMessage getMessage() {
         return new PingPongMessage(this);

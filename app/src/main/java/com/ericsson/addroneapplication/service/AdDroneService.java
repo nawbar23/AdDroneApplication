@@ -16,6 +16,7 @@ import com.ericsson.addroneapplication.model.ConnectionInfo;
  * Service that contains CommunicationHandler
  * Can be stopped only when state is DISCONNECTED
  */
+
 public class AdDroneService extends Service implements CommunicationHandler.CommunicationListener {
     private static final String DEBUG_TAG = "AdDrone:" + AdDroneService.class.getSimpleName();
     private final IBinder mBinder = new LocalBinder();

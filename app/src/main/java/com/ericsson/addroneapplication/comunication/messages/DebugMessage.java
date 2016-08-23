@@ -8,6 +8,10 @@ import com.ericsson.addroneapplication.comunication.data.DebugData;
  */
 public class DebugMessage extends CommunicationMessage {
 
+    public DebugMessage(byte[] byteArray) {
+
+    }
+
     public DebugMessage(DebugData debugData) {
 
     }
@@ -19,12 +23,12 @@ public class DebugMessage extends CommunicationMessage {
 
     @Override
     public byte[] getPreamble() {
-        return new byte[]{'$', '$', '$', '$'};
+        return getPreambleById(getMessageId());
     }
 
     @Override
     public int getPayloadSize() {
-        return 32;
+        return getPayloadSizeById(getMessageId());
     }
 
     @Override

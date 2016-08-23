@@ -6,39 +6,44 @@ import com.ericsson.addroneapplication.comunication.data.PingPongData;
 /**
  * Created by nbar on 2016-08-22.
  */
+
 public class PingPongMessage extends CommunicationMessage {
+
+    public PingPongMessage(byte[] byteArray) {
+
+    }
 
     public PingPongMessage(PingPongData pingPongData) {
 
     }
 
     @Override
-    MessageId getMessageId() {
+    public MessageId getMessageId() {
         return MessageId.PING_MESSAGE;
     }
 
     @Override
-    byte[] getPreamble() {
-        return new byte[]{'%', '%', '%', '%'};
+    public byte[] getPreamble() {
+        return getPreambleById(getMessageId());
     }
 
     @Override
-    int getPayloadSize() {
-        return 4;
+    public int getPayloadSize() {
+        return getPayloadSizeById(getMessageId());
     }
 
     @Override
-    CommunicationMessageValue getValue() {
+    public PingPongData getValue() {
         return new PingPongData(this);
     }
 
     @Override
-    String toByteString() {
+    public String toByteString() {
         return null;
     }
 
     @Override
-    String toHexString() {
+    public String toHexString() {
         return null;
     }
 }

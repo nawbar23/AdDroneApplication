@@ -8,37 +8,41 @@ import com.ericsson.addroneapplication.comunication.data.CommunicationMessageVal
  */
 public class AutopilotMessage extends CommunicationMessage {
 
+    public AutopilotMessage(byte[] byteArray) {
+
+    }
+
     public AutopilotMessage(AutopilotData autopilotData) {
 
     }
 
     @Override
-    MessageId getMessageId() {
+    public MessageId getMessageId() {
         return MessageId.AUTOPILOT_MESSAGE;
     }
 
     @Override
-    byte[] getPreamble() {
+    public byte[] getPreamble() {
         return new byte[]{'#', '#', '#', '#'};
     }
 
     @Override
-    int getPayloadSize() {
-        return 24;
+    public int getPayloadSize() {
+        return getPayloadSizeById(getMessageId());
     }
 
     @Override
-    CommunicationMessageValue getValue() {
+    public CommunicationMessageValue getValue() {
         return new AutopilotData(this);
     }
 
     @Override
-    String toByteString() {
+    public String toByteString() {
         return null;
     }
 
     @Override
-    String toHexString() {
+    public String toHexString() {
         return null;
     }
 }

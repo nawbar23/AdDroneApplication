@@ -12,6 +12,7 @@ import com.ericsson.addroneapplication.comunication.messages.ControlMessage;
  * - command - command for specific control type
  * - solver mode - (only in MANUAL command), defines way of euler angles interpretation
  */
+
 public class ControlData implements CommunicationMessageValue {
 
     short command;

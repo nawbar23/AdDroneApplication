@@ -9,34 +9,104 @@ import com.ericsson.addroneapplication.comunication.data.CommunicationMessageVal
  * and handles CRC validation
  */
 public abstract class CommunicationMessage {
-    protected static final int PREAMBLE_SIZE = 4;
-    protected static final int CRC_SIZE = 2;
+    private static final int PREAMBLE_SIZE = 4;
+    private static final int CRC_SIZE = 2;
     private byte[] payload;
+
     private short crc;
 
-    abstract MessageId getMessageId();
+    public abstract MessageId getMessageId();
 
-    abstract byte[] getPreamble();
+    public abstract byte[] getPreamble();
 
-    abstract int getPayloadSize();
+    public abstract int getPayloadSize();
 
     public int getMessageSize() {
         return PREAMBLE_SIZE + getPayloadSize() + CRC_SIZE;
     }
 
-    abstract CommunicationMessageValue getValue();
+    public abstract CommunicationMessageValue getValue();
 
-    abstract String toByteString();
+    public abstract String toByteString();
 
-    abstract String toHexString();
+    public abstract String toHexString();
+
+    public void setCrc() {
+        this.crc = computeCrc();
+    }
+
+    public byte[] getByteArray() {
+        byte[] message = new byte[getMessageSize()];
+        System.arraycopy(getPreamble(), 0, message, 0, 4);
+        System.arraycopy(payload, 0, message, 4, getPayloadSize());
+        message[getMessageSize() - 2] = (byte) (crc & 0xff);
+        message[getMessageSize() - 1] = (byte) ((crc >> 8) & 0xff);
+        return message;
+    }
 
     public boolean isValid() {
         return crc == computeCrc();
     }
 
-    public short computeCrc() {
-        // TODO implement this algorithm
-        return 0;
+    private short computeCrc() {
+        int crcShort = 0;
+        for (int i = 0; i < getPayloadSize(); i++) {
+            crcShort = ((crcShort  >>> 8) | (crcShort  << 8) )& 0xffff;
+            crcShort ^= (payload[i] & 0xff);
+            crcShort ^= ((crcShort & 0xff) >> 4);
+            crcShort ^= (crcShort << 12) & 0xffff;
+            crcShort ^= ((crcShort & 0xFF) << 5) & 0xffff;
+        }
+        crcShort &= 0xffff;
+        return (short)crcShort;
+    }
+
+    public static byte[] getPreambleById(MessageId id) {
+        switch (id) {
+            case CONTROL_MESSAGE:
+                return new byte[]{'$', '$', '$', '$'};
+            case DEBUG_MESSAGE:
+                return new byte[]{'$', '$', '$', '$'};
+            case PING_MESSAGE:
+                return new byte[]{'%', '%', '%', '%'};
+            case AUTOPILOT_MESSAGE:
+                return new byte[]{'#', '#', '#', '#'};
+            default:
+                // TODO throw some error
+                return new byte[]{'a', 'a', 'a', 'a'};
+        }
+    }
+
+    public static int getPayloadSizeById(MessageId id){
+        switch (id) {
+            case CONTROL_MESSAGE:
+                return 32;
+            case DEBUG_MESSAGE:
+                return 32;
+            case PING_MESSAGE:
+                return 4;
+            case AUTOPILOT_MESSAGE:
+                return 24;
+            default:
+                // TODO throw some error
+                return -1;
+        }
+    }
+
+    public static CommunicationMessage messageFactory(MessageId id, byte[] data){
+        switch (id) {
+            case CONTROL_MESSAGE:
+                return new ControlMessage(data);
+            case DEBUG_MESSAGE:
+                return new DebugMessage(data);
+            case PING_MESSAGE:
+                return new PingPongMessage(data);
+            case AUTOPILOT_MESSAGE:
+                return new AutopilotMessage(data);
+            default:
+                // TODO throw some error
+                return new ControlMessage(data);
+        }
     }
 
     public enum MessageId {

@@ -13,6 +13,7 @@ import com.ericsson.addroneapplication.comunication.messages.DebugMessage;
  * - flags:
  * GPS fix | GPS 3D fix | low. bat. volt. | errorHandling | autopilotUsed | solver1 | solver2
  */
+
 public class DebugData implements CommunicationMessageValue {
 
     private float roll, pitch, yaw;
