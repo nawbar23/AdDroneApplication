@@ -8,9 +8,9 @@ import com.ericsson.addroneapplication.comunication.messages.CommunicationMessag
  * Autopilot data used to control drone in autopilot mode.
  * This data is sent to drone when target is changed and send back from drone as ACK.
  * Data:
- *  - position (lat, lon, alt)
- *  - flags:
- *    ..............
+ * - position (lat, lon, alt)
+ * - flags:
+ * ..............
  */
 public class AutopilotData implements CommunicationMessageValue {
 

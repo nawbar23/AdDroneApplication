@@ -11,19 +11,13 @@ import com.ericsson.addroneapplication.comunication.data.CommunicationMessageVal
 public abstract class CommunicationMessage {
     protected static final int PREAMBLE_SIZE = 4;
     protected static final int CRC_SIZE = 2;
-
-    public enum MessageId {
-        CONTROL_MESSAGE,
-        DEBUG_MESSAGE,
-        PING_MESSAGE,
-        AUTOPILOT_MESSAGE,
-    }
-
     private byte[] payload;
     private short crc;
 
     abstract MessageId getMessageId();
+
     abstract byte[] getPreamble();
+
     abstract int getPayloadSize();
 
     public int getMessageSize() {
@@ -33,15 +27,22 @@ public abstract class CommunicationMessage {
     abstract CommunicationMessageValue getValue();
 
     abstract String toByteString();
+
     abstract String toHexString();
 
     public boolean isValid() {
         return crc == computeCrc();
     }
 
-    public short computeCrc()
-    {
+    public short computeCrc() {
         // TODO implement this algorithm
         return 0;
+    }
+
+    public enum MessageId {
+        CONTROL_MESSAGE,
+        DEBUG_MESSAGE,
+        PING_MESSAGE,
+        AUTOPILOT_MESSAGE,
     }
 }

@@ -25,10 +25,6 @@ public class StartViewModel implements ViewModel {
     private Map<String, ConnectionInfo> connectionInfoMap;
     private JSONArray jsonArray;
 
-    public static String connectionNameToId(String name) {
-        return name.substring(0, name.lastIndexOf('(') - 1);
-    }
-
     public StartViewModel(Context context) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
         connectionInfoMap = new HashMap<>();
@@ -48,6 +44,10 @@ public class StartViewModel implements ViewModel {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String connectionNameToId(String name) {
+        return name.substring(0, name.lastIndexOf('(') - 1);
     }
 
     public void addConnection(String name, String ip, int port) {
@@ -70,7 +70,7 @@ public class StartViewModel implements ViewModel {
 
     public ArrayList<String> getConnectionInfoNames() {
         ArrayList<String> names = new ArrayList<>();
-        for(Map.Entry<String, ConnectionInfo> entry: connectionInfoMap.entrySet()) {
+        for (Map.Entry<String, ConnectionInfo> entry : connectionInfoMap.entrySet()) {
             names.add(entry.getKey() + " (" + entry.getValue().toString() + ")");
         }
         return names;

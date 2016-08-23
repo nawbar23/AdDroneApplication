@@ -23,11 +23,11 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Preference connectionPref = findPreference(key);
 
-        if(key.equals(SettingsActivity.KEY_PREF_MSG_RETRANS_RATE)) {
+        if (key.equals(SettingsActivity.KEY_PREF_MSG_RETRANS_RATE)) {
             connectionPref.setSummary(sharedPreferences.getString(key, ""));
         }
 
-        if(key.equals(SettingsActivity.KEY_PREF_MSG_RETRANS_NUM)) {
+        if (key.equals(SettingsActivity.KEY_PREF_MSG_RETRANS_NUM)) {
             connectionPref.setSummary(sharedPreferences.getString(key, ""));
         }
     }

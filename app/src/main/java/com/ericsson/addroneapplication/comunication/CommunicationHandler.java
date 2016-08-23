@@ -5,7 +5,6 @@ import android.util.Log;
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -21,22 +20,6 @@ import java.util.ArrayList;
  */
 public class CommunicationHandler {
     private static final String DEBUG_TAG = "AdDrone:" + CommunicationHandler.class.getSimpleName();
-
-    public enum TimeoutId {
-        CONNECTION_TIMEOUT,
-        DEBUG_DATA_TIMEOUT,
-        PING_TIMEOUT,
-        AUTOPILOT_DATA_TIMEOUT,
-    }
-
-    public interface CommunicationListener {
-        void onConnected();
-        void onDisconnected();
-        void onTimeout(TimeoutId timeoutId);
-        void onMessageReceived(CommunicationMessage message);
-        void onPingUpdated(double pingDelay);
-    }
-
     ArrayList<CommunicationListener> listeners;
 
     public CommunicationHandler() {
@@ -51,39 +34,39 @@ public class CommunicationHandler {
         notifyOnConnected();
     }
 
-    public void disconnect(){
+    public void disconnect() {
 
     }
 
-    public void notifyOnConnected(){
+    public void notifyOnConnected() {
         Log.e(DEBUG_TAG, "notifyOnConnected");
         for (CommunicationListener listener : listeners) {
             listener.onConnected();
         }
     }
 
-    public void notifyOnDisconnected(){
+    public void notifyOnDisconnected() {
         Log.e(DEBUG_TAG, "notifyOnConnected");
         for (CommunicationListener listener : listeners) {
             listener.onDisconnected();
         }
     }
 
-    public void notifyOnConnect(TimeoutId timeoutId){
+    public void notifyOnConnect(TimeoutId timeoutId) {
         Log.e(DEBUG_TAG, "notifyOnConnect");
         for (CommunicationListener listener : listeners) {
             listener.onTimeout(timeoutId);
         }
     }
 
-    public void notifyOnMessageReceived(CommunicationMessage message){
+    public void notifyOnMessageReceived(CommunicationMessage message) {
         Log.e(DEBUG_TAG, "notifyOnMessageReceived");
         for (CommunicationListener listener : listeners) {
             listener.onMessageReceived(message);
         }
     }
 
-    public void notifyOnPingUpdated(double pingDelay){
+    public void notifyOnPingUpdated(double pingDelay) {
         Log.e(DEBUG_TAG, "notifyOnPingUpdated");
         for (CommunicationListener listener : listeners) {
             listener.onPingUpdated(pingDelay);
@@ -96,5 +79,24 @@ public class CommunicationHandler {
 
     public void unregisterListener(CommunicationListener listener) {
         listeners.remove(listener);
+    }
+
+    public enum TimeoutId {
+        CONNECTION_TIMEOUT,
+        DEBUG_DATA_TIMEOUT,
+        PING_TIMEOUT,
+        AUTOPILOT_DATA_TIMEOUT,
+    }
+
+    public interface CommunicationListener {
+        void onConnected();
+
+        void onDisconnected();
+
+        void onTimeout(TimeoutId timeoutId);
+
+        void onMessageReceived(CommunicationMessage message);
+
+        void onPingUpdated(double pingDelay);
     }
 }

@@ -11,9 +11,9 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -30,7 +30,7 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
     StartViewModel startViewModel;
 
     private AdDroneService service = null;
-
+    private Spinner spinnerConnection;
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder binderService) {
@@ -44,8 +44,6 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
             Log.e(DEBUG_TAG, "Disconnected !!!");
         }
     };
-
-    private Spinner spinnerConnection;
     private Button buttonConnect;
     private Button buttonAdd;
 
@@ -89,6 +87,15 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
                 addDialogFragment.show(getFragmentManager(), "ADD_DIALOG");
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.e(DEBUG_TAG, "onDestroy");
+        super.onDestroy();
+        if (service != null) {
+            unbindService(connection);
+        }
     }
 
     private void onConnect(ConnectionInfo connectionInfo) {

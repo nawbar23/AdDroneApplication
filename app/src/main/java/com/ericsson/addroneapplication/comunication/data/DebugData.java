@@ -6,12 +6,12 @@ import com.ericsson.addroneapplication.comunication.messages.DebugMessage;
 /**
  * Created by nbar on 2016-08-22.
  * Container tha stores most important telemetry data from drone:
- *  - euler angles - rotation of drone
- *  - position (lat, lon, alt), altitude is relative to start
- *  - vLoc - speed of drone relatively to ground
- *  - controller state - actual control command used by controller
- *  - flags:
- *    GPS fix | GPS 3D fix | low. bat. volt. | errorHandling | autopilotUsed | solver1 | solver2
+ * - euler angles - rotation of drone
+ * - position (lat, lon, alt), altitude is relative to start
+ * - vLoc - speed of drone relatively to ground
+ * - controller state - actual control command used by controller
+ * - flags:
+ * GPS fix | GPS 3D fix | low. bat. volt. | errorHandling | autopilotUsed | solver1 | solver2
  */
 public class DebugData implements CommunicationMessageValue {
 
@@ -29,7 +29,7 @@ public class DebugData implements CommunicationMessageValue {
 
     }
 
-    public DebugData(DebugMessage message){
+    public DebugData(DebugMessage message) {
 
     }
 

@@ -3,8 +3,6 @@ package com.ericsson.addroneapplication.model;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
-
 /**
  * Created by nbar on 2016-08-19.
  * Container for connection information

@@ -8,7 +8,7 @@ import com.ericsson.addroneapplication.comunication.data.PingPongData;
  */
 public class PingPongMessage extends CommunicationMessage {
 
-    public PingPongMessage(PingPongData pingPongData){
+    public PingPongMessage(PingPongData pingPongData) {
 
     }
 

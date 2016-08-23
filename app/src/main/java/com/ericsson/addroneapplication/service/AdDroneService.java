@@ -18,19 +18,8 @@ import com.ericsson.addroneapplication.model.ConnectionInfo;
  */
 public class AdDroneService extends Service implements CommunicationHandler.CommunicationListener {
     private static final String DEBUG_TAG = "AdDrone:" + AdDroneService.class.getSimpleName();
-
-    private enum State {
-        DISABLED,
-        CONNECTING,
-        CONNECTED,
-        DISCONNECTING,
-        DISCONNECTED,
-    }
-
     private final IBinder mBinder = new LocalBinder();
-
     private State state;
-
     // main communication handler for internet connection
     private CommunicationHandler communicationHandler;
 
@@ -59,8 +48,7 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
         this.communicationHandler.unregisterListener(this);
     }
 
-    public void attemptConnection(ConnectionInfo connectionInfo)
-    {
+    public void attemptConnection(ConnectionInfo connectionInfo) {
         switch (state) {
             case CONNECTED:
                 Log.e(DEBUG_TAG, "attemptConnection at CONNECTED, starting activity");
@@ -80,16 +68,14 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
 
     private void startControlActivity() {
         //TODO: notify StartActivity that connection is established
+        Intent intent = new Intent(getApplicationContext(), ControlActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     public State getState() {
         return state;
-    }
-
-    public class LocalBinder extends Binder {
-        public AdDroneService getService() {
-            return AdDroneService.this;
-        }
     }
 
     @Override
@@ -116,5 +102,19 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
     public void onConnected() {
         this.state = State.CONNECTED;
         startControlActivity();
+    }
+
+    private enum State {
+        DISABLED,
+        CONNECTING,
+        CONNECTED,
+        DISCONNECTING,
+        DISCONNECTED,
+    }
+
+    public class LocalBinder extends Binder {
+        public AdDroneService getService() {
+            return AdDroneService.this;
+        }
     }
 }

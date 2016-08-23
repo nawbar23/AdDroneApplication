@@ -11,7 +11,7 @@ public class PingPongData implements CommunicationMessageValue {
     int key;
 
     public PingPongData() {
-        key = (int)(Math.random() * 100000);
+        key = (int) (Math.random() * 100000);
     }
 
     public PingPongData(PingPongMessage message) {
