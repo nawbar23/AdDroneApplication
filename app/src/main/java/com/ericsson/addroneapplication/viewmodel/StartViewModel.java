@@ -25,6 +25,10 @@ public class StartViewModel implements ViewModel {
     private Map<String, ConnectionInfo> connectionInfoMap;
     private JSONArray jsonArray;
 
+    public static String connectionNameToId(String name) {
+        return name.substring(0, name.lastIndexOf('(') - 1);
+    }
+
     public StartViewModel(Context context) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
         connectionInfoMap = new HashMap<>();

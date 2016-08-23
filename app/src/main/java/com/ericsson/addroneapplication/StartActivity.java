@@ -108,7 +108,7 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
     }
 
     private ConnectionInfo getSelectedConnection() {
-        return startViewModel.getConnectionInfo(spinnerConnection.getSelectedItem().toString());
+        return startViewModel.getConnectionInfo(StartViewModel.connectionNameToId(spinnerConnection.getSelectedItem().toString()));
     }
 
     @Override
