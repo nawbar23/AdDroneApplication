@@ -7,12 +7,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.InputFilter;
-import android.text.Spanned;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -23,6 +20,7 @@ import android.widget.Spinner;
 
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 import com.ericsson.addroneapplication.service.AdDroneService;
+import com.ericsson.addroneapplication.settings.SettingsActivity;
 import com.ericsson.addroneapplication.viewmodel.StartViewModel;
 
 public class StartActivity extends AppCompatActivity implements AddConnectionDialogFragment.AddConnectionDialogListener {
@@ -30,9 +28,6 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
     private static final String DEBUG_TAG = "AdDrone:" + StartActivity.class.getSimpleName();
 
     StartViewModel startViewModel;
-
-    // TODO TextView - for actually chosen ConnectionInfo
-    // TODO ListAdapter - for list of stored ConnectionInfoList
 
     private AdDroneService service = null;
 

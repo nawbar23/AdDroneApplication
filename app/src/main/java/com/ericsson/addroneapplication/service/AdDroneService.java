@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.ericsson.addroneapplication.comunication.CommunicationHandler;
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
+import com.ericsson.addroneapplication.controller.ControlActivity;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 
 /**
@@ -78,7 +79,8 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
     }
 
     private void startControlActivity() {
-
+        Intent intent = new Intent(this, ControlActivity.class);
+        startActivity(intent);
     }
 
     public State getState() {

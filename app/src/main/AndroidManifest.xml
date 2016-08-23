@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SettingsActivity"
+        <activity android:name=".settings.SettingsActivity"
             android:label="@string/settings"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
@@ -30,6 +30,17 @@
 
                 <category android:name="android.intent.category.PREFERENCE" />
             </intent-filter>
+        </activity>
+
+        <activity android:name=".controller.ControlActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
         </activity>
     </application>
 
