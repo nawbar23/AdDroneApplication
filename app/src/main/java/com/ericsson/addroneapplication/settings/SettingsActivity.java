@@ -1,9 +1,6 @@
-package com.ericsson.addroneapplication;
+package com.ericsson.addroneapplication.settings;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;

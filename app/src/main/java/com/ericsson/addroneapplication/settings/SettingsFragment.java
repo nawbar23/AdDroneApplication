@@ -1,11 +1,11 @@
-package com.ericsson.addroneapplication;
+package com.ericsson.addroneapplication.settings;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
-import java.util.Objects;
+import com.ericsson.addroneapplication.R;
 
 /**
  * Created by Kamil on 8/22/2016.
