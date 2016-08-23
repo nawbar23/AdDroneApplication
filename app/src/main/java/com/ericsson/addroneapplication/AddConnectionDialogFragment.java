@@ -35,7 +35,13 @@ public class AddConnectionDialogFragment extends DialogFragment {
                 stringBuilder.append(c);
             }
 
-            String[] parts = stringBuilder.toString().split("\\.");
+            String text = stringBuilder.toString();
+
+            if(text.contains("..") || text.startsWith(".")) {
+                return "";
+            }
+
+            String[] parts = text.split("\\.");
             if (parts.length <= 4) {
                 for (String part : parts) {
                     try {
@@ -47,6 +53,10 @@ public class AddConnectionDialogFragment extends DialogFragment {
                     }
                 }
             } else {
+                return "";
+            }
+
+            if(parts.length == 4 && text.endsWith(".")) {
                 return "";
             }
 
