@@ -79,8 +79,7 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
     }
 
     private void startControlActivity() {
-        Intent intent = new Intent(this, ControlActivity.class);
-        startActivity(intent);
+        //TODO: notify StartActivity that connection is established
     }
 
     public State getState() {
