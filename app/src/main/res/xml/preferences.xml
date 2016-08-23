@@ -19,11 +19,18 @@
             android:defaultValue="200"
             android:inputType="number"/>
 
-        <CheckBoxPreference
-            android:key="pref_enable_little_endian"
-            android:title="@string/pref_enable_little_endian"
-            android:summary="@string/pref_enable_little_endian_summ"
-            android:defaultValue="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="User interface settings"
+        android:key="pref_ui_settings">
+
+        <EditTextPreference
+            android:key="pref_ui_refresh_rate"
+            android:title="@string/pref_ui_refresh_rate"
+            android:summary="@string/pref_ui_refresh_rate_summ"
+            android:defaultValue="2"
+            android:inputType="number"/>
 
     </PreferenceCategory>
 
