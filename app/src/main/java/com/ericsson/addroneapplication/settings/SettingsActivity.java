@@ -12,7 +12,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     public static final String KEY_PREF_MSG_RETRANS_RATE = "pref_msg_retrans_rate";
     public static final String KEY_PREF_MSG_RETRANS_NUM = "pref_msg_retrans_num";
-    public static final String KEY_PREF_ENABLE_LITTLE_ENDIAN = "pref_enable_little_endian";
+    public static final String KEY_PREF_UI_REFRESH_RATE = "pref_ui_refresh_rate";
 
     private SettingsFragment settingsFragment;
 

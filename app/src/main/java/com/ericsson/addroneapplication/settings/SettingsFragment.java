@@ -30,5 +30,9 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         if (key.equals(SettingsActivity.KEY_PREF_MSG_RETRANS_NUM)) {
             connectionPref.setSummary(sharedPreferences.getString(key, ""));
         }
+
+        if (key.equals(SettingsActivity.KEY_PREF_UI_REFRESH_RATE)) {
+            connectionPref.setSummary(sharedPreferences.getString(key, ""));
+        }
     }
 }
