@@ -25,7 +25,9 @@ import java.util.Map;
  * This class also stores all internet communication objects (sockets, etc.)
  */
 
-public class CommunicationHandler implements StreamProcessor.StreamProcessorListener {
+public class CommunicationHandler implements
+        StreamProcessor.StreamProcessorListener,
+        TcpSocket.TcpSocketEventListener {
     private static final String DEBUG_TAG = "AdDrone:" + CommunicationHandler.class.getSimpleName();
     private ArrayList<CommunicationListener> listeners;
 
@@ -38,7 +40,7 @@ public class CommunicationHandler implements StreamProcessor.StreamProcessorList
         this.listeners = new ArrayList<>();
 
         this.streamProcessor = new StreamProcessor(getSuppertetMessagesMap(), this);
-        this.tcpSocket = new TcpSocket(this.streamProcessor);
+        this.tcpSocket = new TcpSocket(this.streamProcessor, this);
 
         // TODO get ping frequency from settings
         this.pingPongHandler = new PingPongHandler(tcpSocket, 0.5);
@@ -46,14 +48,11 @@ public class CommunicationHandler implements StreamProcessor.StreamProcessorList
 
     public void connect(ConnectionInfo connectionInfo) {
         Log.e(DEBUG_TAG, "connecting...");
-
-        // TODO implement connection algorithm
-
-        notifyOnConnected();
+        this.tcpSocket.connect(connectionInfo);
     }
 
     public void disconnect() {
-
+        this.tcpSocket.disconnect();
     }
 
     @Override
@@ -63,11 +62,26 @@ public class CommunicationHandler implements StreamProcessor.StreamProcessorList
                 long pingDelay = pingPongHandler.handlePongReception((PingPongMessage) message);
                 notifyOnPingUpdated(pingDelay);
             } catch (CommunicationException e) {
-                notifyOnTimeout(TimeoutId.PING_TIMEOUT);
+                notifyOnError("Ping timeout");
             }
         } else {
             notifyOnMessageReceived(message);
         }
+    }
+
+    @Override
+    public void onConnected() {
+        notifyOnConnected();
+    }
+
+    @Override
+    public void onDisconnected() {
+        notifyOnDisconnected();
+    }
+
+    @Override
+    public void onError(String message) {
+        notifyOnError(message);
     }
 
     public void notifyOnConnected() {
@@ -78,16 +92,16 @@ public class CommunicationHandler implements StreamProcessor.StreamProcessorList
     }
 
     public void notifyOnDisconnected() {
-        Log.e(DEBUG_TAG, "notifyOnConnected");
+        Log.e(DEBUG_TAG, "notifyOnDisconnected");
         for (CommunicationListener listener : listeners) {
             listener.onDisconnected();
         }
     }
 
-    public void notifyOnTimeout(TimeoutId timeoutId) {
-        Log.e(DEBUG_TAG, "notifyOnConnect");
+    public void notifyOnError(String message) {
+        Log.e(DEBUG_TAG, "notifyOnError");
         for (CommunicationListener listener : listeners) {
-            listener.onTimeout(timeoutId);
+            listener.onError(message);
         }
     }
 
@@ -142,7 +156,7 @@ public class CommunicationHandler implements StreamProcessor.StreamProcessorList
 
         void onDisconnected();
 
-        void onTimeout(TimeoutId timeoutId);
+        void onError(String message);
 
         void onMessageReceived(CommunicationMessage message);
 

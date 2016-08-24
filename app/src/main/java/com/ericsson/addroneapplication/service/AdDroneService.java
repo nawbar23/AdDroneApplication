@@ -67,8 +67,11 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
         }
     }
 
+    public void attemptDisconnection() {
+        this.state = State.DISCONNECTING;
+    }
+
     private void startControlActivity() {
-        //TODO: notify StartActivity that connection is established
         Intent intent = new Intent(getApplicationContext(), ControlActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -90,7 +93,10 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
     }
 
     @Override
-    public void onTimeout(CommunicationHandler.TimeoutId timeoutId) {
+    public void onError(String message) {
+        if (this.state == State.CONNECTING) {
+            this.state = State.DISCONNECTED;
+        }
 
     }
 

@@ -20,7 +20,8 @@ import java.net.Socket;
 public class TcpSocket {
     private static final String DEBUG_TAG = "AdDrone:" + TcpSocket.class.getSimpleName();
 
-    private TcpSocketListener listener;
+    private TcpSocketDataListener dataListener;
+    private TcpSocketEventListener eventListener;
     private State state;
 
     private Socket socket;
@@ -28,31 +29,16 @@ public class TcpSocket {
 
     private DataOutputStream outputStream;
 
-    public TcpSocket(TcpSocketListener listener) {
-        this.listener = listener;
+    public TcpSocket(TcpSocketDataListener dataListener, TcpSocketEventListener eventListener) {
+        this.dataListener = dataListener;
+        this.eventListener = eventListener;
 
         this.state = State.DISCONNECTED;
     }
 
     public void connect(ConnectionInfo connectionInfo) {
-        this.socket = new Socket();
-
-        try {
-            this.socket.connect(new InetSocketAddress(connectionInfo.getIpAddress(), connectionInfo.getPort()), 3000);
-        } catch (IOException e) {
-            Log.e(DEBUG_TAG, "Error while connecting: " + e.getMessage());
-        }
-
-        try {
-            outputStream = new DataOutputStream(socket.getOutputStream());
-        } catch (IOException e) {
-            Log.e(DEBUG_TAG, "Error while connection output stream: " + e.getMessage());
-        }
-
-        Log.e(DEBUG_TAG, "Successfully connected to: " + connectionInfo.toString() + " starting receiving task...");
-
-        connection.execute((Void)null);
-
+        this.connection = new SocketConnection();
+        connection.execute(connectionInfo);
     }
 
     public void disconnect() {
@@ -67,8 +53,14 @@ public class TcpSocket {
         }
     }
 
-    public interface TcpSocketListener {
+    public interface TcpSocketDataListener {
         void onPacketReceived(byte[] packet);
+    }
+
+    public interface TcpSocketEventListener {
+        void onConnected();
+        void onDisconnected();
+        void onError(String message);
     }
 
     public enum State {
@@ -80,16 +72,44 @@ public class TcpSocket {
     }
 
     public enum ConnectionThreadResult {
-        NULL_SOCKET,
+        CONNECTION_ERROR,
+        CONNECTION_INPUT_STREAM_ERROR,
         RECEIVING_ERROR,
-        SUCCESS;
+        SUCCESS
     }
 
-    private class SocketConnection extends AsyncTask<Void, Void, ConnectionThreadResult> {
+    private class SocketConnection extends AsyncTask<ConnectionInfo, Void, ConnectionThreadResult> {
         private final String DEBUG_TAG = "AdDrone:" + SocketConnection.class.getSimpleName();
 
         @Override
-        protected ConnectionThreadResult doInBackground(Void... params) {
+        protected ConnectionThreadResult doInBackground(ConnectionInfo... params) {
+
+            ConnectionInfo connectionInfo = params[0];
+
+            Log.e(DEBUG_TAG, "Successfully started thread, " + connectionInfo.toString());
+
+            socket = new Socket();
+
+            try {
+                socket.connect(new InetSocketAddress(connectionInfo.getIpAddress(), connectionInfo.getPort()), 3000);
+            } catch (IOException e) {
+                Log.e(DEBUG_TAG, "Error while connecting: " + e.getMessage());
+                return ConnectionThreadResult.CONNECTION_ERROR;
+            }
+
+            Log.e(DEBUG_TAG, "Connected");
+
+            try {
+                outputStream = new DataOutputStream(socket.getOutputStream());
+            } catch (IOException e) {
+                Log.e(DEBUG_TAG, "Error while connecting output stream: " + e.getMessage());
+                return ConnectionThreadResult.CONNECTION_INPUT_STREAM_ERROR;
+            }
+
+            Log.e(DEBUG_TAG, "Connected connected stream");
+
+            eventListener.onConnected();
+
             try {
                 DataInputStream mDataInputStream = new DataInputStream(socket.getInputStream());
                 byte[] buffer = new byte[255];
@@ -97,13 +117,12 @@ public class TcpSocket {
                 {
                     int receptionSize = mDataInputStream.read(buffer);
                     if(receptionSize > 0) {
-                        listener.onPacketReceived(buffer);
+                        dataListener.onPacketReceived(buffer);
                     }
                 }
             } catch (Exception e) {
-                if(state != State.DISCONNECTING) {
-                    return ConnectionThreadResult.RECEIVING_ERROR;
-                }
+                Log.e(DEBUG_TAG, "Error while receiving data: " + e.getMessage());
+                return ConnectionThreadResult.RECEIVING_ERROR;
             }
             return ConnectionThreadResult.SUCCESS;
         }
@@ -111,18 +130,30 @@ public class TcpSocket {
         @Override
         protected void onPostExecute(ConnectionThreadResult connectionThreadResult) {
             super.onPostExecute(connectionThreadResult);
-            switch (connectionThreadResult) {
-                case NULL_SOCKET:
-                    Log.e(DEBUG_TAG, "Thread exits with NULL_SOCKET");
-                case RECEIVING_ERROR:
-                    Log.e(DEBUG_TAG, "Thread exits with RECEIVING_ERROR");
-                case SUCCESS:
-                    Log.e(DEBUG_TAG, "Thread exits with SUCCESS");
-            }
             try {
                 socket.close();
             } catch (IOException e) {
                 Log.e(DEBUG_TAG, "Error while closing socket: " + e.getMessage());
+            }
+            switch (connectionThreadResult) {
+                case CONNECTION_ERROR:
+                    Log.e(DEBUG_TAG, "Thread exits with CONNECTION_ERROR");
+                    eventListener.onError("Thread exits with CONNECTION_ERROR");
+                    break;
+                case CONNECTION_INPUT_STREAM_ERROR:
+                    Log.e(DEBUG_TAG, "Thread exits with CONNECTION_INPUT_STREAM_ERROR");
+                    eventListener.onError("Thread exits with CONNECTION_INPUT_STREAM_ERROR");
+                    eventListener.onDisconnected();
+                    break;
+                case RECEIVING_ERROR:
+                    Log.e(DEBUG_TAG, "Thread exits with RECEIVING_ERROR");
+                    eventListener.onError("Thread exits with RECEIVING_ERROR");
+                    eventListener.onDisconnected();
+                    break;
+                case SUCCESS:
+                    Log.e(DEBUG_TAG, "Thread exits with SUCCESS");
+                    eventListener.onDisconnected();
+                    break;
             }
         }
     }

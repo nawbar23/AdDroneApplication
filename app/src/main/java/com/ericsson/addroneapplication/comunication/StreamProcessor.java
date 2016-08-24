@@ -11,7 +11,7 @@ import java.util.Map;
  * Map argument in constructor defines preamble byte vs message type.
  */
 
-public class StreamProcessor implements TcpSocket.TcpSocketListener {
+public class StreamProcessor implements TcpSocket.TcpSocketDataListener {
     private static final String DEBUG_TAG = "AdDrone:" + StreamProcessor.class.getSimpleName();
 
     private final Map<Byte, CommunicationMessage.MessageId> supportMap;
