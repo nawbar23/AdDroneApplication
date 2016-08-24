@@ -19,7 +19,31 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right|top"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:id="@+id/button_change_view" />
+
+    <com.ericsson.addroneapplication.controller.ControlThrottleView
+        android:layout_width="50dp"
+        android:layout_height="200dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="@dimen/margin_lg"
+        android:layout_marginStart="@dimen/margin_lg"
+        android:layout_marginBottom="@dimen/margin_lg"
+        android:id="@+id/throttle"/>
+
+    <com.ericsson.addroneapplication.controller.ControlPadView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="@dimen/margin_sm"
+        android:layout_marginEnd="@dimen/margin_lg"
+        android:layout_marginBottom="@dimen/margin_lg"
+        android:id="@+id/joystick"/>
 
 </RelativeLayout>

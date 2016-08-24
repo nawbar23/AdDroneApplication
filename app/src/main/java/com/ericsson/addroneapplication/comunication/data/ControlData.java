@@ -26,6 +26,14 @@ public class ControlData implements CommunicationMessageValue {
         this.yaw = 0.0f;
         this.throttle = 0.0f;
     }
+
+    public ControlData(ControlData controlData) {
+        this.roll = controlData.roll;
+        this.pitch = controlData.pitch;
+        this.yaw = controlData.yaw;
+        this.throttle = controlData.throttle;
+    }
+
     public ControlData(ControlMessage message) {
 
     }
