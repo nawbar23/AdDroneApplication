@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import java.util.regex.Pattern;
+
 /**
  * Created by Kamil on 8/22/2016.
  */
@@ -23,6 +25,9 @@ public class AddConnectionDialogFragment extends DialogFragment {
     private AddConnectionDialogListener listener = null;
     private EditText editTextName;
     private EditText editTextIp;
+
+    private Pattern ipPattern = Pattern.compile("(?:[0-9]+\\.){3}[0-9]+");
+
     InputFilter ipFilter = new InputFilter() {
         @Override
         public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
@@ -120,12 +125,17 @@ public class AddConnectionDialogFragment extends DialogFragment {
                     public void onClick(View v) {
 
                         if (editTextName.length() > 0 && editTextIp.length() > 0 && editTextPort.length() > 0) {
-                            listener.onAddConnection(
-                                    editTextName.getText().toString(),
-                                    editTextIp.getText().toString(),
-                                    Integer.parseInt(editTextPort.getText().toString())
-                            );
-                            alertDialog.dismiss();
+
+                            if (! ipPattern.matcher(editTextIp.getText().toString()).matches()) {
+                                Toast.makeText(getActivity(), R.string.invalid_ip_format, Toast.LENGTH_LONG).show();
+                            } else {
+                                listener.onAddConnection(
+                                        editTextName.getText().toString(),
+                                        editTextIp.getText().toString(),
+                                        Integer.parseInt(editTextPort.getText().toString())
+                                );
+                                alertDialog.dismiss();
+                            }
                         } else {
                             Toast.makeText(AddConnectionDialogFragment.this.getActivity(), R.string.fill_all_fields, Toast.LENGTH_LONG).show();
                         }
