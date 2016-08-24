@@ -1,8 +1,5 @@
 package com.ericsson.addroneapplication.comunication.messages;
 
-import android.util.Log;
-
-import com.ericsson.addroneapplication.comunication.StreamProcessor;
 import com.ericsson.addroneapplication.comunication.data.CommunicationMessageValue;
 
 import java.nio.ByteBuffer;
@@ -26,7 +23,7 @@ public abstract class CommunicationMessage {
     public CommunicationMessage(byte[] byteArray){
         this.payload = new byte[getPayloadSize()];
         System.arraycopy(byteArray, 4, this.payload, 0, getPayloadSize());
-        
+
         ByteBuffer buffer = ByteBuffer.wrap(byteArray, 4 + getPayloadSize(), 2);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         this.crc = buffer.getShort();

@@ -3,6 +3,7 @@ package com.ericsson.addroneapplication.service;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -25,6 +26,8 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
     // main communication handler for internet connection
     private CommunicationHandler communicationHandler;
 
+    private Handler handler;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -34,6 +37,8 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
         this.communicationHandler.registerListener(this);
 
         this.state = State.DISABLED;
+
+        this.handler = new Handler();
     }
 
     @Override
@@ -112,9 +117,17 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
         startControlActivity();
     }
 
-    public void displayToast(String message) {
-        Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
-        toast.show();
+    private void runOnUiThread(Runnable runnable) {
+        handler.post(runnable);
+    }
+
+    public void displayToast(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private enum State {

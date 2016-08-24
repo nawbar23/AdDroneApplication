@@ -18,7 +18,7 @@
         android:id="@+id/edit_text_ip_address"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:inputType="numberDecimal|text"
+        android:inputType="number|text"
         android:layout_marginBottom="@dimen/margin_sm"/>
 
     <EditText

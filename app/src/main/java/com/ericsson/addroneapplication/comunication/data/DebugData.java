@@ -131,7 +131,7 @@ public class DebugData implements CommunicationMessageValue {
     @Override
     public String toString() {
         String result = "Rotation: roll: " + String.valueOf(roll) + " pitch: " + String.valueOf(pitch) + " yaw: " + String.valueOf(yaw);
-        result += ("Position: lat: " + String.valueOf(latitude) + " lon: " + String.valueOf(longitude) + " alt: " + String.valueOf(relativeAltitude));
+        result += (" Position: lat: " + String.valueOf(latitude) + " lon: " + String.valueOf(longitude) + " alt: " + String.valueOf(relativeAltitude));
         // TODO format this string for better presentation
         return result;
     }

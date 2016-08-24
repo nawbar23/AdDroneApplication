@@ -69,11 +69,13 @@ public class CommunicationHandler implements
     @Override
     public void onConnected() {
         notifyOnConnected();
+        pingPongHandler.start();
     }
 
     @Override
     public void onDisconnected() {
         notifyOnDisconnected();
+        pingPongHandler.stop();
     }
 
     @Override
@@ -109,8 +111,8 @@ public class CommunicationHandler implements
         }
     }
 
-    public void notifyOnPingUpdated(double pingDelay) {
-        Log.e(DEBUG_TAG, "notifyOnPingUpdated");
+    public void notifyOnPingUpdated(long pingDelay) {
+        Log.e(DEBUG_TAG, "notifyOnPingUpdated, delay: " + String.valueOf(pingDelay) + " ms");
         for (CommunicationListener listener : listeners) {
             listener.onPingUpdated(pingDelay);
         }

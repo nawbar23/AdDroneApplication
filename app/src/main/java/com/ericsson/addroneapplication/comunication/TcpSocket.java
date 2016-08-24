@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -48,6 +47,7 @@ public class TcpSocket {
 
     public void send(byte[] packet) {
         try {
+            Log.e(DEBUG_TAG, "Sending: 0x" + StreamProcessor.byteArrayToHexString(packet));
             outputStream.write(packet, 0, packet.length);
         } catch (IOException e) {
             Log.e(DEBUG_TAG, "Error while sending: " + e.getMessage());

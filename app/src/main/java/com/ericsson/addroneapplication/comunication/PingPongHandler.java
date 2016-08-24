@@ -1,7 +1,12 @@
 package com.ericsson.addroneapplication.comunication;
 
+import android.util.Log;
+
 import com.ericsson.addroneapplication.comunication.data.PingPongData;
 import com.ericsson.addroneapplication.comunication.messages.PingPongMessage;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by nbar on 2016-08-23.
@@ -10,6 +15,8 @@ import com.ericsson.addroneapplication.comunication.messages.PingPongMessage;
  */
 
 public class PingPongHandler {
+    private static final String DEBUG_TAG = "AdDrone:" + PingPongHandler.class.getSimpleName();
+
     private final double pingFrequency;
     private TcpSocket socket;
 
@@ -17,24 +24,40 @@ public class PingPongHandler {
     private long timestamp;
     private boolean pongReceived;
 
+    Timer timer = new Timer();
+    private TimerTask timerTask = new TimerTask() {
+        @Override
+        public void run() {
+            if (pongReceived) {
+                sentPing = new PingPongData();
+                socket.send(sentPing.getMessage().getByteArray());
+                timestamp = System.currentTimeMillis();
+            } else {
+                Log.e(DEBUG_TAG, "Ping receiving timeout");
+                pongReceived = true;
+            }
+        }
+    };
+
     public PingPongHandler(TcpSocket socket, double pingFrequency) {
         this.pingFrequency = pingFrequency;
         this.socket = socket;
     }
 
     public void start() {
-
+        this.pongReceived = true;
+        timer.scheduleAtFixedRate(timerTask, 1000, (long)((1.0 / this.pingFrequency) * 1000));
     }
 
     public void stop() {
-
+        timer.cancel();
     }
 
     public long handlePongReception(PingPongMessage pingPongMessage) throws CommunicationException{
         if (pingPongMessage.getValue().getKey() == sentPing.getKey()) {
             // valid ping measurement, compute ping time
             pongReceived = true;
-            return System.currentTimeMillis() - timestamp;
+            return (System.currentTimeMillis() - timestamp) / 2;
         } else {
             throw new CommunicationException("Pong key does not match to the ping key!");
         }
