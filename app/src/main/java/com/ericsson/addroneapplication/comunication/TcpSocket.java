@@ -79,10 +79,6 @@ public class TcpSocket {
         ERROR;
     }
 
-    private interface ConnectionEvent {
-        void run(String str);
-    }
-
     public enum ConnectionThreadResult {
         NULL_SOCKET,
         RECEIVING_ERROR,
