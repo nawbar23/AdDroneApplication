@@ -9,7 +9,7 @@ import com.ericsson.addroneapplication.comunication.data.ControlData;
 public class ControlMessage extends CommunicationMessage {
 
     public ControlMessage(byte[] byteArray) {
-
+        super(byteArray);
     }
 
     public ControlMessage(ControlData controlData) {

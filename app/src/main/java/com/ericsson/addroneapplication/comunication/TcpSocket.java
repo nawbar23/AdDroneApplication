@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -74,6 +75,7 @@ public class TcpSocket {
     public enum ConnectionThreadResult {
         CONNECTION_ERROR,
         CONNECTION_INPUT_STREAM_ERROR,
+        CONNECTION_OUTPUT_STREAM_ERROR,
         RECEIVING_ERROR,
         SUCCESS
     }
@@ -97,29 +99,36 @@ public class TcpSocket {
                 return ConnectionThreadResult.CONNECTION_ERROR;
             }
 
-            Log.e(DEBUG_TAG, "Connected");
-
             try {
                 outputStream = new DataOutputStream(socket.getOutputStream());
             } catch (IOException e) {
                 Log.e(DEBUG_TAG, "Error while connecting output stream: " + e.getMessage());
-                return ConnectionThreadResult.CONNECTION_INPUT_STREAM_ERROR;
+                return ConnectionThreadResult.CONNECTION_OUTPUT_STREAM_ERROR;
             }
 
             Log.e(DEBUG_TAG, "Connected connected stream");
 
+            DataInputStream inputStream;
+            try {
+                inputStream = new DataInputStream(socket.getInputStream());
+            } catch (IOException e){
+                Log.e(DEBUG_TAG, "Error while connecting input stream: " + e.getMessage());
+                return ConnectionThreadResult.CONNECTION_INPUT_STREAM_ERROR;
+            }
+
             eventListener.onConnected();
 
             try {
-                DataInputStream mDataInputStream = new DataInputStream(socket.getInputStream());
-                byte[] buffer = new byte[255];
-                while(state != State.DISCONNECTING)
-                {
-                    int receptionSize = mDataInputStream.read(buffer);
-                    if(receptionSize > 0) {
-                        dataListener.onPacketReceived(buffer);
+                while(state != State.DISCONNECTING) {
+                    byte buffer[] = new byte[1024];
+                    int dataSize = inputStream.read(buffer, 0, buffer.length);
+                    if (dataSize != -1) {
+                        byte[] tempArray = new byte[dataSize];
+                        System.arraycopy(buffer, 0, tempArray, 0, dataSize);
+                        dataListener.onPacketReceived(tempArray);
                     }
                 }
+                inputStream.close();
             } catch (Exception e) {
                 Log.e(DEBUG_TAG, "Error while receiving data: " + e.getMessage());
                 return ConnectionThreadResult.RECEIVING_ERROR;
@@ -132,6 +141,10 @@ public class TcpSocket {
             super.onPostExecute(connectionThreadResult);
             try {
                 socket.close();
+                if (outputStream != null) {
+                    outputStream.flush();
+                    outputStream.close();
+                }
             } catch (IOException e) {
                 Log.e(DEBUG_TAG, "Error while closing socket: " + e.getMessage());
             }
@@ -143,6 +156,11 @@ public class TcpSocket {
                 case CONNECTION_INPUT_STREAM_ERROR:
                     Log.e(DEBUG_TAG, "Thread exits with CONNECTION_INPUT_STREAM_ERROR");
                     eventListener.onError("Thread exits with CONNECTION_INPUT_STREAM_ERROR");
+                    eventListener.onDisconnected();
+                    break;
+                case CONNECTION_OUTPUT_STREAM_ERROR:
+                    Log.e(DEBUG_TAG, "Thread exits with CONNECTION_OUTPUT_STREAM_ERROR");
+                    eventListener.onError("Thread exits with CONNECTION_OUTPUT_STREAM_ERROR");
                     eventListener.onDisconnected();
                     break;
                 case RECEIVING_ERROR:

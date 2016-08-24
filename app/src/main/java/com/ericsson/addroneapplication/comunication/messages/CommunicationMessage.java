@@ -1,6 +1,12 @@
 package com.ericsson.addroneapplication.comunication.messages;
 
+import android.util.Log;
+
+import com.ericsson.addroneapplication.comunication.StreamProcessor;
 import com.ericsson.addroneapplication.comunication.data.CommunicationMessageValue;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Created by nbar on 2016-08-19.
@@ -11,9 +17,19 @@ import com.ericsson.addroneapplication.comunication.data.CommunicationMessageVal
 public abstract class CommunicationMessage {
     private static final int PREAMBLE_SIZE = 4;
     private static final int CRC_SIZE = 2;
-    private byte[] payload;
+    protected byte[] payload;
 
-    private short crc;
+    protected short crc;
+
+    public CommunicationMessage() {}
+
+    public CommunicationMessage(byte[] byteArray){
+        this.payload = new byte[getPayloadSize()];
+        System.arraycopy(byteArray, 4, this.payload, 0, getPayloadSize());
+        ByteBuffer buffer = ByteBuffer.wrap(byteArray, 4 + getPayloadSize(), 2);
+        buffer.order(ByteOrder.BIG_ENDIAN);
+        this.crc = ((short) (buffer.get() & 0xff));
+    }
 
     public abstract MessageId getMessageId();
 
@@ -93,10 +109,8 @@ public abstract class CommunicationMessage {
         }
     }
 
-    public static CommunicationMessage messageFactory(MessageId id, byte[] data){
+    public static CommunicationMessage inputMessageFactory(MessageId id, byte[] data){
         switch (id) {
-            case CONTROL_MESSAGE:
-                return new ControlMessage(data);
             case DEBUG_MESSAGE:
                 return new DebugMessage(data);
             case PING_MESSAGE:

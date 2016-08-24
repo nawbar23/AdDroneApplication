@@ -10,7 +10,7 @@ import com.ericsson.addroneapplication.comunication.data.PingPongData;
 public class PingPongMessage extends CommunicationMessage {
 
     public PingPongMessage(byte[] byteArray) {
-
+        super(byteArray);
     }
 
     public PingPongMessage(PingPongData pingPongData) {

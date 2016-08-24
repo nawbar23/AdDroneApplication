@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.ericsson.addroneapplication.comunication.CommunicationHandler;
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
@@ -97,7 +98,7 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
         if (this.state == State.CONNECTING) {
             this.state = State.DISCONNECTED;
         }
-
+        displayToast(message);
     }
 
     @Override
@@ -109,6 +110,11 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
     public void onConnected() {
         this.state = State.CONNECTED;
         startControlActivity();
+    }
+
+    public void displayToast(String message) {
+        Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG);
+        toast.show();
     }
 
     private enum State {

@@ -9,7 +9,7 @@ import com.ericsson.addroneapplication.comunication.data.CommunicationMessageVal
 public class AutopilotMessage extends CommunicationMessage {
 
     public AutopilotMessage(byte[] byteArray) {
-
+        super(byteArray);
     }
 
     public AutopilotMessage(AutopilotData autopilotData) {

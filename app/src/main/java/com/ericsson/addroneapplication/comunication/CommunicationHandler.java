@@ -1,14 +1,11 @@
 package com.ericsson.addroneapplication.comunication;
 
 import android.util.Log;
-import android.util.SparseArray;
 
-import com.ericsson.addroneapplication.comunication.data.PingPongData;
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
 import com.ericsson.addroneapplication.comunication.messages.PingPongMessage;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 
-import java.security.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +36,7 @@ public class CommunicationHandler implements
     public CommunicationHandler() {
         this.listeners = new ArrayList<>();
 
-        this.streamProcessor = new StreamProcessor(getSuppertetMessagesMap(), this);
+        this.streamProcessor = new StreamProcessor(getSupportedMessagesMap(), this);
         this.tcpSocket = new TcpSocket(this.streamProcessor, this);
 
         // TODO get ping frequency from settings
@@ -119,14 +116,11 @@ public class CommunicationHandler implements
         }
     }
 
-    private Map<Byte, CommunicationMessage.MessageId> getSuppertetMessagesMap(){
+    private Map<Byte, CommunicationMessage.MessageId> getSupportedMessagesMap(){
         Map<Byte, CommunicationMessage.MessageId> map = new HashMap<>();
         map.put(CommunicationMessage.getPreambleById(
-                CommunicationMessage.MessageId.CONTROL_MESSAGE)[0],
-                CommunicationMessage.MessageId.CONTROL_MESSAGE);
-        map.put(CommunicationMessage.getPreambleById(
                 CommunicationMessage.MessageId.DEBUG_MESSAGE)[0],
-                CommunicationMessage.MessageId.CONTROL_MESSAGE);
+                CommunicationMessage.MessageId.DEBUG_MESSAGE);
         map.put(CommunicationMessage.getPreambleById(
                 CommunicationMessage.MessageId.PING_MESSAGE)[0],
                 CommunicationMessage.MessageId.PING_MESSAGE);

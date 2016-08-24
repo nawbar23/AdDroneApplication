@@ -1,5 +1,7 @@
 package com.ericsson.addroneapplication.comunication;
 
+import android.util.Log;
+
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
 
 import java.util.Map;
@@ -42,25 +44,37 @@ public class StreamProcessor implements TcpSocket.TcpSocketDataListener {
     public void process(byte[] data) {
         final int dataSize = data.length;
 
+        if (dataSize > 0) {
+            Log.e(DEBUG_TAG, "Processing data, size: " + String.valueOf(dataSize) + ", 0x" + byteArrayToHexString(data));
+        } else {
+            return;
+        }
+
         if (dataSize < 4 && !activePreamble) {
             // if any preamble is not active and data is shorter than preamble any data can not be received
             return;
         }
 
         for (int i = 0; i < dataSize; i++) {
-            byte[] tmp = new byte[4];
-            System.arraycopy(data, i, tmp, 0, 4);
-            if (dataSize - i > 4 && isPreamble(tmp)) {
-                activatePreamble(tmp[0]);
+            if (dataSize - i > 4) {
+                byte[] tmp = new byte[4];
+                System.arraycopy(data, i, tmp, 0, 4);
+                if (isPreamble(tmp)){
+                    activatePreamble(tmp[0]);
+                }
             }
             if (activePreamble) {
                 messageBuffer[messageBufferCounter] = data[i];
                 messageBufferCounter++;
                 if (isMessageReceived()) {
-                    listener.onMessageReceived(CommunicationMessage.messageFactory(
-                            supportMap.get(preambleByte),
-                            messageBuffer));
                     activePreamble = false;
+
+                    CommunicationMessage message = CommunicationMessage.inputMessageFactory(
+                            supportMap.get(preambleByte),
+                            messageBuffer);
+                    if (message.isValid()) {
+                        listener.onMessageReceived(message);
+                    }
                 }
             }
         }
@@ -89,5 +103,21 @@ public class StreamProcessor implements TcpSocket.TcpSocketDataListener {
 
     public interface StreamProcessorListener {
         void onMessageReceived(CommunicationMessage message);
+    }
+
+    public static String byteToHexString(byte b) {
+        String ret = "";
+        int intVal = b & 0xff;
+        if (intVal < 0x10) ret += "0";
+        ret += Integer.toHexString(intVal);
+        return ret;
+    }
+
+    public static String byteArrayToHexString(byte[] in) {
+        String ret="";
+        for(byte b:in) {
+            ret += byteToHexString(b);
+        }
+        return ret;
     }
 }
