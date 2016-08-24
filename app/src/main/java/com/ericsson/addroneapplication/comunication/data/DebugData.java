@@ -3,6 +3,8 @@ package com.ericsson.addroneapplication.comunication.data;
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
 import com.ericsson.addroneapplication.comunication.messages.DebugMessage;
 
+import java.nio.ByteBuffer;
+
 /**
  * Created by nbar on 2016-08-22.
  * Container tha stores most important telemetry data from drone:
@@ -26,12 +28,24 @@ public class DebugData implements CommunicationMessageValue {
     private short controllerState;
     private byte flags;
 
+    private byte battery;
+
     public DebugData() {
 
     }
 
     public DebugData(DebugMessage message) {
-
+        ByteBuffer buffer = message.getByteBuffer();
+        roll = buffer.getFloat();
+        pitch= buffer.getFloat();
+        yaw = buffer.getFloat();
+        latitude = buffer.getFloat();
+        longitude = buffer.getFloat();
+        relativeAltitude = buffer.getFloat();
+        vLoc = buffer.getFloat();
+        controllerState = ((short)(buffer.get() & 0xff));
+        flags = buffer.get();
+        battery = buffer.get();
     }
 
     public float getRoll() {
@@ -104,6 +118,22 @@ public class DebugData implements CommunicationMessageValue {
 
     public void setFlags(byte flags) {
         this.flags = flags;
+    }
+
+    public byte getBattery() {
+        return battery;
+    }
+
+    public void setBattery(byte battery) {
+        this.battery = battery;
+    }
+
+    @Override
+    public String toString() {
+        String result = "Rotation: roll: " + String.valueOf(roll) + " pitch: " + String.valueOf(pitch) + " yaw: " + String.valueOf(yaw);
+        result += ("Position: lat: " + String.valueOf(latitude) + " lon: " + String.valueOf(longitude) + " alt: " + String.valueOf(relativeAltitude));
+        // TODO format this string for better presentation
+        return result;
     }
 
     @Override

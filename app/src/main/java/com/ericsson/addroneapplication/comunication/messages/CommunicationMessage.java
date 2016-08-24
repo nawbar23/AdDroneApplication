@@ -26,9 +26,10 @@ public abstract class CommunicationMessage {
     public CommunicationMessage(byte[] byteArray){
         this.payload = new byte[getPayloadSize()];
         System.arraycopy(byteArray, 4, this.payload, 0, getPayloadSize());
+        
         ByteBuffer buffer = ByteBuffer.wrap(byteArray, 4 + getPayloadSize(), 2);
-        buffer.order(ByteOrder.BIG_ENDIAN);
-        this.crc = ((short) (buffer.get() & 0xff));
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        this.crc = buffer.getShort();
     }
 
     public abstract MessageId getMessageId();
@@ -77,6 +78,12 @@ public abstract class CommunicationMessage {
         return (short)crcShort;
     }
 
+    public ByteBuffer getByteBuffer() {
+        ByteBuffer buffer = ByteBuffer.wrap(this.payload);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        return buffer;
+    }
+
     public static byte[] getPreambleById(MessageId id) {
         switch (id) {
             case CONTROL_MESSAGE:
@@ -107,6 +114,10 @@ public abstract class CommunicationMessage {
                 // TODO throw some error
                 return -1;
         }
+    }
+
+    public static int getMessageSizeById(MessageId id){
+        return PREAMBLE_SIZE + getPayloadSizeById(id) + CRC_SIZE;
     }
 
     public static CommunicationMessage inputMessageFactory(MessageId id, byte[] data){

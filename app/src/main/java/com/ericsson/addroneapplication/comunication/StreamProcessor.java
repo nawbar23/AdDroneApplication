@@ -74,6 +74,8 @@ public class StreamProcessor implements TcpSocket.TcpSocketDataListener {
                             messageBuffer);
                     if (message.isValid()) {
                         listener.onMessageReceived(message);
+                    } else {
+                        Log.e(DEBUG_TAG, "Invalid message!");
                     }
                 }
             }
@@ -88,7 +90,7 @@ public class StreamProcessor implements TcpSocket.TcpSocketDataListener {
     }
 
     private boolean isMessageReceived() {
-        return messageBufferCounter == CommunicationMessage.getPayloadSizeById(supportMap.get(preambleByte));
+        return messageBufferCounter == CommunicationMessage.getMessageSizeById(supportMap.get(preambleByte));
     }
 
     private boolean isPreambleByteSupported(byte b) {

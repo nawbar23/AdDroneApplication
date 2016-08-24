@@ -90,7 +90,7 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
 
     @Override
     public void onMessageReceived(CommunicationMessage message) {
-
+        Log.e(DEBUG_TAG, message.getValue().toString());
     }
 
     @Override
