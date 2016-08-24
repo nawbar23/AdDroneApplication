@@ -23,4 +23,5 @@
     <string name="pref_ui_refresh_rate_summ">Set the frequency at which map is updated</string>
     <string name="map">Map</string>
     <string name="camera">Camera</string>
+    <string name="add_one_to_connect">Add at least one connection to be able to connect</string>
 </resources>

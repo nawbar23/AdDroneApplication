@@ -17,11 +17,14 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 import com.ericsson.addroneapplication.service.AdDroneService;
 import com.ericsson.addroneapplication.settings.SettingsActivity;
 import com.ericsson.addroneapplication.viewmodel.StartViewModel;
+
+import java.util.ArrayList;
 
 public class StartActivity extends AppCompatActivity implements AddConnectionDialogFragment.AddConnectionDialogListener {
 
@@ -72,14 +75,6 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         // fill spinner with options
         updateSpinner();
 
-        // handle UI buttons
-        buttonConnect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onConnect(getSelectedConnection());
-            }
-        });
-
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,7 +103,25 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
     }
 
     private void updateSpinner() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, startViewModel.getConnectionInfoNames());
+        ArrayList<String> connections = startViewModel.getConnectionInfoNames();
+        if(connections.size() == 0) {
+            buttonConnect.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(StartActivity.this, R.string.add_one_to_connect, Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            buttonAdd.setEnabled(true);
+            buttonConnect.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onConnect(getSelectedConnection());
+                }
+            });
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, connections);
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerConnection.setAdapter(adapter);
