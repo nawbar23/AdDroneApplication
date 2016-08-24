@@ -21,4 +21,6 @@
     <string name="settings">Settings</string>
     <string name="pref_ui_refresh_rate">UI refresh rate</string>
     <string name="pref_ui_refresh_rate_summ">Set the frequency at which map is updated</string>
+    <string name="map">Map</string>
+    <string name="camera">Camera</string>
 </resources>
