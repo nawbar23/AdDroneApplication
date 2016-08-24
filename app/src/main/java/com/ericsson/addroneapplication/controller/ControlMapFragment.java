@@ -72,7 +72,7 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback {
         this.googleMap = googleMap;
 
         CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(-34, 151)).zoom(12).build();
-        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     public void updatePosition(LatLng latLng) {

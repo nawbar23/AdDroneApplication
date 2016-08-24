@@ -41,4 +41,22 @@ public class ControlPadFragment extends Fragment {
 
         return root;
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        videoView.pause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        videoView.resume();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        videoView.stopPlayback();
+    }
 }
