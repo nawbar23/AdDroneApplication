@@ -5,6 +5,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -19,10 +20,9 @@ import com.ericsson.addroneapplication.viewmodel.ControlViewModel;
 /**
  * Created by Kamil on 8/23/2016.
  */
-public class ControlActivity extends AppCompatActivity {
+public class ControlActivity extends AppCompatActivity implements ControlPadView.OnControlPadChangedListener, ControlThrottleView.OnControlTrottlePadChangedListener {
 
     public interface OnControlsChangedListener {
-
     }
 
     private Fragment mapFragment;
@@ -33,9 +33,13 @@ public class ControlActivity extends AppCompatActivity {
     private FrameLayout frameLayout2;
 
     private Button buttonChangeView;
+    private ControlPadView controlPadView;
+    private ControlThrottleView controlThrottleView;
 
     private RelativeLayout.LayoutParams layoutParamsFullscreen;
     private RelativeLayout.LayoutParams layoutParamsHidden;
+
+    private OnControlsChangedListener listener;
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +60,11 @@ public class ControlActivity extends AppCompatActivity {
         frameLayout1 = (FrameLayout) findViewById(R.id.layout_container_1);
         frameLayout2 = (FrameLayout) findViewById(R.id.layout_container_2);
         buttonChangeView = (Button) findViewById(R.id.button_change_view);
+        controlPadView = (ControlPadView) findViewById(R.id.joystick);
+        controlThrottleView = (ControlThrottleView) findViewById(R.id.throttle);
+
+        controlPadView.setOnControlPadChangedListener(this);
+        controlThrottleView.setOnControlTrottlePadChangedListener(this);
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.layout_container_1, mapFragment)
@@ -117,5 +126,19 @@ public class ControlActivity extends AppCompatActivity {
 
     public void updateUI(UpdateUIData data) {
 
+    }
+
+    public void setOnControlsChangedListener(OnControlsChangedListener listener) {
+        this.listener = listener;
+    }
+
+    @Override
+    public void onControlPadChanged(float x, float y) {
+        Log.i("CONTROLS_UPDATE", "Received pad update: "  + x + " " + y);
+    }
+
+    @Override
+    public void onControlThrottlePadChangedListener(float x, float y) {
+        Log.i("CONTROLS_UPDATE", "Received throttle update: "  + x + " " + y);
     }
 }

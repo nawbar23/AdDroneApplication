@@ -9,7 +9,7 @@ import java.util.TimerTask;
 /**
  * Created by Kamil on 8/23/2016.
  */
-public class ControlViewModel implements ViewModel, ControlActivity.OnControlsChangedListener {
+public class ControlViewModel implements ViewModel {
 
     ControlActivity activity;
     long delay;
