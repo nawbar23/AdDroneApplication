@@ -15,7 +15,7 @@ import com.ericsson.addroneapplication.R;
  */
 public class ControlThrottleView extends View {
 
-    public interface OnControlTrottlePadChangedListener {
+    public interface setOnControlThrottlePadChangedListener {
         void onControlThrottlePadChangedListener(float x, float y);
     }
 
@@ -35,7 +35,7 @@ public class ControlThrottleView extends View {
 
     float y;
 
-    private OnControlTrottlePadChangedListener listener;
+    private setOnControlThrottlePadChangedListener listener;
 
     public ControlThrottleView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -124,7 +124,7 @@ public class ControlThrottleView extends View {
         return true;
     }
 
-    public void setOnControlTrottlePadChangedListener(OnControlTrottlePadChangedListener listener) {
+    public void setOnControlThrottlePadChangedListener(setOnControlThrottlePadChangedListener listener) {
         this.listener = listener;
     }
 }

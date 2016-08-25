@@ -19,7 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Created by Kamil on 8/23/2016.
  */
-public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadChangedListener, ControlThrottleView.OnControlTrottlePadChangedListener, CommunicationHandler.CommunicationListener {
+public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadChangedListener, ControlThrottleView.setOnControlThrottlePadChangedListener, CommunicationHandler.CommunicationListener {
 
     ControlActivity activity;
     long delay;

@@ -9,7 +9,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -84,7 +83,7 @@ public class ControlActivity extends AppCompatActivity {
 
         // Register GUI listeners
         controlPadView.setOnControlPadChangedListener(controlViewModel);
-        controlThrottleView.setOnControlTrottlePadChangedListener(controlViewModel);
+        controlThrottleView.setOnControlThrottlePadChangedListener(controlViewModel);
 
         // Setup fragments
         mapFragment = Fragment.instantiate(this, ControlMapFragment.class.getName());
