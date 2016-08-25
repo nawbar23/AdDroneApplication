@@ -42,7 +42,8 @@ public class TcpSocket {
     }
 
     public void disconnect() {
-
+        // TODO implement disconnecting algorithm
+        this.state =  State.DISCONNECTING;
     }
 
     public void send(byte[] packet) {

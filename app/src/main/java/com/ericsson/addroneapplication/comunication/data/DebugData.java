@@ -25,7 +25,7 @@ public class DebugData implements CommunicationMessageValue {
 
     private float vLoc;
 
-    private short controllerState;
+    private ControllerState controllerState;
     private byte flags;
 
     private byte battery;
@@ -43,7 +43,7 @@ public class DebugData implements CommunicationMessageValue {
         longitude = buffer.getFloat();
         relativeAltitude = buffer.getFloat();
         vLoc = buffer.getFloat();
-        controllerState = ((short)(buffer.get() & 0xff));
+        controllerState = ControllerState.getControllerState((short)(buffer.get() & 0xff));
         flags = buffer.get();
         battery = buffer.get();
     }
@@ -104,11 +104,11 @@ public class DebugData implements CommunicationMessageValue {
         this.vLoc = vLoc;
     }
 
-    public short getControllerState() {
+    public ControllerState getControllerState() {
         return controllerState;
     }
 
-    public void setControllerState(short controllerState) {
+    public void setControllerState(ControllerState controllerState) {
         this.controllerState = controllerState;
     }
 
@@ -130,14 +130,73 @@ public class DebugData implements CommunicationMessageValue {
 
     @Override
     public String toString() {
-        String result = "Rotation: roll: " + String.valueOf(roll) + " pitch: " + String.valueOf(pitch) + " yaw: " + String.valueOf(yaw);
-        result += (" Position: lat: " + String.valueOf(latitude) + " lon: " + String.valueOf(longitude) + " alt: " + String.valueOf(relativeAltitude));
         // TODO format this string for better presentation
+        String result = "Rotation: roll: " + String.valueOf(roll) + " pitch: " + String.valueOf(pitch) + " yaw: " + String.valueOf(yaw);
+        result += (", Position: lat: " + String.valueOf(latitude) + " lon: " + String.valueOf(longitude) + " alt: " + String.valueOf(relativeAltitude));
+        result += (", Controller state: " + controllerState.toString());
         return result;
     }
 
     @Override
     public CommunicationMessage getMessage() {
         return null;
+    }
+
+    public enum ControllerState {
+        IDLE((short)0),
+        // manual control
+        MANUAL(ControlData.ControllerCommand.MANUAL.getValue()),
+        // auto lading with specified descend rate
+        AUTOLANDING(ControlData.ControllerCommand.AUTOLANDING.getValue()),
+        // auto lading with specified descend rate and position hold
+        AUTOLANDING_AP(ControlData.ControllerCommand.AUTOLANDING_AP.getValue()),
+        // auto altitude hold, throttle value is now specifying descend/climb rate
+        // th = 0 -> -v, th = 0.5 -> 0, th = 1.0 -> v
+        HOLD_ALTITUDE(ControlData.ControllerCommand.HOLD_ALTITUDE.getValue()),
+        // auto position hold, (hold altitude enabled)
+        HOLD_POSITION(ControlData.ControllerCommand.HOLD_POSITION.getValue()),
+        // autonomous back to base, climb 10 meters above start, cruise to base and auto land with AP
+        BACK_TO_BASE(ControlData.ControllerCommand.BACK_TO_BASE.getValue()),
+        // cruise via specific route and back to base
+        VIA_ROUTE(ControlData.ControllerCommand.VIA_ROUTE.getValue()),
+        // immediate STOP (even when fling)
+        STOP(ControlData.ControllerCommand.STOP.getValue());
+
+        private final short value;
+
+        ControllerState(short value) {
+            this.value = value;
+        }
+
+        public short getValue() {
+            return value;
+        }
+
+        static public ControllerState getControllerState(short value) {
+            if (value == IDLE.getValue()) return IDLE;
+            else if (value == MANUAL.getValue()) return MANUAL;
+            else if (value == AUTOLANDING.getValue()) return AUTOLANDING;
+            else if (value == AUTOLANDING_AP.getValue()) return AUTOLANDING_AP;
+            else if (value == HOLD_ALTITUDE.getValue()) return HOLD_ALTITUDE;
+            else if (value == HOLD_POSITION.getValue()) return HOLD_POSITION;
+            else if (value == BACK_TO_BASE.getValue()) return BACK_TO_BASE;
+            else if (value == VIA_ROUTE.getValue()) return VIA_ROUTE;
+            else if (value == STOP.getValue()) return STOP;
+            else return IDLE; // TODO throw some exception
+        }
+
+        @Override
+        public String toString() {
+            if (value == IDLE.getValue()) return "Idle";
+            else if (value == MANUAL.getValue()) return "Manual";
+            else if (value == AUTOLANDING.getValue()) return "Auto landing";
+            else if (value == AUTOLANDING_AP.getValue()) return "Auto landing AP";
+            else if (value == HOLD_ALTITUDE.getValue()) return "Hold altitude";
+            else if (value == HOLD_POSITION.getValue()) return "Hold position";
+            else if (value == BACK_TO_BASE.getValue()) return "Back to base";
+            else if (value == VIA_ROUTE.getValue()) return "Via route";
+            else if (value == STOP.getValue()) return "Stop";
+            else return "Error type!";
+        }
     }
 }

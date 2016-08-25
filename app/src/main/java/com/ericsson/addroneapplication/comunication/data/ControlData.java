@@ -15,23 +15,18 @@ import com.ericsson.addroneapplication.comunication.messages.ControlMessage;
 
 public class ControlData implements CommunicationMessageValue {
 
-    short command;
-    byte mode;
     private float roll, pitch, yaw;
     private float throttle;
+    private ControllerCommand command;
+    private SolverMode mode;
 
     public ControlData() {
         this.roll = 0.0f;
         this.pitch = 0.0f;
         this.yaw = 0.0f;
         this.throttle = 0.0f;
-    }
-
-    public ControlData(ControlData controlData) {
-        this.roll = controlData.roll;
-        this.pitch = controlData.pitch;
-        this.yaw = controlData.yaw;
-        this.throttle = controlData.throttle;
+        this.command = ControllerCommand.STOP;
+        this.mode = SolverMode.STABLILIZATION;
     }
 
     public ControlData(ControlMessage message) {
@@ -70,19 +65,19 @@ public class ControlData implements CommunicationMessageValue {
         this.throttle = throttle;
     }
 
-    public short getCommand() {
+    public ControllerCommand getCommand() {
         return command;
     }
 
-    public void setCommand(short command) {
+    public void setCommand(ControllerCommand command) {
         this.command = command;
     }
 
-    public byte getMode() {
+    public SolverMode getMode() {
         return mode;
     }
 
-    public void setMode(byte mode) {
+    public void setMode(SolverMode mode) {
         this.mode = mode;
     }
 
@@ -93,38 +88,52 @@ public class ControlData implements CommunicationMessageValue {
 
     public enum ControllerCommand {
         // manual control
-        MANUAL(1000),
+        MANUAL((short)1000),
         // auto lading with specified descend rate
-        AUTOLANDING(1100),
+        AUTOLANDING((short)1100),
         // auto lading with specified descend rate and position hold
-        AUTOLANDING_AP(1200),
+        AUTOLANDING_AP((short)1200),
         // auto altitude hold, throttle value is now specifying descend/climb rate
         // th = 0 -> -v, th = 0.5 -> 0, th = 1.0 -> v
-        HOLD_ALTITUDE(1300),
+        HOLD_ALTITUDE((short)1300),
         // auto position hold, (hold altitude enabled)
-        HOLD_POSITION(1400),
+        HOLD_POSITION((short)1400),
         // autonomous back to base, climb 10 meters above start, cruise to base and auto land with AP
-        BACK_TO_BASE(1500),
+        BACK_TO_BASE((short)1500),
         // cruise via specific route and back to base
-        VIA_ROUTE(1600),
+        VIA_ROUTE((short)1600),
         // immediate STOP (even when fling)
-        STOP(2000),
+        STOP((short)2000),
         // error conditions
-        ERROR_CONNECTION(6100),
-        ERROR_JOYSTICK(6200),
-        ERROR_EXTERNAL(6300);
+        ERROR_CONNECTION((short)6100),
+        ERROR_JOYSTICK((short)6200),
+        ERROR_EXTERNAL((short)6300);
 
-        private int value;
+        private short value;
 
-        ControllerCommand(int value) {
+        ControllerCommand(short value) {
             this.value = value;
+        }
+
+        public short getValue() {
+            return value;
         }
     }
 
     public enum SolverMode {
-        STABLILIZATION,
-        ANGLE_NO_YAW,
-        ANGLE,
-        HEADLESS;
+        STABLILIZATION((byte)0),
+        ANGLE_NO_YAW((byte)1),
+        ANGLE((byte)2),
+        HEADLESS((byte)3);
+
+        private byte value;
+
+        SolverMode(byte value) {
+            this.value = value;
+        }
+
+        public byte getValue() {
+            return value;
+        }
     }
 }

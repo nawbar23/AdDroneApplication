@@ -75,6 +75,7 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
 
     public void attemptDisconnection() {
         this.state = State.DISCONNECTING;
+        this.communicationHandler.disconnect();
     }
 
     private void startControlActivity() {
@@ -82,6 +83,14 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    public void registerListener(CommunicationHandler.CommunicationListener listener) {
+        communicationHandler.registerListener(listener);
+    }
+
+    public void unregisterListener(CommunicationHandler.CommunicationListener listener) {
+        communicationHandler.registerListener(listener);
     }
 
     public State getState() {
