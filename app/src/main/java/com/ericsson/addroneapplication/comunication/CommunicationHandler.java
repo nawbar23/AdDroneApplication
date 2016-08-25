@@ -182,6 +182,6 @@ public class CommunicationHandler implements
 
         void onMessageReceived(CommunicationMessage message);
 
-        void onPingUpdated(double pingDelay);
+        void onPingUpdated(long pingDelay);
     }
 }

@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -32,6 +33,7 @@ public class ControlActivity extends AppCompatActivity {
     private FrameLayout frameLayout1;
     private FrameLayout frameLayout2;
 
+    private HudGLSurfaceView hudGLSurfaceView;
     private Button buttonChangeView;
     private ControlPadView controlPadView;
     private ControlThrottleView controlThrottleView;
@@ -47,6 +49,7 @@ public class ControlActivity extends AppCompatActivity {
             AdDroneService.LocalBinder binder = (AdDroneService.LocalBinder) serviceBinder;
             service = binder.getService();
             service.setControlViewModel(controlViewModel);
+            service.registerListener(controlViewModel);
         }
 
         @Override
@@ -66,14 +69,15 @@ public class ControlActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_control);
 
+        controlViewModel = new ControlViewModel(this);
+
         // Bind to service
         bindService(new Intent(this, AdDroneService.class), serviceConnection, 0);
-
-        controlViewModel = new ControlViewModel(this);
 
         // Setup GUI
         frameLayout1 = (FrameLayout) findViewById(R.id.layout_container_1);
         frameLayout2 = (FrameLayout) findViewById(R.id.layout_container_2);
+        hudGLSurfaceView = (HudGLSurfaceView) findViewById(R.id.surface_hud);
         buttonChangeView = (Button) findViewById(R.id.button_change_view);
         controlPadView = (ControlPadView) findViewById(R.id.joystick);
         controlThrottleView = (ControlThrottleView) findViewById(R.id.throttle);
