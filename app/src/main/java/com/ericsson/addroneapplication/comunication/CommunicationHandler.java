@@ -2,13 +2,17 @@ package com.ericsson.addroneapplication.comunication;
 
 import android.util.Log;
 
+import com.ericsson.addroneapplication.comunication.data.ControlData;
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
 import com.ericsson.addroneapplication.comunication.messages.PingPongMessage;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
+import com.ericsson.addroneapplication.viewmodel.ControlViewModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by nbar on 2016-08-19.
@@ -27,11 +31,25 @@ public class CommunicationHandler implements
         TcpSocket.TcpSocketEventListener {
     private static final String DEBUG_TAG = "AdDrone:" + CommunicationHandler.class.getSimpleName();
     private ArrayList<CommunicationListener> listeners;
+    private ControlViewModel controlViewModel;
 
     private TcpSocket tcpSocket;
     private StreamProcessor streamProcessor;
 
     private PingPongHandler pingPongHandler;
+
+    Timer timer = new Timer();
+    private TimerTask controlTimerTask = new TimerTask() {
+        @Override
+        public void run() {
+            // send control message to controller
+            ControlData controlData = new ControlData();
+            controlData.setCommand(ControlData.ControllerCommand.MANUAL);
+            controlData.setMode(ControlData.SolverMode.STABILIZATION);
+            Log.e(DEBUG_TAG, "Sending ControlData: " + controlData.toString());
+            tcpSocket.send(controlData.getMessage().getByteArray());
+        }
+    };
 
     public CommunicationHandler() {
         this.listeners = new ArrayList<>();
@@ -70,12 +88,15 @@ public class CommunicationHandler implements
     public void onConnected() {
         notifyOnConnected();
         pingPongHandler.start();
+        // TODO set control frequency from settings
+        timer.scheduleAtFixedRate(controlTimerTask, 1000, 75);
     }
 
     @Override
     public void onDisconnected() {
         notifyOnDisconnected();
         pingPongHandler.stop();
+        timer.cancel();
     }
 
     @Override
@@ -138,6 +159,10 @@ public class CommunicationHandler implements
 
     public void unregisterListener(CommunicationListener listener) {
         listeners.remove(listener);
+    }
+
+    public void setControlViewModel(ControlViewModel controlViewModel) {
+        this.controlViewModel = controlViewModel;
     }
 
     public enum TimeoutId {

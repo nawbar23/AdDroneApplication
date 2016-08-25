@@ -36,16 +36,16 @@ public class DebugData implements CommunicationMessageValue {
 
     public DebugData(DebugMessage message) {
         ByteBuffer buffer = message.getByteBuffer();
-        roll = buffer.getFloat();
-        pitch= buffer.getFloat();
-        yaw = buffer.getFloat();
-        latitude = buffer.getFloat();
-        longitude = buffer.getFloat();
-        relativeAltitude = buffer.getFloat();
-        vLoc = buffer.getFloat();
-        controllerState = ControllerState.getControllerState((short)(buffer.get() & 0xff));
-        flags = buffer.get();
-        battery = buffer.get();
+        this.roll = buffer.getFloat();
+        this.pitch = buffer.getFloat();
+        this.yaw = buffer.getFloat();
+        this.latitude = buffer.getFloat();
+        this.longitude = buffer.getFloat();
+        this.relativeAltitude = buffer.getFloat();
+        this.vLoc = buffer.getFloat();
+        this.controllerState = ControllerState.getControllerState((short)(buffer.get() & 0xff));
+        this.flags = buffer.get();
+        this.battery = buffer.get();
     }
 
     public float getRoll() {

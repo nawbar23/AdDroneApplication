@@ -12,6 +12,7 @@ import com.ericsson.addroneapplication.comunication.CommunicationHandler;
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
 import com.ericsson.addroneapplication.controller.ControlActivity;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
+import com.ericsson.addroneapplication.viewmodel.ControlViewModel;
 
 /**
  * Created by nbar on 2016-08-19.
@@ -91,6 +92,10 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
 
     public void unregisterListener(CommunicationHandler.CommunicationListener listener) {
         communicationHandler.registerListener(listener);
+    }
+
+    public void setControlViewModel(ControlViewModel controlViewModel) {
+        communicationHandler.setControlViewModel(controlViewModel);
     }
 
     public State getState() {
