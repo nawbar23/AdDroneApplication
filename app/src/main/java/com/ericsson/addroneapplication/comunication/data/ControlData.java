@@ -31,6 +31,14 @@ public class ControlData implements CommunicationMessageValue {
         this.mode = SolverMode.ANGLE_NO_YAW;
     }
 
+    public ControlData(ControlData controlData) {
+        this.roll = controlData.roll;
+        this.pitch= controlData.pitch;
+        this.yaw = controlData.yaw;
+        this.command = controlData.command;
+        this.mode = controlData.mode;
+    }
+
     public ControlData(ControlMessage message) {
         ByteBuffer buffer = message.getByteBuffer();
         this.roll = buffer.getFloat();
