@@ -34,7 +34,7 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
 
     private AdDroneService service = null;
     private Spinner spinnerConnection;
-    private ServiceConnection connection = new ServiceConnection() {
+    private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder binderService) {
             AdDroneService.LocalBinder binder = (AdDroneService.LocalBinder) binderService;
@@ -89,7 +89,7 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         Log.e(DEBUG_TAG, "onDestroy");
         super.onDestroy();
         if (service != null) {
-            unbindService(connection);
+            unbindService(serviceConnection);
         }
     }
 
@@ -98,7 +98,7 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         if (service != null) {
             service.attemptConnection(connectionInfo);
         } else {
-            bindService(new Intent(StartActivity.this, AdDroneService.class), connection, Context.BIND_AUTO_CREATE);
+            bindService(new Intent(StartActivity.this, AdDroneService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         }
     }
 

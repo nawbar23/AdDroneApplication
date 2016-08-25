@@ -14,6 +14,7 @@ import java.nio.ByteBuffer;
  * - controller state - actual control command used by controller
  * - flags:
  * GPS fix | GPS 3D fix | low. bat. volt. | errorHandling | autopilotUsed | solver1 | solver2
+ * - battery voltage [volts]
  */
 
 public class DebugData implements CommunicationMessageValue {

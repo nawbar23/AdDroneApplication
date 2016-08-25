@@ -46,6 +46,7 @@ public class ControlActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder serviceBinder) {
             AdDroneService.LocalBinder binder = (AdDroneService.LocalBinder) serviceBinder;
             service = binder.getService();
+            service.setControlViewModel(controlViewModel);
         }
 
         @Override
@@ -141,5 +142,8 @@ public class ControlActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         controlViewModel.destroy();
+        if (service != null) {
+            unbindService(serviceConnection);
+        }
     }
 }

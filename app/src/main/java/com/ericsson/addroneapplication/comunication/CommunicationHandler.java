@@ -43,9 +43,10 @@ public class CommunicationHandler implements
         @Override
         public void run() {
             // send control message to controller
-            ControlData controlData = new ControlData();
-            controlData.setCommand(ControlData.ControllerCommand.MANUAL);
-            controlData.setMode(ControlData.SolverMode.STABILIZATION);
+            ControlData controlData = controlViewModel.getCurrentControlData();
+            if (controlData == null) {
+                controlData = new ControlData();
+            }
             Log.e(DEBUG_TAG, "Sending ControlData: " + controlData.toString());
             tcpSocket.send(controlData.getMessage().getByteArray());
         }

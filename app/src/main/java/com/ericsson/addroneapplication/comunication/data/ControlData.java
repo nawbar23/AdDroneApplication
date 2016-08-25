@@ -27,7 +27,7 @@ public class ControlData implements CommunicationMessageValue {
         this.pitch = 0.0f;
         this.yaw = 0.0f;
         this.throttle = 0.0f;
-        this.command = ControllerCommand.STOP;
+        this.command = ControllerCommand.MANUAL;
         this.mode = SolverMode.ANGLE_NO_YAW;
     }
 

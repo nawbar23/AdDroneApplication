@@ -22,6 +22,7 @@ public class ControlMessage extends CommunicationMessage {
         buffer.putFloat(controlData.getRoll());
         buffer.putFloat(controlData.getPitch());
         buffer.putFloat(controlData.getYaw());
+        buffer.putFloat(controlData.getThrottle());
         buffer.putShort(controlData.getCommand().getValue());
         buffer.put(controlData.getMode().getValue());
         System.arraycopy(buffer.array(), 0, this.payload, 0, getPayloadSize());
