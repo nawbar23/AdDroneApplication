@@ -35,6 +35,7 @@ public class ControlData implements CommunicationMessageValue {
         this.roll = controlData.roll;
         this.pitch= controlData.pitch;
         this.yaw = controlData.yaw;
+        this.throttle = controlData.throttle;
         this.command = controlData.command;
         this.mode = controlData.mode;
     }

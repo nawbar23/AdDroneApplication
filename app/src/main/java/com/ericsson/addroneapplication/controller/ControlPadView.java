@@ -88,6 +88,11 @@ public class ControlPadView extends View {
                 action == MotionEvent.ACTION_UP) {
             currentPointerX = width2;
             currentPointerY = height2;
+
+            if(listener != null) {
+                listener.onControlPadChanged(0, 0);
+            }
+
         } else if(action == MotionEvent.ACTION_BUTTON_PRESS ||
                 action == MotionEvent.ACTION_DOWN ||
                 action == MotionEvent.ACTION_MOVE ||

@@ -103,7 +103,7 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
     }
 
     @Override
-    public void onPingUpdated(double pingDelay) {
+    public void onPingUpdated(long pingDelay) {
 
     }
 

@@ -33,6 +33,8 @@ public class ControlThrottleView extends View {
 
     float currentPointerX, currentPointerY;
 
+    float y;
+
     private OnControlTrottlePadChangedListener listener;
 
     public ControlThrottleView(Context context, AttributeSet attrs) {
@@ -43,6 +45,8 @@ public class ControlThrottleView extends View {
 
         pointerWidth2 = bitmapPadPointer.getWidth() / 2;
         pointerHeight2 = bitmapPadPointer.getHeight() / 2;
+
+        y = 1.f;
     }
 
     @Override
@@ -85,13 +89,18 @@ public class ControlThrottleView extends View {
         if(action ==  MotionEvent.ACTION_BUTTON_RELEASE ||
                 action == MotionEvent.ACTION_UP) {
             currentPointerX = width2;
+
+            if(listener != null) {
+                listener.onControlThrottlePadChangedListener(0.f, 1.f - y);
+            }
+
         } else if(action == MotionEvent.ACTION_BUTTON_PRESS ||
                 action == MotionEvent.ACTION_DOWN ||
                 action == MotionEvent.ACTION_MOVE ||
                 action == MotionEvent.ACTION_SCROLL) {
 
             float x = ((event.getRawX() - getX()) - width2) / width2;
-            float y = (event.getRawY() - getY()) / height;
+            y = (event.getRawY() - getY()) / height;
 
             float xlen = Math.abs(x);
 
