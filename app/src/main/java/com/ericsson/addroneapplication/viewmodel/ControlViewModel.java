@@ -1,27 +1,26 @@
 package com.ericsson.addroneapplication.viewmodel;
 
+import android.util.Log;
+
+import com.ericsson.addroneapplication.comunication.data.ControlData;
 import com.ericsson.addroneapplication.controller.ControlActivity;
-import com.ericsson.addroneapplication.model.UpdateUIData;
+import com.ericsson.addroneapplication.controller.ControlPadView;
+import com.ericsson.addroneapplication.controller.ControlThrottleView;
 import com.ericsson.addroneapplication.settings.SettingsActivity;
 
-import java.util.TimerTask;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by Kamil on 8/23/2016.
  */
-public class ControlViewModel implements ViewModel {
+public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadChangedListener, ControlThrottleView.OnControlTrottlePadChangedListener {
 
     ControlActivity activity;
     long delay;
 
-    private TimerTask updateTask = new TimerTask() {
-        @Override
-        public void run() {
-            UpdateUIData data = new UpdateUIData();
-
-            activity.updateUI(data);
-        }
-    };
+    private ControlData controlData = new ControlData();
+    private Lock controlDataLock = new ReentrantLock();
 
     public ControlViewModel(ControlActivity activity) {
         this.activity = activity;
@@ -42,5 +41,37 @@ public class ControlViewModel implements ViewModel {
     @Override
     public void destroy() {
 
+    }
+
+    @Override
+    public void onControlPadChanged(float x, float y) {
+        Log.v("CONTROLS_UPDATE", "Received pad update: "  + x + " " + y);
+
+        controlDataLock.lock();
+
+        controlData.setRoll(x);
+        controlData.setPitch(y);
+
+        controlDataLock.unlock();
+    }
+
+    @Override
+    public void onControlThrottlePadChangedListener(float x, float y) {
+        Log.v("CONTROLS_UPDATE", "Received throttle update: "  + x + " " + y);
+
+        controlDataLock.lock();
+
+        controlData.setYaw(x);
+        controlData.setThrottle(y);
+
+        controlDataLock.unlock();
+    }
+
+    public ControlData getCurrentControlData() {
+        controlDataLock.lock();
+        ControlData currentControlData = new ControlData(controlData);
+        controlDataLock.unlock();
+
+        return currentControlData;
     }
 }

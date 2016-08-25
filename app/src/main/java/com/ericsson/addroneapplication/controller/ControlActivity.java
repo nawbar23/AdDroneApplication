@@ -1,11 +1,14 @@
 package com.ericsson.addroneapplication.controller;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -14,16 +17,13 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.ericsson.addroneapplication.R;
-import com.ericsson.addroneapplication.model.UpdateUIData;
+import com.ericsson.addroneapplication.service.AdDroneService;
 import com.ericsson.addroneapplication.viewmodel.ControlViewModel;
 
 /**
  * Created by Kamil on 8/23/2016.
  */
-public class ControlActivity extends AppCompatActivity implements ControlPadView.OnControlPadChangedListener, ControlThrottleView.OnControlTrottlePadChangedListener {
-
-    public interface OnControlsChangedListener {
-    }
+public class ControlActivity extends AppCompatActivity {
 
     private Fragment mapFragment;
     private Fragment cameraFragment;
@@ -39,7 +39,20 @@ public class ControlActivity extends AppCompatActivity implements ControlPadView
     private RelativeLayout.LayoutParams layoutParamsFullscreen;
     private RelativeLayout.LayoutParams layoutParamsHidden;
 
-    private OnControlsChangedListener listener;
+    private AdDroneService service = null;
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder serviceBinder) {
+            AdDroneService.LocalBinder binder = (AdDroneService.LocalBinder) serviceBinder;
+            service = binder.getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,19 +65,25 @@ public class ControlActivity extends AppCompatActivity implements ControlPadView
 
         setContentView(R.layout.activity_control);
 
+        // Bind to service
+        bindService(new Intent(this, AdDroneService.class), serviceConnection, 0);
+
         controlViewModel = new ControlViewModel(this);
 
-        mapFragment = Fragment.instantiate(this, ControlMapFragment.class.getName());
-        cameraFragment = Fragment.instantiate(this, ControlPadFragment.class.getName());
-
+        // Setup GUI
         frameLayout1 = (FrameLayout) findViewById(R.id.layout_container_1);
         frameLayout2 = (FrameLayout) findViewById(R.id.layout_container_2);
         buttonChangeView = (Button) findViewById(R.id.button_change_view);
         controlPadView = (ControlPadView) findViewById(R.id.joystick);
         controlThrottleView = (ControlThrottleView) findViewById(R.id.throttle);
 
-        controlPadView.setOnControlPadChangedListener(this);
-        controlThrottleView.setOnControlTrottlePadChangedListener(this);
+        // Register GUI listeners
+        controlPadView.setOnControlPadChangedListener(controlViewModel);
+        controlThrottleView.setOnControlTrottlePadChangedListener(controlViewModel);
+
+        // Setup fragments
+        mapFragment = Fragment.instantiate(this, ControlMapFragment.class.getName());
+        cameraFragment = Fragment.instantiate(this, ControlPadFragment.class.getName());
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.layout_container_1, mapFragment)
@@ -122,23 +141,5 @@ public class ControlActivity extends AppCompatActivity implements ControlPadView
     protected void onDestroy() {
         super.onDestroy();
         controlViewModel.destroy();
-    }
-
-    public void updateUI(UpdateUIData data) {
-
-    }
-
-    public void setOnControlsChangedListener(OnControlsChangedListener listener) {
-        this.listener = listener;
-    }
-
-    @Override
-    public void onControlPadChanged(float x, float y) {
-        Log.i("CONTROLS_UPDATE", "Received pad update: "  + x + " " + y);
-    }
-
-    @Override
-    public void onControlThrottlePadChangedListener(float x, float y) {
-        Log.i("CONTROLS_UPDATE", "Received throttle update: "  + x + " " + y);
     }
 }
