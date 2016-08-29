@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.ericsson.addroneapplication.StartActivity;
 import com.ericsson.addroneapplication.comunication.CommunicationHandler;
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
 import com.ericsson.addroneapplication.controller.ControlActivity;
@@ -86,6 +87,13 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
         startActivity(intent);
     }
 
+    private void startConnectionActivity() {
+        Intent intent = new Intent(getApplicationContext(), StartActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
     public void registerListener(CommunicationHandler.CommunicationListener listener) {
         communicationHandler.registerListener(listener);
     }
@@ -123,6 +131,7 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
     @Override
     public void onDisconnected() {
         this.state = State.DISCONNECTED;
+        startConnectionActivity();
     }
 
     @Override
@@ -139,7 +148,7 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
             }
         });
     }

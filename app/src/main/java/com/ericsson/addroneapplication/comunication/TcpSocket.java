@@ -48,10 +48,11 @@ public class TcpSocket {
 
     public void send(byte[] packet) {
         try {
-            Log.e(DEBUG_TAG, "Sending: 0x" + StreamProcessor.byteArrayToHexString(packet));
+            //Log.e(DEBUG_TAG, "Sending: 0x" + StreamProcessor.byteArrayToHexString(packet));
             outputStream.write(packet, 0, packet.length);
         } catch (IOException e) {
             Log.e(DEBUG_TAG, "Error while sending: " + e.getMessage());
+            eventListener.onError("Error while sending: " + e.getMessage(), true);
         }
     }
 
@@ -62,7 +63,7 @@ public class TcpSocket {
     public interface TcpSocketEventListener {
         void onConnected();
         void onDisconnected();
-        void onError(String message);
+        void onError(String message, boolean critical);
     }
 
     public enum State {
@@ -152,21 +153,21 @@ public class TcpSocket {
             switch (connectionThreadResult) {
                 case CONNECTION_ERROR:
                     Log.e(DEBUG_TAG, "Thread exits with CONNECTION_ERROR");
-                    eventListener.onError("Thread exits with CONNECTION_ERROR");
+                    eventListener.onError("Thread exits with CONNECTION_ERROR", true);
                     break;
                 case CONNECTION_INPUT_STREAM_ERROR:
                     Log.e(DEBUG_TAG, "Thread exits with CONNECTION_INPUT_STREAM_ERROR");
-                    eventListener.onError("Thread exits with CONNECTION_INPUT_STREAM_ERROR");
+                    eventListener.onError("Thread exits with CONNECTION_INPUT_STREAM_ERROR", true);
                     eventListener.onDisconnected();
                     break;
                 case CONNECTION_OUTPUT_STREAM_ERROR:
                     Log.e(DEBUG_TAG, "Thread exits with CONNECTION_OUTPUT_STREAM_ERROR");
-                    eventListener.onError("Thread exits with CONNECTION_OUTPUT_STREAM_ERROR");
+                    eventListener.onError("Thread exits with CONNECTION_OUTPUT_STREAM_ERROR", true);
                     eventListener.onDisconnected();
                     break;
                 case RECEIVING_ERROR:
                     Log.e(DEBUG_TAG, "Thread exits with RECEIVING_ERROR");
-                    eventListener.onError("Thread exits with RECEIVING_ERROR");
+                    eventListener.onError("Thread exits with RECEIVING_ERROR", false);
                     eventListener.onDisconnected();
                     break;
                 case SUCCESS:
@@ -174,6 +175,7 @@ public class TcpSocket {
                     eventListener.onDisconnected();
                     break;
             }
+            state = State.DISCONNECTED;
         }
     }
 }

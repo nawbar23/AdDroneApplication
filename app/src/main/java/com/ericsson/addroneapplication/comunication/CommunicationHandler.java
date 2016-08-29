@@ -38,19 +38,7 @@ public class CommunicationHandler implements
 
     private PingPongHandler pingPongHandler;
 
-    Timer timer = new Timer();
-    private TimerTask controlTimerTask = new TimerTask() {
-        @Override
-        public void run() {
-            // send control message to controller
-            ControlData controlData = controlViewModel.getCurrentControlData();
-            if (controlData == null) {
-                controlData = new ControlData();
-            }
-            Log.e(DEBUG_TAG, "Sending ControlData: " + controlData.toString());
-            tcpSocket.send(controlData.getMessage().getByteArray());
-        }
-    };
+    private Timer controlTimer;
 
     public CommunicationHandler() {
         this.listeners = new ArrayList<>();
@@ -68,6 +56,9 @@ public class CommunicationHandler implements
     }
 
     public void disconnect() {
+        Log.e(DEBUG_TAG, "disconnecting...");
+        this.controlTimer.cancel();
+        this.pingPongHandler.stop();
         this.tcpSocket.disconnect();
     }
 
@@ -78,7 +69,7 @@ public class CommunicationHandler implements
                 long pingDelay = pingPongHandler.handlePongReception((PingPongMessage) message);
                 notifyOnPingUpdated(pingDelay);
             } catch (CommunicationException e) {
-                notifyOnError("Ping timeout");
+                notifyOnError("Ping timeout", false);
             }
         } else {
             notifyOnMessageReceived(message);
@@ -88,21 +79,39 @@ public class CommunicationHandler implements
     @Override
     public void onConnected() {
         notifyOnConnected();
-        pingPongHandler.start();
+        this.pingPongHandler.start();
+
+        TimerTask controlTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+                // send control message to controller
+                ControlData controlData;
+                if (controlViewModel == null) {
+                    controlData = new ControlData();
+                } else {
+                    controlData = controlViewModel.getCurrentControlData();
+                }
+                Log.e(DEBUG_TAG, "Sending ControlData: " + controlData.toString());
+                tcpSocket.send(controlData.getMessage().getByteArray());
+            }
+        };
         // TODO set control frequency from settings
-        timer.scheduleAtFixedRate(controlTimerTask, 1000, 75);
+        this.controlTimer = new Timer("control_timer");
+        this.controlTimer.scheduleAtFixedRate(controlTimerTask, 1000, 200);
     }
 
     @Override
     public void onDisconnected() {
         notifyOnDisconnected();
-        pingPongHandler.stop();
-        timer.cancel();
     }
 
     @Override
-    public void onError(String message) {
-        notifyOnError(message);
+    public void onError(String message, boolean critical) {
+        if (critical) {
+            // close connection
+            disconnect();
+        }
+        notifyOnError(message, critical);
     }
 
     public void notifyOnConnected() {
@@ -119,7 +128,7 @@ public class CommunicationHandler implements
         }
     }
 
-    public void notifyOnError(String message) {
+    public void notifyOnError(String message, boolean critical) {
         Log.e(DEBUG_TAG, "notifyOnError");
         for (CommunicationListener listener : listeners) {
             listener.onError(message);

@@ -34,6 +34,7 @@ public class ControlActivity extends AppCompatActivity {
 
     private HudGLSurfaceView hudGLSurfaceView;
     private Button buttonChangeView;
+    private Button buttonDisconnect;
     private ControlPadView controlPadView;
     private ControlThrottleView controlThrottleView;
 
@@ -78,6 +79,7 @@ public class ControlActivity extends AppCompatActivity {
         frameLayout2 = (FrameLayout) findViewById(R.id.layout_container_2);
         hudGLSurfaceView = (HudGLSurfaceView) findViewById(R.id.surface_hud);
         buttonChangeView = (Button) findViewById(R.id.button_change_view);
+        buttonDisconnect = (Button) findViewById(R.id.button_disconnect);
         controlPadView = (ControlPadView) findViewById(R.id.joystick);
         controlThrottleView = (ControlThrottleView) findViewById(R.id.throttle);
 
@@ -101,6 +103,13 @@ public class ControlActivity extends AppCompatActivity {
         layoutParamsHidden = new RelativeLayout.LayoutParams(0, 0);
 
         setMapFragment();
+
+        buttonDisconnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                service.attemptDisconnection();
+            }
+        });
     }
 
     private void setMapFragment() {
@@ -146,6 +155,7 @@ public class ControlActivity extends AppCompatActivity {
         super.onDestroy();
         controlViewModel.destroy();
         if (service != null) {
+            service.unregisterListener(controlViewModel);
             unbindService(serviceConnection);
         }
     }

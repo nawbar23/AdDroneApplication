@@ -24,20 +24,7 @@ public class PingPongHandler {
     private long timestamp;
     private boolean pongReceived;
 
-    Timer timer = new Timer();
-    private TimerTask timerTask = new TimerTask() {
-        @Override
-        public void run() {
-            if (pongReceived) {
-                sentPing = new PingPongData();
-                socket.send(sentPing.getMessage().getByteArray());
-                timestamp = System.currentTimeMillis();
-            } else {
-                Log.e(DEBUG_TAG, "Ping receiving timeout");
-                pongReceived = true;
-            }
-        }
-    };
+    private Timer timer;
 
     public PingPongHandler(TcpSocket socket, double pingFrequency) {
         this.pingFrequency = pingFrequency;
@@ -45,12 +32,28 @@ public class PingPongHandler {
     }
 
     public void start() {
+        Log.e(DEBUG_TAG, "Starting ping-pong task");
         this.pongReceived = true;
-        timer.scheduleAtFixedRate(timerTask, 1000, (long)((1.0 / this.pingFrequency) * 1000));
+        this.timer = new Timer("ping_pong_timer");
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                if (pongReceived) {
+                    sentPing = new PingPongData();
+                    socket.send(sentPing.getMessage().getByteArray());
+                    timestamp = System.currentTimeMillis();
+                } else {
+                    Log.e(DEBUG_TAG, "Ping receiving timeout");
+                    pongReceived = true;
+                }
+            }
+        };
+        this.timer.scheduleAtFixedRate(timerTask, 1000, (long)((1.0 / this.pingFrequency) * 1000));
     }
 
     public void stop() {
-        timer.cancel();
+        Log.e(DEBUG_TAG, "Stopping ping-pong task");
+        this.timer.cancel();
     }
 
     public long handlePongReception(PingPongMessage pingPongMessage) throws CommunicationException{

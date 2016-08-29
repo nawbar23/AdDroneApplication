@@ -45,7 +45,7 @@ public class StreamProcessor implements TcpSocket.TcpSocketDataListener {
         final int dataSize = data.length;
 
         if (dataSize > 0) {
-            Log.e(DEBUG_TAG, "Processing data, size: " + String.valueOf(dataSize) + ", 0x" + byteArrayToHexString(data));
+            //Log.e(DEBUG_TAG, "Processing data, size: " + String.valueOf(dataSize) + ", 0x" + byteArrayToHexString(data));
         } else {
             return;
         }
