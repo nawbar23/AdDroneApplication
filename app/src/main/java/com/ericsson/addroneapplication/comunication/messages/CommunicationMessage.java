@@ -137,4 +137,20 @@ public abstract class CommunicationMessage {
         PING_MESSAGE,
         AUTOPILOT_MESSAGE,
     }
+
+    public static String byteToHexString(byte b) {
+        String ret = "";
+        int intVal = b & 0xff;
+        if (intVal < 0x10) ret += "0";
+        ret += Integer.toHexString(intVal);
+        return ret;
+    }
+
+    public static String byteArrayToHexString(byte[] in) {
+        String ret="";
+        for(byte b:in) {
+            ret += byteToHexString(b);
+        }
+        return ret;
+    }
 }

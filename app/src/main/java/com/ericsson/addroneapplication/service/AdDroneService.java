@@ -35,7 +35,7 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
         super.onCreate();
         Log.e(DEBUG_TAG, "onCreate");
 
-        this.communicationHandler = new CommunicationHandler();
+        this.communicationHandler = new CommunicationHandler(getApplicationContext());
         this.communicationHandler.registerListener(this);
 
         this.state = State.DISABLED;

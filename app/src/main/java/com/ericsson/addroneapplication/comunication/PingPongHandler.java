@@ -1,5 +1,7 @@
 package com.ericsson.addroneapplication.comunication;
 
+import android.content.Context;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.ericsson.addroneapplication.comunication.data.PingPongData;

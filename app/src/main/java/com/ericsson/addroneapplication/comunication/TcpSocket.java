@@ -37,13 +37,14 @@ public class TcpSocket {
     }
 
     public void connect(ConnectionInfo connectionInfo) {
-        this.connection = new SocketConnection();
+        state = State.CONNECTING;
+        connection = new SocketConnection();
         connection.execute(connectionInfo);
     }
 
     public void disconnect() {
         // TODO implement disconnecting algorithm
-        this.state =  State.DISCONNECTING;
+        state =  State.DISCONNECTING;
     }
 
     public void send(byte[] packet) {
@@ -70,8 +71,7 @@ public class TcpSocket {
         CONNECTED,
         CONNECTING,
         DISCONNECTING,
-        DISCONNECTED,
-        ERROR;
+        DISCONNECTED
     }
 
     public enum ConnectionThreadResult {
@@ -118,6 +118,7 @@ public class TcpSocket {
                 return ConnectionThreadResult.CONNECTION_INPUT_STREAM_ERROR;
             }
 
+            state = State.CONNECTED;
             eventListener.onConnected();
 
             try {
@@ -153,7 +154,7 @@ public class TcpSocket {
             switch (connectionThreadResult) {
                 case CONNECTION_ERROR:
                     Log.e(DEBUG_TAG, "Thread exits with CONNECTION_ERROR");
-                    eventListener.onError("Thread exits with CONNECTION_ERROR", true);
+                    eventListener.onError("Thread exits with CONNECTION_ERROR", false);
                     break;
                 case CONNECTION_INPUT_STREAM_ERROR:
                     Log.e(DEBUG_TAG, "Thread exits with CONNECTION_INPUT_STREAM_ERROR");
@@ -167,7 +168,7 @@ public class TcpSocket {
                     break;
                 case RECEIVING_ERROR:
                     Log.e(DEBUG_TAG, "Thread exits with RECEIVING_ERROR");
-                    eventListener.onError("Thread exits with RECEIVING_ERROR", false);
+                    eventListener.onError("Thread exits with RECEIVING_ERROR", true);
                     eventListener.onDisconnected();
                     break;
                 case SUCCESS:

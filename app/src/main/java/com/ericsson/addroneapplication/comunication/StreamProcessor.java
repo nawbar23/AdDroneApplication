@@ -44,11 +44,11 @@ public class StreamProcessor implements TcpSocket.TcpSocketDataListener {
     public void process(byte[] data) {
         final int dataSize = data.length;
 
-        if (dataSize > 0) {
-            //Log.e(DEBUG_TAG, "Processing data, size: " + String.valueOf(dataSize) + ", 0x" + byteArrayToHexString(data));
-        } else {
+        if (dataSize <= 0) {
             return;
         }
+
+        //Log.e(DEBUG_TAG, "Processing data, size: " + String.valueOf(dataSize) + ", 0x" + CommunicationMessage.byteArrayToHexString(data));
 
         if (dataSize < 4 && !activePreamble) {
             // if any preamble is not active and data is shorter than preamble any data can not be received
@@ -105,21 +105,5 @@ public class StreamProcessor implements TcpSocket.TcpSocketDataListener {
 
     public interface StreamProcessorListener {
         void onMessageReceived(CommunicationMessage message);
-    }
-
-    public static String byteToHexString(byte b) {
-        String ret = "";
-        int intVal = b & 0xff;
-        if (intVal < 0x10) ret += "0";
-        ret += Integer.toHexString(intVal);
-        return ret;
-    }
-
-    public static String byteArrayToHexString(byte[] in) {
-        String ret="";
-        for(byte b:in) {
-            ret += byteToHexString(b);
-        }
-        return ret;
     }
 }

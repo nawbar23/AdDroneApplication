@@ -44,7 +44,7 @@ public class DebugData implements CommunicationMessageValue {
         this.longitude = buffer.getFloat();
         this.relativeAltitude = buffer.getFloat();
         this.vLoc = buffer.getFloat();
-        this.controllerState = ControllerState.getControllerState((short)(buffer.get() & 0xff));
+        this.controllerState = ControllerState.getControllerState(buffer.getShort());
         this.flags = buffer.get();
         this.battery = buffer.get();
     }

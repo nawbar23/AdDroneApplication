@@ -1,5 +1,8 @@
 package com.ericsson.addroneapplication.comunication;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.ericsson.addroneapplication.comunication.data.ControlData;
@@ -33,6 +36,8 @@ public class CommunicationHandler implements
     private ArrayList<CommunicationListener> listeners;
     private ControlViewModel controlViewModel;
 
+    private Context context;
+
     private TcpSocket tcpSocket;
     private StreamProcessor streamProcessor;
 
@@ -40,7 +45,9 @@ public class CommunicationHandler implements
 
     private Timer controlTimer;
 
-    public CommunicationHandler() {
+    public CommunicationHandler(Context context) {
+        this.context = context;
+
         this.listeners = new ArrayList<>();
 
         this.streamProcessor = new StreamProcessor(getSupportedMessagesMap(), this);
@@ -143,7 +150,7 @@ public class CommunicationHandler implements
     }
 
     public void notifyOnPingUpdated(long pingDelay) {
-        Log.e(DEBUG_TAG, "notifyOnPingUpdated, delay: " + String.valueOf(pingDelay) + " ms");
+        Log.e(DEBUG_TAG, "notifyOnPingUpdated, delay: " + String.valueOf(pingDelay) + " ms, network generation: " + getNetworkInfo());
         for (CommunicationListener listener : listeners) {
             listener.onPingUpdated(pingDelay);
         }
@@ -192,5 +199,38 @@ public class CommunicationHandler implements
         void onMessageReceived(CommunicationMessage message);
 
         void onPingUpdated(long pingDelay);
+    }
+
+    @NonNull
+    private String getNetworkInfo() {
+        TelephonyManager telephonyManager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+        if (telephonyManager != null) {
+            int networkType = telephonyManager.getNetworkType();
+            switch (networkType) {
+                case TelephonyManager.NETWORK_TYPE_GPRS:
+                case TelephonyManager.NETWORK_TYPE_EDGE:
+                case TelephonyManager.NETWORK_TYPE_CDMA:
+                case TelephonyManager.NETWORK_TYPE_1xRTT:
+                case TelephonyManager.NETWORK_TYPE_IDEN:
+                    return "2G";
+                case TelephonyManager.NETWORK_TYPE_UMTS:
+                case TelephonyManager.NETWORK_TYPE_EVDO_0:
+                case TelephonyManager.NETWORK_TYPE_EVDO_A:
+                case TelephonyManager.NETWORK_TYPE_HSDPA:
+                case TelephonyManager.NETWORK_TYPE_HSUPA:
+                case TelephonyManager.NETWORK_TYPE_HSPA:
+                case TelephonyManager.NETWORK_TYPE_EVDO_B:
+                case TelephonyManager.NETWORK_TYPE_EHRPD:
+                case TelephonyManager.NETWORK_TYPE_HSPAP:
+                    return "3G";
+                case TelephonyManager.NETWORK_TYPE_LTE:
+                    return "4G";
+                default:
+                    return "Unknown";
+            }
+        }
+        else {
+            return "Unknown";
+        }
     }
 }
