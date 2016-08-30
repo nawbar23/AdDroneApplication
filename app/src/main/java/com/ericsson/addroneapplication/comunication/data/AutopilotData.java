@@ -76,4 +76,11 @@ public class AutopilotData implements CommunicationMessageValue {
     public CommunicationMessage getMessage() {
         return new AutopilotMessage(this);
     }
+
+    public boolean isEqual(AutopilotData autopilotData) {
+        return this.latitude == autopilotData.latitude
+                && this.longitude == autopilotData.longitude
+                && this.relativeAltitude == autopilotData.relativeAltitude
+                && this.flags == autopilotData.flags;
+    }
 }

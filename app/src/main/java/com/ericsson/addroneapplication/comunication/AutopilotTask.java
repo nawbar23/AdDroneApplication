@@ -37,7 +37,7 @@ public class AutopilotTask extends CommunicationTask {
 
     public void notifyAutopilotMessageReceived(AutopilotMessage autopilotMessage){
         AutopilotData autopilotData = autopilotMessage.getValue();
-        if (autopilotData.equals(sentAutopilotData)) {
+        if (autopilotData.isEqual(sentAutopilotData)) {
             Log.e(DEBUG_TAG, "Autopilot data confirmed");
             state = State.CONFIRMED;
             restart(frequency / COMM_FREQ_DIVIDER);

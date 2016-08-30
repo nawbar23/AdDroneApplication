@@ -33,7 +33,6 @@ public abstract class CommunicationTask {
     }
 
     protected void start(double freq) {
-        Log.e(DEBUG_TAG, "Starting " + getTaskName() + " task with freq: " + String.valueOf(freq) + " Hz");
         this.timer = new Timer(getTaskName() + "_timer");
         TimerTask timerTask = new TimerTask() {
             @Override
@@ -41,7 +40,10 @@ public abstract class CommunicationTask {
                 task();
             }
         };
-        this.timer.scheduleAtFixedRate(timerTask, 1000, (long)((1.0 / freq) * 1000));
+        long period = (long)((1.0 / freq) * 1000);
+        long delay = period > 1000 ? period : 1000;
+        Log.e(DEBUG_TAG, "Starting " + getTaskName() + " task with freq: " + String.valueOf(freq) + " Hz, and delay: " + String.valueOf(delay) + " ms");
+        this.timer.scheduleAtFixedRate(timerTask, delay, period);
     }
 
     public void stop() {
