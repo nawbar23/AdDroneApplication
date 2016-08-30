@@ -23,6 +23,7 @@ import com.ericsson.addroneapplication.viewmodel.ControlViewModel;
 
 public class AdDroneService extends Service implements CommunicationHandler.CommunicationListener {
     private static final String DEBUG_TAG = "AdDrone:" + AdDroneService.class.getSimpleName();
+
     private final IBinder mBinder = new LocalBinder();
     private State state;
     // main communication handler for internet connection

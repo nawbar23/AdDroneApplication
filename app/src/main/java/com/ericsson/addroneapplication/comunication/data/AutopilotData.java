@@ -3,6 +3,8 @@ package com.ericsson.addroneapplication.comunication.data;
 import com.ericsson.addroneapplication.comunication.messages.AutopilotMessage;
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
 
+import java.nio.ByteBuffer;
+
 /**
  * Created by nbar on 2016-08-22.
  * Autopilot data used to control drone in autopilot mode.
@@ -24,7 +26,11 @@ public class AutopilotData implements CommunicationMessageValue {
     }
 
     public AutopilotData(AutopilotMessage message) {
-
+        ByteBuffer buffer = message.getByteBuffer();
+        this.latitude = buffer.getDouble();
+        this.longitude = buffer.getDouble();
+        this.relativeAltitude = buffer.getFloat();
+        this.flags = buffer.getInt();
     }
 
     public double getLatitude() {
@@ -57,6 +63,13 @@ public class AutopilotData implements CommunicationMessageValue {
 
     public void setFlags(int flags) {
         this.flags = flags;
+    }
+
+    @Override
+    public String toString() {
+        String result = ("Target: lat: " + String.valueOf(latitude) + " lon: " + String.valueOf(longitude) + " alt: " + String.valueOf(relativeAltitude));
+        result += (", flags: " + String.valueOf(flags) + ")");
+        return result;
     }
 
     @Override

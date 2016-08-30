@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.ericsson.addroneapplication.comunication.data.ControlData;
+import com.ericsson.addroneapplication.comunication.messages.AutopilotMessage;
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
 import com.ericsson.addroneapplication.comunication.messages.PingPongMessage;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
@@ -14,8 +14,6 @@ import com.ericsson.addroneapplication.viewmodel.ControlViewModel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by nbar on 2016-08-19.
@@ -33,28 +31,26 @@ public class CommunicationHandler implements
         StreamProcessor.StreamProcessorListener,
         TcpSocket.TcpSocketEventListener {
     private static final String DEBUG_TAG = "AdDrone:" + CommunicationHandler.class.getSimpleName();
-    private ArrayList<CommunicationListener> listeners;
-    private ControlViewModel controlViewModel;
 
+    private ArrayList<CommunicationListener> listeners;
     private Context context;
 
     private TcpSocket tcpSocket;
-    private StreamProcessor streamProcessor;
 
-    private PingPongHandler pingPongHandler;
-
-    private Timer controlTimer;
+    private ControlTask controlTask;
+    private PingPongTask pingPongTask;
+    private AutopilotTask autopilotTask;
 
     public CommunicationHandler(Context context) {
         this.context = context;
-
         this.listeners = new ArrayList<>();
 
-        this.streamProcessor = new StreamProcessor(getSupportedMessagesMap(), this);
-        this.tcpSocket = new TcpSocket(this.streamProcessor, this);
+        this.tcpSocket = new TcpSocket(new StreamProcessor(getSupportedMessagesMap(), this), this);
 
         // TODO get ping frequency from settings
-        this.pingPongHandler = new PingPongHandler(tcpSocket, 0.5);
+        this.controlTask = new ControlTask(this,tcpSocket, 5);
+        this.pingPongTask = new PingPongTask(this, tcpSocket, 0.5);
+        this.autopilotTask = new AutopilotTask(this, tcpSocket, 0.5, 0.2);
     }
 
     public void connect(ConnectionInfo connectionInfo) {
@@ -64,47 +60,39 @@ public class CommunicationHandler implements
 
     public void disconnect() {
         Log.e(DEBUG_TAG, "disconnecting...");
-        this.controlTimer.cancel();
-        this.pingPongHandler.stop();
+        this.controlTask.stop();
+        this.pingPongTask.stop();
+        this.autopilotTask.stop();
         this.tcpSocket.disconnect();
     }
 
     @Override
     public void onMessageReceived(CommunicationMessage message) {
-        if (message.getMessageId() == CommunicationMessage.MessageId.PING_MESSAGE) {
-            try {
-                long pingDelay = pingPongHandler.handlePongReception((PingPongMessage) message);
-                notifyOnPingUpdated(pingDelay);
-            } catch (CommunicationException e) {
-                notifyOnError("Ping timeout", false);
-            }
-        } else {
-            notifyOnMessageReceived(message);
+        switch (message.getMessageId()) {
+            case PING_MESSAGE:
+                // handle pong response internally
+                try {
+                    long pingDelay = pingPongTask.notifyPongTeceived((PingPongMessage) message);
+                    notifyOnPingUpdated(pingDelay);
+                } catch (CommunicationException e) {
+                    notifyOnError(e.getMessage());
+                }
+                return;
+
+            case AUTOPILOT_MESSAGE:
+                // notify autopilot task and proceed with received data
+                autopilotTask.notifyAutopilotMessageReceived((AutopilotMessage)message);
+                break;
         }
+        notifyOnMessageReceived(message);
     }
 
     @Override
     public void onConnected() {
         notifyOnConnected();
-        this.pingPongHandler.start();
-
-        TimerTask controlTimerTask = new TimerTask() {
-            @Override
-            public void run() {
-                // send control message to controller
-                ControlData controlData;
-                if (controlViewModel == null) {
-                    controlData = new ControlData();
-                } else {
-                    controlData = controlViewModel.getCurrentControlData();
-                }
-                Log.e(DEBUG_TAG, "Sending ControlData: " + controlData.toString());
-                tcpSocket.send(controlData.getMessage().getByteArray());
-            }
-        };
-        // TODO set control frequency from settings
-        this.controlTimer = new Timer("control_timer");
-        this.controlTimer.scheduleAtFixedRate(controlTimerTask, 1000, 200);
+        this.controlTask.start();
+        this.pingPongTask.start();
+        this.autopilotTask.start();
     }
 
     @Override
@@ -118,7 +106,7 @@ public class CommunicationHandler implements
             // close connection
             disconnect();
         }
-        notifyOnError(message, critical);
+        notifyOnError(message);
     }
 
     public void notifyOnConnected() {
@@ -135,7 +123,7 @@ public class CommunicationHandler implements
         }
     }
 
-    public void notifyOnError(String message, boolean critical) {
+    public void notifyOnError(String message) {
         Log.e(DEBUG_TAG, "notifyOnError");
         for (CommunicationListener listener : listeners) {
             listener.onError(message);
@@ -179,14 +167,7 @@ public class CommunicationHandler implements
     }
 
     public void setControlViewModel(ControlViewModel controlViewModel) {
-        this.controlViewModel = controlViewModel;
-    }
-
-    public enum TimeoutId {
-        CONNECTION_TIMEOUT,
-        DEBUG_DATA_TIMEOUT,
-        PING_TIMEOUT,
-        AUTOPILOT_DATA_TIMEOUT,
+        this.controlTask.setControlViewModel(controlViewModel);
     }
 
     public interface CommunicationListener {
