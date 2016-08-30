@@ -22,7 +22,6 @@ public class PingPongMessage extends CommunicationMessage {
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putInt(pingPongData.getKey());
         System.arraycopy(buffer.array(), 0, this.payload, 0, getPayloadSize());
-
         // compute and set CRC for message
         setCrc();
     }
@@ -30,16 +29,6 @@ public class PingPongMessage extends CommunicationMessage {
     @Override
     public MessageId getMessageId() {
         return MessageId.PING_MESSAGE;
-    }
-
-    @Override
-    public byte[] getPreamble() {
-        return getPreambleById(getMessageId());
-    }
-
-    @Override
-    public int getPayloadSize() {
-        return getPayloadSizeById(getMessageId());
     }
 
     @Override

@@ -28,16 +28,6 @@ public class DebugMessage extends CommunicationMessage {
     }
 
     @Override
-    public byte[] getPreamble() {
-        return getPreambleById(getMessageId());
-    }
-
-    @Override
-    public int getPayloadSize() {
-        return getPayloadSizeById(getMessageId());
-    }
-
-    @Override
     public CommunicationMessageValue getValue() {
         return new DebugData(this);
     }

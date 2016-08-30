@@ -26,7 +26,6 @@ public class ControlMessage extends CommunicationMessage {
         buffer.putShort(controlData.getCommand().getValue());
         buffer.put(controlData.getMode().getValue());
         System.arraycopy(buffer.array(), 0, this.payload, 0, getPayloadSize());
-
         // compute and set CRC for message
         setCrc();
     }
@@ -34,16 +33,6 @@ public class ControlMessage extends CommunicationMessage {
     @Override
     public MessageId getMessageId() {
         return MessageId.CONTROL_MESSAGE;
-    }
-
-    @Override
-    public byte[] getPreamble() {
-        return getPreambleById(getMessageId());
-    }
-
-    @Override
-    public int getPayloadSize() {
-        return getPayloadSizeById(getMessageId());
     }
 
     @Override

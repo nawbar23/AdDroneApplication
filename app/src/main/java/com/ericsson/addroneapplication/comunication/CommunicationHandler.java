@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.ericsson.addroneapplication.comunication.data.AutopilotData;
 import com.ericsson.addroneapplication.comunication.messages.AutopilotMessage;
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
 import com.ericsson.addroneapplication.comunication.messages.PingPongMessage;
@@ -32,6 +33,8 @@ public class CommunicationHandler implements
         TcpSocket.TcpSocketEventListener {
     private static final String DEBUG_TAG = "AdDrone:" + CommunicationHandler.class.getSimpleName();
 
+    static final double COMM_FREQ_DIVIDER = 3.0;
+
     private ArrayList<CommunicationListener> listeners;
     private Context context;
 
@@ -50,7 +53,7 @@ public class CommunicationHandler implements
         // TODO get ping frequency from settings
         this.controlTask = new ControlTask(this,tcpSocket, 5);
         this.pingPongTask = new PingPongTask(this, tcpSocket, 0.5);
-        this.autopilotTask = new AutopilotTask(this, tcpSocket, 0.5, 0.2);
+        this.autopilotTask = new AutopilotTask(this, tcpSocket, 0.5);
     }
 
     public void connect(ConnectionInfo connectionInfo) {
@@ -72,7 +75,7 @@ public class CommunicationHandler implements
             case PING_MESSAGE:
                 // handle pong response internally
                 try {
-                    long pingDelay = pingPongTask.notifyPongTeceived((PingPongMessage) message);
+                    long pingDelay = pingPongTask.notifyPongReceived((PingPongMessage)message);
                     notifyOnPingUpdated(pingDelay);
                 } catch (CommunicationException e) {
                     notifyOnError(e.getMessage());
@@ -168,6 +171,10 @@ public class CommunicationHandler implements
 
     public void setControlViewModel(ControlViewModel controlViewModel) {
         this.controlTask.setControlViewModel(controlViewModel);
+    }
+
+    public void notifyAutopilotEvent(AutopilotData autopilotData){
+        autopilotTask.sendAutopilotEvent(autopilotData);
     }
 
     public interface CommunicationListener {

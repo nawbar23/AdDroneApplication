@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -17,6 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.ericsson.addroneapplication.R;
+import com.ericsson.addroneapplication.comunication.data.AutopilotData;
 import com.ericsson.addroneapplication.service.AdDroneService;
 import com.ericsson.addroneapplication.viewmodel.ControlViewModel;
 
@@ -126,6 +128,15 @@ public class ControlActivity extends AppCompatActivity {
     }
 
     private void setCameraFragment() {
+        //TODO only temporary event for autopilot
+        AutopilotData autopilotData = new AutopilotData();
+        autopilotData.setLatitude(50.00 + (Math.random() - 0.5) / 100);
+        autopilotData.setLongitude(20.00 + (Math.random() - 0.5) / 100);
+        autopilotData.setRelativeAltitude(10.0f);
+        autopilotData.setFlags(0);
+        Log.e("DDD", "Autopilot event: " + autopilotData.toString());
+        service.getCommunicationHandler().notifyAutopilotEvent(autopilotData);
+
         frameLayout1.setLayoutParams(layoutParamsHidden);
         frameLayout2.setLayoutParams(layoutParamsFullscreen);
 

@@ -26,6 +26,7 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
 
     private final IBinder mBinder = new LocalBinder();
     private State state;
+
     // main communication handler for internet connection
     private CommunicationHandler communicationHandler;
 
@@ -56,6 +57,10 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
         Log.e(DEBUG_TAG, "onDestroy");
 
         this.communicationHandler.unregisterListener(this);
+    }
+
+    public CommunicationHandler getCommunicationHandler() {
+        return communicationHandler;
     }
 
     public void attemptConnection(ConnectionInfo connectionInfo) {

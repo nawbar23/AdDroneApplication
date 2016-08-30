@@ -7,6 +7,9 @@ import com.ericsson.addroneapplication.comunication.messages.PingPongMessage;
 
 /**
  * Created by nbar on 2016-08-30.
+ * Task for ping pong feature handling. Ping is sent every timer tick and its confirmed when received.
+ * Computation of ping delay is being done only when message key is valid. If pong is not received before next tick new will not
+ * be sent and CommunicationException is raised, but after second timeout next one is sent.
  */
 
 public class PingPongTask extends CommunicationTask{
@@ -22,7 +25,7 @@ public class PingPongTask extends CommunicationTask{
         this.state = State.CONFIRMED;
     }
 
-    public long notifyPongTeceived(PingPongMessage pingPongMessage) throws CommunicationException{
+    public long notifyPongReceived(PingPongMessage pingPongMessage) throws CommunicationException{
         if (pingPongMessage.getValue().getKey() == sentPing.getKey()) {
             // valid ping measurement, compute ping time
             this.state = State.CONFIRMED;

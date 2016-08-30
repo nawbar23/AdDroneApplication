@@ -24,7 +24,6 @@ public class AutopilotMessage extends CommunicationMessage {
         buffer.putFloat(autopilotData.getRelativeAltitude());
         buffer.putInt(autopilotData.getFlags());
         System.arraycopy(buffer.array(), 0, this.payload, 0, getPayloadSize());
-
         // compute and set CRC for message
         setCrc();
     }
@@ -32,16 +31,6 @@ public class AutopilotMessage extends CommunicationMessage {
     @Override
     public MessageId getMessageId() {
         return MessageId.AUTOPILOT_MESSAGE;
-    }
-
-    @Override
-    public byte[] getPreamble() {
-        return new byte[]{'#', '#', '#', '#'};
-    }
-
-    @Override
-    public int getPayloadSize() {
-        return getPayloadSizeById(getMessageId());
     }
 
     @Override

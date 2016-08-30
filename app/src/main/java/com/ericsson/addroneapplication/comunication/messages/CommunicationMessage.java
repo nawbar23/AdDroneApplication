@@ -23,7 +23,6 @@ public abstract class CommunicationMessage {
     public CommunicationMessage(byte[] byteArray){
         this.payload = new byte[getPayloadSize()];
         System.arraycopy(byteArray, 4, this.payload, 0, getPayloadSize());
-
         ByteBuffer buffer = ByteBuffer.wrap(byteArray, 4 + getPayloadSize(), 2);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         this.crc = buffer.getShort();
@@ -31,9 +30,13 @@ public abstract class CommunicationMessage {
 
     public abstract MessageId getMessageId();
 
-    public abstract byte[] getPreamble();
+    public byte[] getPreamble() {
+        return getPreambleById(getMessageId());
+    }
 
-    public abstract int getPayloadSize();
+    public int getPayloadSize() {
+        return getPayloadSizeById(getMessageId());
+    }
 
     public int getMessageSize() {
         return PREAMBLE_SIZE + getPayloadSize() + CRC_SIZE;
@@ -43,7 +46,9 @@ public abstract class CommunicationMessage {
 
     public abstract String toByteString();
 
-    public abstract String toHexString();
+    public String toHexString() {
+        return byteArrayToHexString(payload);
+    }
 
     public void setCrc() {
         this.crc = computeCrc();
@@ -90,7 +95,7 @@ public abstract class CommunicationMessage {
             case PING_MESSAGE:
                 return new byte[]{'%', '%', '%', '%'};
             case AUTOPILOT_MESSAGE:
-                return new byte[]{'#', '#', '#', '#'};
+                return new byte[]{'^', '^', '^', '^'};
             default:
                 // TODO throw some error
                 return new byte[]{'a', 'a', 'a', 'a'};
