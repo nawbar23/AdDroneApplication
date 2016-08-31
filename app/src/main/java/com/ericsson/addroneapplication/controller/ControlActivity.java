@@ -132,7 +132,7 @@ public class ControlActivity extends AppCompatActivity {
         });
 
         hudViewUpdateTimer = new Timer();
-        hudViewUpdateTimer.scheduleAtFixedRate(hudViewTimerUpdateTask, 500, 50);
+        hudViewUpdateTimer.scheduleAtFixedRate(hudViewTimerUpdateTask, 1000, 100);
     }
 
     private void setMapFragment() {

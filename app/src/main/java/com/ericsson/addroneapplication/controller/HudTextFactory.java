@@ -66,6 +66,10 @@ public class HudTextFactory {
     }
 
     public String getYawText(float yaw) {
-        return degreesFormat.format(yaw / Math.PI * 180);
+        return degreesFormat.format(yaw / Math.PI * 180) + "╦";
+    }
+
+    public String getAltText(float altitude) {
+        return degreesFormat.format(altitude) + "m";
     }
 }

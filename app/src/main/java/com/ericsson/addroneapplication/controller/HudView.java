@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -19,7 +20,7 @@ public class HudView extends View {
     private static final float PI4 = (float) (Math.PI / 4);
     private static final float PI12 = (float) (Math.PI / 12);
 
-    private static final String[] yawLabels = {
+    private static final String[] YAW_LABELS = {
             "N", "15", "30", "45", "60", "75",
             "E", "105", "120", "135", "150", "165",
             "S", "195", "210", "225", "240", "255",
@@ -28,6 +29,7 @@ public class HudView extends View {
     private Paint linePaint;
     private Paint borderLinePaint;
     private Paint textPaint;
+    private Paint borderTextPaint;
 
     private boolean advancedMode;
     private boolean isAutopilotAvailable;
@@ -50,15 +52,21 @@ public class HudView extends View {
 
         linePaint = new Paint();
         linePaint.setColor(Color.WHITE);
-        linePaint.setStrokeWidth(lineWidth);
 
         borderLinePaint = new Paint();
         borderLinePaint.setColor(Color.BLACK);
-        borderLinePaint.setStrokeWidth(borderLineWidth);
 
         textPaint = new Paint();
-        textPaint.setTextSize(40);
-        textPaint.setStrokeWidth(5);
+        textPaint.setColor(Color.BLUE);
+        textPaint.setTextSize(32);
+        textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+
+        borderTextPaint = new Paint();
+        borderTextPaint.setColor(Color.WHITE);
+        borderTextPaint.setTextSize(32);
+        borderTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
+        borderTextPaint.setStyle(Paint.Style.STROKE);
+        borderTextPaint.setStrokeWidth(2);
 
         advancedMode = true;
         isAutopilotAvailable = false;
@@ -79,8 +87,11 @@ public class HudView extends View {
         borderWidth = 2;
         borderLineWidth = lineWidth + 2 * borderWidth;
 
+        linePaint.setStrokeWidth(lineWidth);
+        borderLinePaint.setStrokeWidth(borderLineWidth);
+
         Rect rect = new Rect();
-        textPaint.getTextBounds("xX1", 0, 3, rect);
+        borderTextPaint.getTextBounds("xX1", 0, 3, rect);
         textHeight = rect.height();
     }
 
@@ -90,30 +101,24 @@ public class HudView extends View {
 
         // draw ping and autopilot availability
         String pingString = hudTextFactory.getLatencyString(uiDataPack.ping);
-        canvas.drawText(pingString, 10, 10 + textHeight, textPaint);
+        drawTextWithBorder(pingString, 10, 10 + textHeight, Paint.Align.LEFT, canvas);
 
         // draw autopilot state
-        textPaint.setColor(isAutopilotAvailable ? Color.GREEN : Color.RED);
-
         String autopilotString = hudTextFactory.getAutopilotString(isAutopilotAvailable);
-        canvas.drawText(autopilotString, 10, 10 + textHeight * 3, textPaint);
-
-        textPaint.setColor(Color.WHITE);
+        drawTextWithBorder(autopilotString, 10, 10 + 3 * textHeight, Paint.Align.LEFT, canvas);
 
         // draw battery state
         String batteryString = hudTextFactory.getBatteryStateString(uiDataPack.battery, 10);
-        textPaint.getTextBounds(batteryString, 0, batteryString.length(), drawingRect);
-        canvas.drawText(batteryString, (width - drawingRect.width()) / 2, 10 + textHeight, textPaint);
+        drawTextWithBorder(batteryString, width * .5f, 10 + textHeight, Paint.Align.CENTER, canvas);
 
         // draw current time
         String dateString = hudTextFactory.getDateString();
         textPaint.getTextBounds(dateString, 0, dateString.length(), drawingRect);
-        canvas.drawText(dateString, width - drawingRect.width() - 10, 10 + textHeight, textPaint);
+        drawTextWithBorder(dateString, width, 10 + textHeight, Paint.Align.RIGHT, canvas);
 
         // draw current position
         String positionString = hudTextFactory.getPositionString(uiDataPack.lat, uiDataPack.lng);
-        textPaint.getTextBounds(positionString, 0, positionString.length(), drawingRect);
-        canvas.drawText(positionString, (width - drawingRect.width()) / 2, height - 10, textPaint);
+        drawTextWithBorder(positionString, width * .5f, height - 10, Paint.Align.CENTER, canvas);
 
         if(advancedMode) {
             // draw yaw bar
@@ -123,7 +128,7 @@ public class HudView extends View {
             drawVerticalDividedLine(.25f, .25f, .75f, .3f, .1f, .075f * height / width, canvas);
 
             // draw alt bar
-            drawVerticalDividedLine(.75f, .25f, .75f, .3f, .1f, .075f * height / width, canvas);
+            //updateAltitudeBar(canvas);
 
             // draw tilt line
         }
@@ -158,8 +163,7 @@ public class HudView extends View {
             px = x * width;
             canvas.drawLine(px, pDivY1, px, pDivY2, linePaint);
 
-            textPaint.getTextBounds(labels[i], 0, labels[i].length(), drawingRect);
-            canvas.drawText(labels[i], px - drawingRect.width() / 2, pDivY1 - textHeight, textPaint);
+            drawTextWithBorder(labels[i], px, pDivY1 - textHeight, Paint.Align.CENTER, canvas);
 
             if(++i >= labels.length)
                 i = 0;
@@ -196,6 +200,14 @@ public class HudView extends View {
         }
     }
 
+    private void drawTextWithBorder(String text, float x, float y, Paint.Align align, Canvas canvas) {
+        borderTextPaint.setTextAlign(align);
+        textPaint.setTextAlign(align);
+
+        canvas.drawText(text, x, y, borderTextPaint);
+        canvas.drawText(text, x, y, textPaint);
+    }
+
     public void updateYawBar(Canvas canvas) {
         float yaw = uiDataPack.yaw;
         float leftBound = yaw - PI4;
@@ -209,12 +221,20 @@ public class HudView extends View {
 
         float delta = Math.abs(yaw - firstBar) / PI2;
 
-
-
-        drawHorizontalDividedLine(.25f, .75f, .15f, 0.5f - delta * 0.5f, 0.5f * (PI12 / PI2), .075f, yawLabels, firstBarNumber, canvas);
+        drawHorizontalDividedLine(.25f, .75f, .15f, .5f - delta * .5f, .5f * (PI12 / PI2), .075f, YAW_LABELS, firstBarNumber, canvas);
         String yawText = hudTextFactory.getYawText(uiDataPack.yaw);
-        textPaint.getTextBounds(yawText, 0, yawText.length(), drawingRect);
-        canvas.drawText(yawText, (width - drawingRect.width()) / 2, .225f * height + textHeight, textPaint);
+        drawTextWithBorder(yawText, width * 0.5f, .225f * height + textHeight, Paint.Align.CENTER, canvas);
+    }
+
+    public void updateAltitudeBar(Canvas canvas) {
+        float upperBound = uiDataPack.altitude - 25;
+        int firstBarNumber = (int)(upperBound / 10) + 1;
+
+        float delta = Math.abs(uiDataPack.altitude - firstBarNumber * 10) / 25;
+
+        drawVerticalDividedLine(.75f, .25f, .75f, .5f - delta, .5f * (10 / 50), .075f, canvas);
+        String altText = hudTextFactory.getAltText(uiDataPack.altitude);
+        drawTextWithBorder(altText, .675f * width - textHeight, height * .5f, Paint.Align.RIGHT, canvas);
     }
 
     public void setAdvancedMode(boolean advancedMode) {
