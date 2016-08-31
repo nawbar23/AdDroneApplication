@@ -53,7 +53,7 @@ public class PingPongTask extends CommunicationTask{
 
     @Override
     String getTaskName() {
-        return "AutopilotTask";
+        return "PingPongTask";
     }
 
     private enum State {

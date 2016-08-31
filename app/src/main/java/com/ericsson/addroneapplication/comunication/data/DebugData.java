@@ -66,7 +66,7 @@ public class DebugData implements CommunicationMessageValue {
     }
 
     public float getYaw() {
-        return yaw;
+        return yaw + (float)Math.PI;
     }
 
     public void setYaw(float yaw) {
