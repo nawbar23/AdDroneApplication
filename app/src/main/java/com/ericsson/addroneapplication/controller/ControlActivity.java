@@ -22,6 +22,9 @@ import com.ericsson.addroneapplication.comunication.data.AutopilotData;
 import com.ericsson.addroneapplication.service.AdDroneService;
 import com.ericsson.addroneapplication.viewmodel.ControlViewModel;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * Created by Kamil on 8/23/2016.
  */
@@ -35,6 +38,21 @@ public class ControlActivity extends AppCompatActivity {
     private FrameLayout frameLayout2;
 
     private HudView hudView;
+    private Timer hudViewUpdateTimer;
+    private TimerTask hudViewTimerUpdateTask = new TimerTask() {
+        @Override
+        public void run() {
+            if(controlViewModel != null) {
+                ControlActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        hudView.updateUiDataPack(controlViewModel.getcurrentUiDataPack());
+                    }
+                });
+            }
+        }
+    };
+
     private Button buttonChangeView;
     private Button buttonDisconnect;
     private ControlPadView controlPadView;
@@ -52,7 +70,6 @@ public class ControlActivity extends AppCompatActivity {
             service = binder.getService();
             service.setControlViewModel(controlViewModel);
             service.registerListener(controlViewModel);
-            Log.e("ABCD", controlViewModel.toString());
         }
 
         @Override
@@ -113,6 +130,9 @@ public class ControlActivity extends AppCompatActivity {
                 service.attemptDisconnection();
             }
         });
+
+        hudViewUpdateTimer = new Timer();
+        hudViewUpdateTimer.scheduleAtFixedRate(hudViewTimerUpdateTask, 500, 50);
     }
 
     private void setMapFragment() {
