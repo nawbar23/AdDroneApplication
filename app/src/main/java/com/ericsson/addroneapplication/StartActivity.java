@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -57,6 +58,11 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
 
         // set default settings
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if(sharedPreferences.getString("saved_connections", "[]").equals("[]")) {
+            sharedPreferences.edit().putString("saved_connections", "[{ name=\"vpn\", connectionInfo={ ipAddress=\"1.1.1.1\", port=\"1\" } }]").apply();
+        }
 
         setContentView(R.layout.activity_start);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

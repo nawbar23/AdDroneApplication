@@ -25,4 +25,11 @@
     <string name="camera">Camera</string>
     <string name="add_one_to_connect">Add at least one connection to be able to connect</string>
     <string name="invalid_ip_format">Invalid IP format.</string>
+    <string name="latency">latency</string>
+    <string name="autopilot">autopilot</string>
+    <string name="available">available</string>
+    <string name="disabled">disabled</string>
+    <string name="battery">battery</string>
+    <string name="latitude">lat</string>
+    <string name="longitude">lon</string>
 </resources>

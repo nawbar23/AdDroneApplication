@@ -16,17 +16,17 @@
 
     </FrameLayout>
 
-    <com.ericsson.addroneapplication.controller.HudGLSurfaceView
+    <com.ericsson.addroneapplication.controller.HudView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/surface_hud" />
+        android:id="@+id/view_hud"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:id="@+id/button_change_view" />
 
     <com.ericsson.addroneapplication.controller.ControlThrottleView
@@ -35,9 +35,9 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="@dimen/margin_lg"
-        android:layout_marginStart="@dimen/margin_lg"
-        android:layout_marginBottom="@dimen/margin_lg"
+        android:layout_marginLeft="@dimen/margin_sm"
+        android:layout_marginStart="@dimen/margin_sm"
+        android:layout_marginBottom="@dimen/margin_sm"
         android:id="@+id/throttle"/>
 
     <com.ericsson.addroneapplication.controller.ControlPadView
@@ -47,8 +47,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_marginRight="@dimen/margin_sm"
-        android:layout_marginEnd="@dimen/margin_lg"
-        android:layout_marginBottom="@dimen/margin_lg"
+        android:layout_marginEnd="@dimen/margin_sm"
+        android:layout_marginBottom="@dimen/margin_sm"
         android:id="@+id/joystick"/>
 
     <Button

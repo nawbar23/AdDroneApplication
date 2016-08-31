@@ -34,7 +34,7 @@ public class ControlActivity extends AppCompatActivity {
     private FrameLayout frameLayout1;
     private FrameLayout frameLayout2;
 
-    private HudGLSurfaceView hudGLSurfaceView;
+    private HudView hudView;
     private Button buttonChangeView;
     private Button buttonDisconnect;
     private ControlPadView controlPadView;
@@ -52,6 +52,7 @@ public class ControlActivity extends AppCompatActivity {
             service = binder.getService();
             service.setControlViewModel(controlViewModel);
             service.registerListener(controlViewModel);
+            Log.e("ABCD", controlViewModel.toString());
         }
 
         @Override
@@ -79,7 +80,7 @@ public class ControlActivity extends AppCompatActivity {
         // Setup GUI
         frameLayout1 = (FrameLayout) findViewById(R.id.layout_container_1);
         frameLayout2 = (FrameLayout) findViewById(R.id.layout_container_2);
-        hudGLSurfaceView = (HudGLSurfaceView) findViewById(R.id.surface_hud);
+        hudView = (HudView) findViewById(R.id.view_hud);
         buttonChangeView = (Button) findViewById(R.id.button_change_view);
         buttonDisconnect = (Button) findViewById(R.id.button_disconnect);
         controlPadView = (ControlPadView) findViewById(R.id.joystick);

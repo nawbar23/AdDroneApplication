@@ -8,17 +8,21 @@ import com.ericsson.addroneapplication.comunication.data.DebugData;
  */
 public class UIDataPack {
 
-    long ping;
+    public long ping;
 
-    float lat, lng;
+    public float lat, lng;
 
-    double targetLat, targetLon;
+    public double targetLat, targetLon;
 
-    float pitch, roll, yaw;
+    public float pitch, roll, yaw;
 
-    float altitude, velocity;
+    public float altitude, velocity;
 
-    float battery;
+    public float battery;
+
+    public UIDataPack() {
+
+    }
 
     public UIDataPack(DebugData debugData, AutopilotData autopilotData, long ping) {
         this.ping = ping;
