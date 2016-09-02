@@ -38,7 +38,7 @@ public class UIDataPack {
         this.yaw = debugData.getYaw();
 
         this.altitude = debugData.getRelativeAltitude();
-        this.velocity = debugData.getvLoc();
+        this.velocity = debugData.getVLoc();
 
         // TODO: compute battery percentage
         this.battery = (float)debugData.getBattery() / 255;

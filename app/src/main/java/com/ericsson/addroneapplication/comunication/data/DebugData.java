@@ -1,5 +1,7 @@
 package com.ericsson.addroneapplication.comunication.data;
 
+import android.util.Log;
+
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
 import com.ericsson.addroneapplication.comunication.messages.DebugMessage;
 
@@ -18,6 +20,7 @@ import java.nio.ByteBuffer;
  */
 
 public class DebugData implements CommunicationMessageValue {
+    private static final String DEBUG_TAG = "AdDrone:" + DebugData.class.getSimpleName();
 
     private float roll, pitch, yaw;
 
@@ -27,7 +30,7 @@ public class DebugData implements CommunicationMessageValue {
     private float vLoc;
 
     private ControllerState controllerState;
-    private byte flags;
+    private Flag flags;
 
     private byte battery;
 
@@ -45,7 +48,7 @@ public class DebugData implements CommunicationMessageValue {
         this.relativeAltitude = buffer.getFloat();
         this.vLoc = buffer.getFloat();
         this.controllerState = ControllerState.getControllerState(buffer.getShort());
-        this.flags = buffer.get();
+        this.flags = new Flag(8, buffer.get());
         this.battery = buffer.get();
     }
 
@@ -97,7 +100,7 @@ public class DebugData implements CommunicationMessageValue {
         this.relativeAltitude = relativeAltitude;
     }
 
-    public float getvLoc() {
+    public float getVLoc() {
         return vLoc;
     }
 
@@ -114,11 +117,28 @@ public class DebugData implements CommunicationMessageValue {
     }
 
     public byte getFlags() {
-        return flags;
+        return (byte)flags.getFlag();
     }
 
     public void setFlags(byte flags) {
-        this.flags = flags;
+        this.flags = new Flag(8, flags);
+    }
+
+    public boolean getFlagState(FlagId id) {
+        try {
+            return flags.getFlagState(id.getValue());
+        } catch (Exception e) {
+            Log.e(DEBUG_TAG, e.getMessage());
+            return false;
+        }
+    }
+
+    public void setFLagState(FlagId id, boolean state) {
+        try {
+            flags.setFlagState(id.getValue(), state);
+        } catch (Exception e) {
+            Log.e(DEBUG_TAG, e.getMessage());
+        }
     }
 
     public byte getBattery() {
@@ -198,6 +218,24 @@ public class DebugData implements CommunicationMessageValue {
             else if (value == VIA_ROUTE.getValue()) return "Via route";
             else if (value == STOP.getValue()) return "Stop";
             else return "Error type!";
+        }
+    }
+
+    public enum FlagId {
+        GPS_FIX(0),
+        GPS_FIX_3D(1),
+        LOW_BATTERY_VOLTAGE(2),
+        ERROR_HANDLING(3),
+        AUTOPILOT_USED(4);
+
+        private final int value;
+
+        FlagId(int value){
+            this.value = value;
+        }
+
+        int getValue(){
+            return value;
         }
     }
 }
