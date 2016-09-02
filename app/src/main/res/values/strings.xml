@@ -11,13 +11,23 @@
     <string name="fill_all_fields">Fill all fields to continue.</string>
     <string name="choose_connection">Choose Connection</string>
     <string name="add_new">Add new</string>
-    <string name="pref_msg_retrans_rate">Message retransmission rate</string>
-    <string name="pref_connection_settings">Connection settings</string>
-    <string name="pref_msg_retrans_rate_summ">Set the frequency at which messages are retransmitted</string>
-    <string name="pref_msg_retrans_num">Message retransmission number</string>
-    <string name="pref_msg_retrans_num_summ">No idea what to put here</string>
-    <string name="pref_enable_little_endian">Enable little endian</string>
-    <string name="pref_enable_little_endian_summ">Set the bit encoding type to little endian</string>
+
+    <string name="pref_control_settings">Frequency settings</string>
+    <string name="pref_con_con_freq">Sending control data</string>
+    <string name="pref_con_ping_freq">Update delay time</string>
+    <string name="pref_con_auto_freq">Autopilot data retransmission</string>
+    <string name="pref_con_divider">Frequency divider</string>
+    <string name="pref_con_con_freq_dsc">Frequency of sending control data</string>
+    <string name="pref_con_ping_freq_dsc">Frequency of update delay time</string>
+    <string name="pref_con_auto_freq_dsc">Frequency of autopilot data retransmission</string>
+    <string name="pref_con_divider_dsc">Divider of frequency when lower is possible</string>
+
+    <string name="pref_drone_settings">Drone settings</string>
+    <string name="pref_con_solver_mode">Type of control interpretation</string>
+    <string name="pref_con_battery_type">Number of battery cells</string>
+    <string name="pref_con_solver_mode_dsc">Type of control interpretation</string>
+    <string name="pref_con_battery_type_dsc">Number of battery cells</string>
+
     <string name="settings">Settings</string>
     <string name="pref_ui_refresh_rate">UI refresh rate</string>
     <string name="pref_ui_refresh_rate_summ">Set the frequency at which map is updated</string>

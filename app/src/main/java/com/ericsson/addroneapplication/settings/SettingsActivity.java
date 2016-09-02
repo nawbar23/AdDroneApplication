@@ -13,9 +13,15 @@ import android.util.Log;
 public class SettingsActivity extends AppCompatActivity {
     private static final String DEBUG_TAG = "AdDrone:" + SettingsActivity.class.getSimpleName();
 
-    public static final String KEY_PREF_MSG_RETRANS_RATE = "pref_msg_retrans_rate";
-    public static final String KEY_PREF_MSG_RETRANS_NUM = "pref_msg_retrans_num";
     public static final String KEY_PREF_UI_REFRESH_RATE = "pref_ui_refresh_rate";
+
+    public static final String KEY_PREF_CON_CON_FREQ = "pref_con_con_freq";
+    public static final String KEY_PREF_CON_PING_FREQ = "pref_con_ping_freq";
+    public static final String KEY_PREF_CON_AUTO_FREQ = "pref_con_auto_freq";
+    public static final String KEY_PREF_CON_DIVIDER = "pref_con_divider";
+    public static final String KEY_PREF_CON_SOLVER_MODE = "pref_con_solver_mode";
+    public static final String KEY_PREF_CON_BATTERY_TYPE = "pref_con_battery_type";
+
 
     private SettingsFragment settingsFragment;
 

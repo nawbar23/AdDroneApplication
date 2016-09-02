@@ -22,10 +22,13 @@ public abstract class CommunicationTask {
     // frequency of task [Hz]
     protected double frequency;
 
+    private boolean isRunning;
+
     CommunicationTask(CommunicationHandler communicationHandler, TcpSocket tcpSocket, double frequency) {
         this.communicationHandler = communicationHandler;
         this.tcpSocket = tcpSocket;
         this.frequency = frequency;
+        this.isRunning = false;
     }
 
     public void start() {
@@ -44,10 +47,12 @@ public abstract class CommunicationTask {
         long delay = period > 1000 ? period : 1000;
         Log.e(DEBUG_TAG, "Starting " + getTaskName() + " task with freq: " + String.valueOf(freq) + " Hz, and delay: " + String.valueOf(delay) + " ms");
         this.timer.scheduleAtFixedRate(timerTask, delay, period);
+        this.isRunning = true;
     }
 
     public void stop() {
         this.timer.cancel();
+        this.isRunning = false;
     }
 
     public void restart() {
@@ -63,6 +68,10 @@ public abstract class CommunicationTask {
         this.frequency = frequency;
         stop();
         start();
+    }
+
+    public boolean isRunning() {
+        return isRunning;
     }
 
     abstract String getTaskName();

@@ -5,8 +5,6 @@ import android.util.Log;
 import com.ericsson.addroneapplication.comunication.data.AutopilotData;
 import com.ericsson.addroneapplication.comunication.messages.AutopilotMessage;
 
-import static com.ericsson.addroneapplication.comunication.CommunicationHandler.COMM_FREQ_DIVIDER;
-
 /**
  * Created by nbar on 2016-08-30.
  * Task for handling asynchronous autopilot control.
@@ -22,9 +20,12 @@ public class AutopilotTask extends CommunicationTask {
 
     private State state;
 
-    public AutopilotTask(CommunicationHandler communicationHandler, TcpSocket tcpSocket, double frequency) {
+    private double freqDivider;
+
+    public AutopilotTask(CommunicationHandler communicationHandler, TcpSocket tcpSocket, double frequency, double divider) {
         super(communicationHandler, tcpSocket, frequency);
         this.state = State.CONFIRMED;
+        this.freqDivider = divider;
     }
 
     public void sendAutopilotEvent(AutopilotData autopilotData) {
@@ -40,7 +41,7 @@ public class AutopilotTask extends CommunicationTask {
         if (autopilotData.isEqual(sentAutopilotData)) {
             Log.e(DEBUG_TAG, "Autopilot data confirmed");
             state = State.CONFIRMED;
-            restart(frequency / COMM_FREQ_DIVIDER);
+            restart(frequency / freqDivider);
         }
     }
 

@@ -14,12 +14,22 @@ public class ControlTask extends CommunicationTask {
 
     private ControlViewModel controlViewModel = null;
 
-    public ControlTask(CommunicationHandler communicationHandler, TcpSocket tcpSocket, double frequency) {
+    private ControlData.SolverMode defaultSolverMode;
+
+    private double freqDivider;
+
+    public ControlTask(CommunicationHandler communicationHandler, TcpSocket tcpSocket, double frequency, double divider) {
         super(communicationHandler, tcpSocket, frequency);
+        this.defaultSolverMode = ControlData.SolverMode.ANGLE_NO_YAW;
+        this.freqDivider = divider;
     }
 
     public void setControlViewModel(ControlViewModel controlViewModel) {
         this.controlViewModel = controlViewModel;
+    }
+
+    public void setDefaultSolverMode(ControlData.SolverMode solver) {
+        this.defaultSolverMode = solver;
     }
 
     @Override
@@ -28,8 +38,10 @@ public class ControlTask extends CommunicationTask {
         ControlData controlData;
         if (controlViewModel == null) {
             controlData = new ControlData();
+            controlData.setMode(defaultSolverMode);
         } else {
             controlData = controlViewModel.getCurrentControlData();
+            controlData.setMode(defaultSolverMode);
         }
         Log.e(DEBUG_TAG, "Sending ControlData: " + controlData.toString());
         tcpSocket.send(controlData.getMessage().getByteArray());

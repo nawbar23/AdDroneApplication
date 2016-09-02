@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="solvers">
+        <item>Stabilization</item>
+        <item>Angle no yaw</item>
+        <item>Angle</item>
+        <item>Headless</item>
+    </string-array>
+    <string-array name="solversValues">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
+    <string-array name="batteries">
+        <item>3S</item>
+        <item>4S</item>
+        <item>5S</item>
+        <item>6S</item>
+    </string-array>
+    <string-array name="batteriesValues">
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
+</resources>

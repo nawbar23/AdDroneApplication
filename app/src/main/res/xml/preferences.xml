@@ -2,26 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="@string/pref_connection_settings"
-        android:key="pref_connection_settings">
-
-        <EditTextPreference
-            android:key="pref_msg_retrans_rate"
-            android:title="@string/pref_msg_retrans_rate"
-            android:summary="@string/pref_msg_retrans_rate_summ"
-            android:defaultValue="50"
-            android:inputType="number"/>
-
-        <EditTextPreference
-            android:key="pref_msg_retrans_num"
-            android:title="@string/pref_msg_retrans_num"
-            android:summary="@string/pref_msg_retrans_num_summ"
-            android:defaultValue="200"
-            android:inputType="number"/>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
         android:title="User interface settings"
         android:key="pref_ui_settings">
 
@@ -31,6 +11,60 @@
             android:summary="@string/pref_ui_refresh_rate_summ"
             android:defaultValue="2"
             android:inputType="number"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_drone_settings"
+        android:key="pref_drone_settings">
+
+        <ListPreference
+            android:key="pref_con_solver_mode"
+            android:title="@string/pref_con_solver_mode"
+            android:summary="@string/pref_con_solver_mode_dsc"
+            android:entries="@array/solvers"
+            android:entryValues="@array/solversValues" />
+
+        <ListPreference
+            android:key="pref_con_battery_type"
+            android:title="@string/pref_con_battery_type"
+            android:summary="@string/pref_con_battery_type_dsc"
+            android:entries="@array/batteries"
+            android:entryValues="@array/batteriesValues" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_control_settings"
+        android:key="pref_connection_settings">
+
+        <EditTextPreference
+            android:key="pref_con_con_freq"
+            android:title="@string/pref_con_con_freq"
+            android:summary="@string/pref_con_con_freq_dsc"
+            android:defaultValue="20"
+            android:inputType="phone"/>
+
+        <EditTextPreference
+            android:key="pref_con_ping_freq"
+            android:title="@string/pref_con_ping_freq"
+            android:summary="@string/pref_con_ping_freq_dsc"
+            android:defaultValue="0.5"
+            android:inputType="phone"/>
+
+        <EditTextPreference
+            android:key="pref_con_auto_freq"
+            android:title="@string/pref_con_auto_freq"
+            android:summary="@string/pref_con_auto_freq_dsc"
+            android:defaultValue="0.5"
+            android:inputType="phone"/>
+
+        <EditTextPreference
+            android:key="pref_con_divider"
+            android:title="@string/pref_con_divider"
+            android:summary="@string/pref_con_divider_dsc"
+            android:defaultValue="3"
+            android:inputType="phone"/>
 
     </PreferenceCategory>
 

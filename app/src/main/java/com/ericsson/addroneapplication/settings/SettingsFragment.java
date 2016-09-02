@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.util.Log;
 
 import com.ericsson.addroneapplication.R;
 
@@ -22,14 +23,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         Preference connectionPref = findPreference(key);
-
-        if (key.equals(SettingsActivity.KEY_PREF_MSG_RETRANS_RATE)) {
-            connectionPref.setSummary(sharedPreferences.getString(key, ""));
-        }
-
-        if (key.equals(SettingsActivity.KEY_PREF_MSG_RETRANS_NUM)) {
-            connectionPref.setSummary(sharedPreferences.getString(key, ""));
-        }
 
         if (key.equals(SettingsActivity.KEY_PREF_UI_REFRESH_RATE)) {
             connectionPref.setSummary(sharedPreferences.getString(key, ""));
