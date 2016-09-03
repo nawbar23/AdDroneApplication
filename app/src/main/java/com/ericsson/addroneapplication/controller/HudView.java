@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.ericsson.addroneapplication.model.UIDataPack;
@@ -128,7 +129,7 @@ public class HudView extends View {
             drawVerticalDividedLine(.25f, .25f, .75f, .3f, .1f, .075f * height / width, canvas);
 
             // draw alt bar
-            //updateAltitudeBar(canvas);
+            updateAltitudeBar(canvas);
 
             // draw tilt line
         }
@@ -230,11 +231,13 @@ public class HudView extends View {
         float upperBound = uiDataPack.altitude - 25;
         int firstBarNumber = (int)(upperBound / 10) + 1;
 
-        float delta = Math.abs(uiDataPack.altitude - firstBarNumber * 10) / 25;
+        float delta = Math.abs(uiDataPack.altitude - firstBarNumber * 10) / 25.f;
 
-        drawVerticalDividedLine(.75f, .25f, .75f, .5f - delta, .5f * (10 / 50), .075f, canvas);
+        Log.i("ABS", String.valueOf(delta));
+
+        drawVerticalDividedLine(.75f, .25f, .75f, .5f - delta, .5f * .2f, .065f, canvas);
         String altText = hudTextFactory.getAltText(uiDataPack.altitude);
-        drawTextWithBorder(altText, .675f * width - textHeight, height * .5f, Paint.Align.RIGHT, canvas);
+        drawTextWithBorder(altText, .685f * width - textHeight, height * .5f, Paint.Align.RIGHT, canvas);
     }
 
     public void setAdvancedMode(boolean advancedMode) {
