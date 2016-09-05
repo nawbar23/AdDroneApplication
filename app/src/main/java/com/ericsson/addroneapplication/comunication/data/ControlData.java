@@ -97,6 +97,14 @@ public class ControlData implements CommunicationMessageValue {
         this.mode = mode;
     }
 
+    public void setStopCommand(){
+        roll = 0.0f;
+        pitch = 0.0f;
+        yaw = 0.0f;
+        throttle = 0.0f;
+        command = ControllerCommand.STOP;
+    }
+
     @Override
     public String toString() {
         // TODO format this string for better presentation

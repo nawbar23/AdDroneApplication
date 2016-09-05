@@ -11,6 +11,7 @@ import com.ericsson.addroneapplication.comunication.data.AutopilotData;
 import com.ericsson.addroneapplication.comunication.data.ControlData;
 import com.ericsson.addroneapplication.comunication.messages.AutopilotMessage;
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
+import com.ericsson.addroneapplication.comunication.messages.DebugMessage;
 import com.ericsson.addroneapplication.comunication.messages.PingPongMessage;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 import com.ericsson.addroneapplication.viewmodel.ControlViewModel;
@@ -91,6 +92,10 @@ public class CommunicationHandler implements
 
     public void disconnect() {
         Log.e(DEBUG_TAG, "disconnecting...");
+        this.tcpSocket.startDisconnectAlgorithm();
+    }
+
+    private void handleStopState() {
         this.controlTask.stop();
         this.pingPongTask.stop();
         this.autopilotTask.stop();
@@ -109,6 +114,13 @@ public class CommunicationHandler implements
                     notifyOnError(e.getMessage());
                 }
                 return;
+
+            case DEBUG_MESSAGE:
+                if (((DebugMessage)message).getValue().isStopState()) {
+                    Log.e(DEBUG_TAG, "Stop state received, disconnected");
+                    handleStopState();
+                }
+                break;
 
             case AUTOPILOT_MESSAGE:
                 // notify autopilot task and proceed with received data
@@ -135,7 +147,7 @@ public class CommunicationHandler implements
     public void onError(String message, boolean critical) {
         if (critical) {
             // close connection
-            disconnect();
+            handleStopState();
         }
         notifyOnError(message);
     }

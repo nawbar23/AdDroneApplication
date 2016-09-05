@@ -27,6 +27,10 @@ public class TcpSocket {
     private Socket socket;
     private SocketConnection connection;
 
+    public State getState() {
+        return state;
+    }
+
     private DataOutputStream outputStream;
 
     public TcpSocket(TcpSocketDataListener dataListener, TcpSocketEventListener eventListener) {
@@ -42,9 +46,12 @@ public class TcpSocket {
         connection.execute(connectionInfo);
     }
 
-    public void disconnect() {
-        // TODO implement disconnecting algorithm
+    public void startDisconnectAlgorithm() {
         state =  State.DISCONNECTING;
+    }
+
+    public void disconnect() {
+        state =  State.DISCONNECTED;
     }
 
     public void send(byte[] packet) {
@@ -122,7 +129,7 @@ public class TcpSocket {
             eventListener.onConnected();
 
             try {
-                while(state != State.DISCONNECTING) {
+                while(state != State.DISCONNECTED) {
                     byte buffer[] = new byte[1024];
                     int dataSize = inputStream.read(buffer, 0, buffer.length);
                     if (dataSize != -1) {

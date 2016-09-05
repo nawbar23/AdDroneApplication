@@ -34,14 +34,19 @@ public class ControlTask extends CommunicationTask {
 
     @Override
     void task() {
-        // send control message to controller
+        // send control message to
         ControlData controlData;
-        if (controlViewModel == null) {
+        if (tcpSocket.getState() == TcpSocket.State.DISCONNECTING) {
             controlData = new ControlData();
-            controlData.setMode(defaultSolverMode);
+            controlData.setStopCommand();
         } else {
-            controlData = controlViewModel.getCurrentControlData();
-            controlData.setMode(defaultSolverMode);
+            if (controlViewModel == null) {
+                controlData = new ControlData();
+                controlData.setMode(defaultSolverMode);
+            } else {
+                controlData = controlViewModel.getCurrentControlData();
+                controlData.setMode(defaultSolverMode);
+            }
         }
         Log.e(DEBUG_TAG, "Sending ControlData: " + controlData.toString());
         tcpSocket.send(controlData.getMessage().getByteArray());

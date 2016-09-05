@@ -36,7 +36,7 @@ public class ControlPadFragment extends Fragment {
         videoView.setMinimumWidth(displayMetrics.widthPixels);
         videoView.setMinimumHeight(displayMetrics.heightPixels);
         videoView.setMediaController(mediaController);
-        videoView.setVideoURI(Uri.parse("rtsp://192.168.25.1:8088"));
+        videoView.setVideoURI(Uri.parse("rtsp://217.146.95.166:554/playlist/ch28zqcif.3gp"));
         videoView.start();
 
         return root;

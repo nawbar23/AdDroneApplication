@@ -149,6 +149,10 @@ public class DebugData implements CommunicationMessageValue {
         this.battery = battery;
     }
 
+    public boolean isStopState() {
+        return this.controllerState == ControllerState.STOP;
+    }
+
     @Override
     public String toString() {
         // TODO format this string for better presentation
@@ -181,7 +185,9 @@ public class DebugData implements CommunicationMessageValue {
         // cruise via specific route and back to base
         VIA_ROUTE(ControlData.ControllerCommand.VIA_ROUTE.getValue()),
         // immediate STOP (even when fling)
-        STOP(ControlData.ControllerCommand.STOP.getValue());
+        STOP(ControlData.ControllerCommand.STOP.getValue()),
+
+        ERROR_CONNECTION((short)6100);
 
         private final short value;
 
@@ -203,6 +209,7 @@ public class DebugData implements CommunicationMessageValue {
             else if (value == BACK_TO_BASE.getValue()) return BACK_TO_BASE;
             else if (value == VIA_ROUTE.getValue()) return VIA_ROUTE;
             else if (value == STOP.getValue()) return STOP;
+            else if (value == ERROR_CONNECTION.getValue()) return ERROR_CONNECTION;
             else return IDLE; // TODO throw some exception
         }
 
@@ -217,6 +224,7 @@ public class DebugData implements CommunicationMessageValue {
             else if (value == BACK_TO_BASE.getValue()) return "Back to base";
             else if (value == VIA_ROUTE.getValue()) return "Via route";
             else if (value == STOP.getValue()) return "Stop";
+            else if (value == ERROR_CONNECTION.getValue()) return "Error connection";
             else return "Error type!";
         }
     }
