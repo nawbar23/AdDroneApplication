@@ -1,62 +1,81 @@
 package com.ericsson.addroneapplication.controller;
 
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.MediaController;
-import android.widget.VideoView;
+import android.widget.ImageView;
 
 import com.ericsson.addroneapplication.R;
+
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by Kamil on 8/23/2016.
  */
-public class ControlPadFragment extends Fragment {
+public class ControlPadFragment extends Fragment implements StreamConnection.OnNewFrameListener {
 
-    VideoView videoView;
-    DisplayMetrics displayMetrics;
-    MediaController mediaController;
+    ImageView imageView;
+    StreamConnection streamConnection;
+
+    Bitmap bitmap;
+    Lock bitmapLock = new ReentrantLock();
+
+    Runnable setImageBitmapRunnable = new Runnable() {
+        @Override
+        public void run() {
+            imageView.setImageBitmap(bitmap);
+        }
+    };
+
+    Timer timer;
+    TimerTask timerUpdateTask = new TimerTask() {
+        @Override
+        public void run() {
+            bitmapLock.lock();
+            ControlPadFragment.this.getActivity().runOnUiThread(setImageBitmapRunnable);
+            bitmapLock.unlock();
+        }
+    };
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_camera, container, false);
 
-        videoView = (VideoView) root.findViewById(R.id.video_view);
-        mediaController = new MediaController(getActivity());
-        displayMetrics = new DisplayMetrics();
+        streamConnection = new StreamConnection(this);
+        imageView = (ImageView) root.findViewById(R.id.image_view);
 
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-
-        videoView.setMinimumWidth(displayMetrics.widthPixels);
-        videoView.setMinimumHeight(displayMetrics.heightPixels);
-        videoView.setMediaController(mediaController);
-        videoView.setVideoURI(Uri.parse("rtsp://217.146.95.166:554/playlist/ch28zqcif.3gp"));
-        videoView.start();
+        timer = new Timer();
 
         return root;
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        videoView.pause();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-        videoView.resume();
+        streamConnection.start();
+        timer.scheduleAtFixedRate(timerUpdateTask, 0, 50);
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        videoView.stopPlayback();
+    public void onPause() {
+        super.onPause();
+        streamConnection.disconnect();
+        timer.cancel();
+    }
+
+    @Override
+    public void setNewFrame(final byte[] array, final int length) {
+        bitmapLock.lock();
+        bitmap = BitmapFactory.decodeByteArray(array, 0, length);
+        bitmapLock.unlock();
     }
 }
