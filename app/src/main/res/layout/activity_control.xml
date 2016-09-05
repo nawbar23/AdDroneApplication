@@ -21,17 +21,9 @@
         android:layout_height="match_parent"
         android:id="@+id/view_hud"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:id="@+id/button_change_view" />
-
     <com.ericsson.addroneapplication.controller.ControlThrottleView
-        android:layout_width="50dp"
-        android:layout_height="200dp"
+        android:layout_width="60dp"
+        android:layout_height="240dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
@@ -41,8 +33,8 @@
         android:id="@+id/throttle"/>
 
     <com.ericsson.addroneapplication.controller.ControlPadView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
@@ -51,11 +43,24 @@
         android:layout_marginBottom="@dimen/margin_sm"
         android:id="@+id/joystick"/>
 
-    <Button
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/button_disconnect"
-        android:text="Disconn"
-        android:layout_below="@+id/button_change_view" />
+        android:orientation="vertical"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_change_view" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_disconnect"
+            android:text="@string/disconnect" />
+
+    </LinearLayout>
 
 </RelativeLayout>

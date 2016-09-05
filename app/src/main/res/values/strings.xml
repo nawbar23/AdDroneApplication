@@ -42,4 +42,5 @@
     <string name="battery">battery</string>
     <string name="latitude">lat</string>
     <string name="longitude">lon</string>
+    <string name="disconnect">Disconnect</string>
 </resources>
