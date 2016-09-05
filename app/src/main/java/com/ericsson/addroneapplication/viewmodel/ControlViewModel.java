@@ -46,6 +46,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
     public void pause() {
 
+
     }
 
     @Override
@@ -71,7 +72,12 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
         controlDataLock.lock();
 
-        controlData.setYaw(x);
+        // TODO temporary trim yaw control for only big changes
+        if (Math.abs(x) > 0.95) {
+            controlData.setYaw(x);
+        } else {
+            controlData.setYaw(0.0f);
+        }
         controlData.setThrottle(y);
 
         controlDataLock.unlock();
