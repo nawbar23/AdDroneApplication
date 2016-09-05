@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import com.ericsson.addroneapplication.model.UIDataPack;
@@ -37,9 +36,7 @@ public class HudView extends View {
 
     private float width, height;
 
-    private float lineWidth;
     private float borderWidth;
-    private float borderLineWidth;
     private float textHeight;
 
 
@@ -84,9 +81,9 @@ public class HudView extends View {
         width = w;
         height = h;
 
-        lineWidth = 6;
+        float lineWidth = 6;
         borderWidth = 2;
-        borderLineWidth = lineWidth + 2 * borderWidth;
+        float borderLineWidth = lineWidth + 2 * borderWidth;
 
         linePaint.setStrokeWidth(lineWidth);
         borderLinePaint.setStrokeWidth(borderLineWidth);
@@ -126,7 +123,7 @@ public class HudView extends View {
             updateYawBar(canvas);
 
             // draw vel bar
-            drawVerticalDividedLine(.25f, .25f, .75f, .3f, .1f, .075f * height / width, canvas);
+            updateVelocityBar(canvas);
 
             // draw alt bar
             updateAltitudeBar(canvas);
@@ -180,7 +177,7 @@ public class HudView extends View {
      * @param divW width of the dividing lines
      * @param canvas canvas to draw on
      */
-    private void drawVerticalDividedLine(float x, float y1, float y2, float divY, float divD, float divW, Canvas canvas) {
+    private void drawVerticalDividedLine(float x, float y1, float y2, float divY, float divD, float divW, String[] labels, int pos, Canvas canvas) {
         float pWidth = x * width;
         float pDivX1 = (x - divW / 2) * width;
         float pDivX2 = (x + divW / 2) * width;
@@ -195,9 +192,15 @@ public class HudView extends View {
 
         canvas.drawLine(pWidth, y1 * height, pWidth, y2 * height, linePaint);
 
+        int i = pos >= labels.length ? 0 : pos;
         for(float y = divY; y < y2; y += divD) {
             py = y * height;
             canvas.drawLine(pDivX1, py, pDivX2, py, linePaint);
+
+            drawTextWithBorder(labels[i], pDivX2 + 10, py - textHeight * 0.5f, Paint.Align.CENTER, canvas);
+
+            if(++i >= labels.length)
+                i = 0;
         }
     }
 
@@ -228,16 +231,35 @@ public class HudView extends View {
     }
 
     public void updateAltitudeBar(Canvas canvas) {
-        float upperBound = uiDataPack.altitude - 25;
-        int firstBarNumber = (int)(upperBound / 10) + 1;
+        float upperBound = uiDataPack.altitude + 25;
+        int firstBarNumber = (int)(upperBound / 10);
 
-        float delta = Math.abs(uiDataPack.altitude - firstBarNumber * 10) / 25.f;
+        float delta = Math.abs(firstBarNumber * 10 - uiDataPack.altitude) / 50f;
 
-        Log.i("ABS", String.valueOf(delta));
+        String[] labels = new String[6];
+        for (int i = 0; i < 6; i++) {
+            labels[i] = String.valueOf((firstBarNumber - i) * 10);
+        }
 
-        drawVerticalDividedLine(.75f, .25f, .75f, .5f - delta, .5f * .2f, .065f, canvas);
+        drawVerticalDividedLine(.75f, .25f, .75f, .5f - delta * .5f, .5f * (10f / 50f), .075f * height / width, labels, 0, canvas);
         String altText = hudTextFactory.getAltText(uiDataPack.altitude);
         drawTextWithBorder(altText, .685f * width - textHeight, height * .5f, Paint.Align.RIGHT, canvas);
+    }
+
+    public void updateVelocityBar(Canvas canvas) {
+        float upperBound = uiDataPack.velocity + 5;
+        int firstBarNumber = (int)(upperBound / 2f);
+
+        float delta = Math.abs(firstBarNumber * 2f - uiDataPack.velocity) / 10f;
+
+        String[] labels = new String[6];
+        for (int i = 0; i < 6; i++) {
+            labels[i] = String.valueOf((firstBarNumber - i) * 2f);
+        }
+
+        drawVerticalDividedLine(.25f, .25f, .75f, .5f - delta * .5f, .5f * (2f / 10f), .075f * height / width, labels, 0, canvas);
+        String velText = hudTextFactory.getVelText(uiDataPack.velocity);
+        drawTextWithBorder(velText, .175f * width, height * .5f, Paint.Align.RIGHT, canvas);
     }
 
     public void setAdvancedMode(boolean advancedMode) {

@@ -27,7 +27,7 @@ public class HudTextFactory {
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
     private DecimalFormat coordinatesFormat = new DecimalFormat(".######");
-    private DecimalFormat degreesFormat = new DecimalFormat(".#");
+    private DecimalFormat decimalFormat = new DecimalFormat(".#");
 
     public HudTextFactory(Context context) {
         latency = context.getString(R.string.latency);
@@ -66,10 +66,14 @@ public class HudTextFactory {
     }
 
     public String getYawText(float yaw) {
-        return degreesFormat.format(yaw / Math.PI * 180) + "╦";
+        return decimalFormat.format(yaw / Math.PI * 180) + "╦";
     }
 
     public String getAltText(float altitude) {
-        return degreesFormat.format(altitude) + "m";
+        return decimalFormat.format(altitude) + "m";
+    }
+
+    public String getVelText(float velocity) {
+        return decimalFormat.format(velocity) + "m/s";
     }
 }

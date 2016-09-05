@@ -62,7 +62,7 @@ public class ControlPadFragment extends Fragment implements StreamConnection.OnN
     public void onResume() {
         super.onResume();
         streamConnection.start();
-        timer.scheduleAtFixedRate(timerUpdateTask, 0, 50);
+        timer.scheduleAtFixedRate(timerUpdateTask, 0, 40);
     }
 
     @Override
