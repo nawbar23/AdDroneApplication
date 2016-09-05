@@ -66,7 +66,7 @@ public class HudTextFactory {
     }
 
     public String getYawText(float yaw) {
-        return decimalFormat.format(yaw / Math.PI * 180) + "╦";
+        return decimalFormat.format(yaw / Math.PI * 180) + "°";
     }
 
     public String getAltText(float altitude) {

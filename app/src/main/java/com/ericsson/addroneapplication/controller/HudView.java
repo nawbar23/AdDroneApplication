@@ -39,6 +39,7 @@ public class HudView extends View {
     private float borderWidth;
     private float textHeight;
 
+    private float barSize;
 
     private HudTextFactory hudTextFactory;
     private UIDataPack uiDataPack;
@@ -56,12 +57,12 @@ public class HudView extends View {
 
         textPaint = new Paint();
         textPaint.setColor(Color.BLUE);
-        textPaint.setTextSize(32);
+        textPaint.setTextSize(36);
         textPaint.setTypeface(Typeface.DEFAULT_BOLD);
 
         borderTextPaint = new Paint();
-        borderTextPaint.setColor(Color.WHITE);
-        borderTextPaint.setTextSize(32);
+        borderTextPaint.setColor(Color.BLACK);
+        borderTextPaint.setTextSize(36);
         borderTextPaint.setTypeface(Typeface.DEFAULT_BOLD);
         borderTextPaint.setStyle(Paint.Style.STROKE);
         borderTextPaint.setStrokeWidth(2);
@@ -83,14 +84,15 @@ public class HudView extends View {
 
         float lineWidth = 6;
         borderWidth = 2;
-        float borderLineWidth = lineWidth + 2 * borderWidth;
 
         linePaint.setStrokeWidth(lineWidth);
-        borderLinePaint.setStrokeWidth(borderLineWidth);
+        borderLinePaint.setStrokeWidth(lineWidth + 2 * borderWidth);
 
         Rect rect = new Rect();
         borderTextPaint.getTextBounds("xX1", 0, 3, rect);
         textHeight = rect.height();
+
+        barSize = .075f * height / width;
     }
 
     @Override
@@ -106,13 +108,13 @@ public class HudView extends View {
         drawTextWithBorder(autopilotString, 10, 10 + 3 * textHeight, Paint.Align.LEFT, canvas);
 
         // draw battery state
-        String batteryString = hudTextFactory.getBatteryStateString(uiDataPack.battery, 10);
-        drawTextWithBorder(batteryString, width * .5f, 10 + textHeight, Paint.Align.CENTER, canvas);
+        //String batteryString = hudTextFactory.getBatteryStateString(uiDataPack.battery, 10);
+        //drawTextWithBorder(batteryString, width * .5f, 10 + textHeight, Paint.Align.CENTER, canvas);
 
         // draw current time
         String dateString = hudTextFactory.getDateString();
         textPaint.getTextBounds(dateString, 0, dateString.length(), drawingRect);
-        drawTextWithBorder(dateString, width, 10 + textHeight, Paint.Align.RIGHT, canvas);
+        drawTextWithBorder(dateString, width * .5f, 10 + textHeight, Paint.Align.RIGHT, canvas);
 
         // draw current position
         String positionString = hudTextFactory.getPositionString(uiDataPack.lat, uiDataPack.lng);
@@ -138,13 +140,12 @@ public class HudView extends View {
      * @param y y coordinate of the line
      * @param divX x coordinate of first dividing line
      * @param divD length between neighbouring dividing lines
-     * @param divH height of the dividing lines
      * @param canvas canvas to draw on
      */
-    private void drawHorizontalDividedLine(float x1, float x2, float y, float divX, float divD, float divH, String[] labels, int pos, Canvas canvas) {
+    private void drawHorizontalDividedLine(float x1, float x2, float y, float divX, float divD, String[] labels, int pos, Canvas canvas) {
         float pHeight = y * height;
-        float pDivY1 = (y - divH / 2) * height;
-        float pDivY2 = (y + divH / 2) * height;
+        float pDivY1 = (y - barSize / 2) * height;
+        float pDivY2 = (y + barSize / 2) * height;
         float px;
 
         canvas.drawLine(width * x1 - borderWidth, pHeight, width * x2 + borderWidth, pHeight, borderLinePaint);
@@ -174,13 +175,12 @@ public class HudView extends View {
      * @param y2 y coordinate of the end of the line
      * @param divY y coordinate of the first dividing line
      * @param divD length between neighbouring dividing lines
-     * @param divW width of the dividing lines
      * @param canvas canvas to draw on
      */
-    private void drawVerticalDividedLine(float x, float y1, float y2, float divY, float divD, float divW, String[] labels, int pos, Canvas canvas) {
+    private void drawVerticalDividedLine(float x, float y1, float y2, float divY, float divD, String[] labels, int pos, Canvas canvas) {
         float pWidth = x * width;
-        float pDivX1 = (x - divW / 2) * width;
-        float pDivX2 = (x + divW / 2) * width;
+        float pDivX1 = (x - barSize / 2) * width;
+        float pDivX2 = (x + barSize / 2) * width;
         float py;
 
         canvas.drawLine(pWidth, y1 * height - borderWidth, pWidth, y2 * height + borderWidth, borderLinePaint);
@@ -225,7 +225,7 @@ public class HudView extends View {
 
         float delta = Math.abs(yaw - firstBar) / PI2;
 
-        drawHorizontalDividedLine(.25f, .75f, .15f, .5f - delta * .5f, .5f * (PI12 / PI2), .075f, YAW_LABELS, firstBarNumber, canvas);
+        drawHorizontalDividedLine(.25f, .75f, .15f, .5f - delta * .5f, .5f * (PI12 / PI2), YAW_LABELS, firstBarNumber, canvas);
         String yawText = hudTextFactory.getYawText(uiDataPack.yaw);
         drawTextWithBorder(yawText, width * 0.5f, .225f * height + textHeight, Paint.Align.CENTER, canvas);
     }
@@ -241,7 +241,7 @@ public class HudView extends View {
             labels[i] = String.valueOf((firstBarNumber - i) * 10);
         }
 
-        drawVerticalDividedLine(.75f, .25f, .75f, .5f - delta * .5f, .5f * (10f / 50f), .075f * height / width, labels, 0, canvas);
+        drawVerticalDividedLine(.75f, .25f, .75f, .5f - delta * .5f, .5f * (10f / 50f), labels, 0, canvas);
         String altText = hudTextFactory.getAltText(uiDataPack.altitude);
         drawTextWithBorder(altText, .685f * width - textHeight, height * .5f, Paint.Align.RIGHT, canvas);
     }
@@ -257,9 +257,9 @@ public class HudView extends View {
             labels[i] = String.valueOf((firstBarNumber - i) * 2f);
         }
 
-        drawVerticalDividedLine(.25f, .25f, .75f, .5f - delta * .5f, .5f * (2f / 10f), .075f * height / width, labels, 0, canvas);
+        drawVerticalDividedLine(.25f, .25f, .75f, .5f - delta * .5f, .5f * (2f / 10f), labels, 0, canvas);
         String velText = hudTextFactory.getVelText(uiDataPack.velocity);
-        drawTextWithBorder(velText, .175f * width, height * .5f, Paint.Align.RIGHT, canvas);
+        drawTextWithBorder(velText, .325f * width, height * .5f, Paint.Align.LEFT, canvas);
     }
 
     public void setAdvancedMode(boolean advancedMode) {
