@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.ericsson.addroneapplication.model.UIDataPack;
@@ -98,6 +99,7 @@ public class HudView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         // draw drone state
+        Log.i("UDPa", uiDataPack.toString());
 
         // draw ping and autopilot availability
         String pingString = hudTextFactory.getLatencyString(uiDataPack.ping);
@@ -114,7 +116,7 @@ public class HudView extends View {
         // draw current time
         String dateString = hudTextFactory.getDateString();
         textPaint.getTextBounds(dateString, 0, dateString.length(), drawingRect);
-        drawTextWithBorder(dateString, width * .5f, 10 + textHeight, Paint.Align.RIGHT, canvas);
+        drawTextWithBorder(dateString, width * .5f, 10 + textHeight, Paint.Align.CENTER, canvas);
 
         // draw current position
         String positionString = hudTextFactory.getPositionString(uiDataPack.lat, uiDataPack.lng);
@@ -131,6 +133,7 @@ public class HudView extends View {
             updateAltitudeBar(canvas);
 
             // draw tilt line
+            updateHorizon(canvas);
         }
     }
 
@@ -212,7 +215,7 @@ public class HudView extends View {
         canvas.drawText(text, x, y, textPaint);
     }
 
-    public void updateYawBar(Canvas canvas) {
+    private void updateYawBar(Canvas canvas) {
         float yaw = uiDataPack.yaw;
         float leftBound = yaw - PI4;
         if(leftBound < 0) leftBound += Math.PI * 2;
@@ -230,7 +233,7 @@ public class HudView extends View {
         drawTextWithBorder(yawText, width * 0.5f, .225f * height + textHeight, Paint.Align.CENTER, canvas);
     }
 
-    public void updateAltitudeBar(Canvas canvas) {
+    private void updateAltitudeBar(Canvas canvas) {
         float upperBound = uiDataPack.altitude + 25;
         int firstBarNumber = (int)(upperBound / 10);
 
@@ -246,7 +249,7 @@ public class HudView extends View {
         drawTextWithBorder(altText, .685f * width - textHeight, height * .5f, Paint.Align.RIGHT, canvas);
     }
 
-    public void updateVelocityBar(Canvas canvas) {
+    private void updateVelocityBar(Canvas canvas) {
         float upperBound = uiDataPack.velocity + 5;
         int firstBarNumber = (int)(upperBound / 2f);
 
@@ -260,6 +263,23 @@ public class HudView extends View {
         drawVerticalDividedLine(.25f, .25f, .75f, .5f - delta * .5f, .5f * (2f / 10f), labels, 0, canvas);
         String velText = hudTextFactory.getVelText(uiDataPack.velocity);
         drawTextWithBorder(velText, .325f * width, height * .5f, Paint.Align.LEFT, canvas);
+    }
+
+    public void updateHorizon(Canvas canvas) {
+        float scale = height / PI4;
+        float y = height * .5f + uiDataPack.pitch * scale;
+
+        float lineMax = width * .25f;
+        float lineMin = width * .05f;
+
+        float dy = (float)Math.sin(uiDataPack.roll);
+        float dx = (float)Math.cos(uiDataPack.roll);
+
+        canvas.drawLine(width * .5f - dx * lineMax, y - dy * lineMax, width * .5f - dx * lineMin, y - dy * lineMin, borderLinePaint);
+        canvas.drawLine(width * .5f - dx * lineMax, y - dy * lineMax, width * .5f - dx * lineMin, y - dy * lineMin, linePaint);
+
+        canvas.drawLine(width * .5f + dx * lineMin, y + dy * lineMin, width * .5f + dx * lineMax, y + dy * lineMax, borderLinePaint);
+        canvas.drawLine(width * .5f + dx * lineMin, y + dy * lineMin, width * .5f + dx * lineMax, y + dy * lineMax, linePaint);
     }
 
     public void setAdvancedMode(boolean advancedMode) {

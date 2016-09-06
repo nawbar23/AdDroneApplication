@@ -43,4 +43,9 @@ public class UIDataPack {
         // TODO: compute battery percentage
         this.battery = (float)debugData.getBattery() / 255;
     }
+
+    @Override
+    public String toString() {
+        return "pitch: " + pitch + " roll: " + roll;
+    }
 }
