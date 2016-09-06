@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.ericsson.addroneapplication.comunication.data.AutopilotData;
 import com.ericsson.addroneapplication.comunication.data.ControlData;
+import com.ericsson.addroneapplication.comunication.data.DebugData;
 import com.ericsson.addroneapplication.comunication.messages.AutopilotMessage;
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
 import com.ericsson.addroneapplication.comunication.messages.DebugMessage;
@@ -118,6 +119,10 @@ public class CommunicationHandler implements
             case DEBUG_MESSAGE:
                 if (((DebugMessage)message).getValue().isStopState()) {
                     Log.e(DEBUG_TAG, "Stop state received, disconnected");
+                    handleStopState();
+                } else if (((DebugMessage)message).getValue().getControllerState() == DebugData.ControllerState.ERROR_CONNECTION
+                    && tcpSocket.getState() == TcpSocket.State.DISCONNECTING) {
+                    // TODO fix this shit!
                     handleStopState();
                 }
                 break;
