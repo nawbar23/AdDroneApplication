@@ -1,6 +1,7 @@
 package com.ericsson.addroneapplication.connection;
 
 import android.app.DialogFragment;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -34,13 +35,16 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
 
     private AdDroneService service = null;
 
+    private ProgressDialog progressDialog;
+
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder binderService) {
             AdDroneService.LocalBinder binder = (AdDroneService.LocalBinder) binderService;
             service = binder.getService();
             try {
-                service.attemptConnection(connectionsListAdapter.getChosenConnection());
+                showProgressDialog();
+                service.attemptConnection(connectionsListAdapter.getChosenConnection(), progressDialog);
             } catch (Exception e) {
                 Log.e(DEBUG_TAG, e.getMessage() + " this should never happen here!");
             }
@@ -79,7 +83,6 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         buttonAdd = (Button) findViewById(R.id.button_add);
         listViewConnections = (ListView) findViewById(R.id.list_connection);
 
-        // fill spinner with options
         connectionsListAdapter = new ConnectionsListAdapter(this, R.layout.connection_list_row, startViewModel.getConnectionInfoMap()) {
             @Override
             public void onEdit(String connectionInfoName) {
@@ -123,6 +126,10 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
                 }
             }
         });
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Connecting...");
+        progressDialog.setCancelable(false);
     }
 
     @Override
@@ -137,10 +144,21 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
     private void onConnect(ConnectionInfo connectionInfo) {
         Log.e(DEBUG_TAG, "onConnect, " + connectionInfo.toString());
         if (service != null) {
-            service.attemptConnection(connectionInfo);
+            showProgressDialog();
+            service.attemptConnection(connectionInfo, progressDialog);
         } else {
             bindService(new Intent(StartActivity.this, AdDroneService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         }
+    }
+
+    private void showProgressDialog() {
+        if (!progressDialog.isShowing())
+            progressDialog.show();
+    }
+
+    private void hideProgressDialog() {
+        if (progressDialog.isShowing())
+            progressDialog.dismiss();
     }
 
     @Override
