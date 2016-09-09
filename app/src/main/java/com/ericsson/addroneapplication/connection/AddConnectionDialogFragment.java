@@ -1,4 +1,4 @@
-package com.ericsson.addroneapplication;
+package com.ericsson.addroneapplication.connection;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -15,6 +15,9 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.ericsson.addroneapplication.R;
+import com.ericsson.addroneapplication.model.ConnectionInfo;
+
 import java.util.regex.Pattern;
 
 /**
@@ -25,6 +28,9 @@ public class AddConnectionDialogFragment extends DialogFragment {
     private AddConnectionDialogListener listener = null;
     private EditText editTextName;
     private EditText editTextIp;
+
+    private String name = null;
+    private ConnectionInfo connectionInfo = null;
 
     private Pattern ipPattern = Pattern.compile("(?:[0-9]+\\.){3}[0-9]+");
 
@@ -91,6 +97,11 @@ public class AddConnectionDialogFragment extends DialogFragment {
         }
     };
 
+    public void setInitialConnection(String name, ConnectionInfo connectionInfo) {
+        this.name = name;
+        this.connectionInfo = connectionInfo;
+    }
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -129,11 +140,18 @@ public class AddConnectionDialogFragment extends DialogFragment {
                             if (! ipPattern.matcher(editTextIp.getText().toString()).matches()) {
                                 Toast.makeText(getActivity(), R.string.invalid_ip_format, Toast.LENGTH_LONG).show();
                             } else {
-                                listener.onAddConnection(
-                                        editTextName.getText().toString(),
-                                        editTextIp.getText().toString(),
-                                        Integer.parseInt(editTextPort.getText().toString())
-                                );
+                                if (getTag().equalsIgnoreCase("MODIFY_DIALOG")) {
+                                    listener.onModifyConnection(
+                                            name,
+                                            editTextName.getText().toString(),
+                                            editTextIp.getText().toString(),
+                                            Integer.parseInt(editTextPort.getText().toString()));
+                                } else {
+                                    listener.onAddConnection(
+                                            editTextName.getText().toString(),
+                                            editTextIp.getText().toString(),
+                                            Integer.parseInt(editTextPort.getText().toString()));
+                                }
                                 alertDialog.dismiss();
                             }
                         } else {
@@ -148,6 +166,12 @@ public class AddConnectionDialogFragment extends DialogFragment {
         editTextIp = (EditText) root.findViewById(R.id.edit_text_ip_address);
         editTextPort = (EditText) root.findViewById(R.id.edit_text_port);
 
+        if (name != null && connectionInfo != null){
+            editTextName.setText(name);
+            editTextIp.setText(connectionInfo.getIpAddress());
+            editTextPort.setText(String.valueOf(connectionInfo.getPort()));
+        }
+
         editTextIp.setFilters(new InputFilter[]{ipFilter});
         editTextPort.setFilters(new InputFilter[]{portFilter});
 
@@ -156,5 +180,6 @@ public class AddConnectionDialogFragment extends DialogFragment {
 
     interface AddConnectionDialogListener {
         void onAddConnection(String name, String ip, int port);
+        void onModifyConnection(String name, String newName, String ip, int port);
     }
 }

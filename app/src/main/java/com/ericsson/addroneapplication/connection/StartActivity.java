@@ -1,4 +1,4 @@
-package com.ericsson.addroneapplication;
+package com.ericsson.addroneapplication.connection;
 
 import android.app.DialogFragment;
 import android.content.ComponentName;
@@ -15,32 +15,35 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.Spinner;
+import android.widget.ListView;
 import android.widget.Toast;
 
+import com.ericsson.addroneapplication.R;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 import com.ericsson.addroneapplication.service.AdDroneService;
 import com.ericsson.addroneapplication.settings.SettingsActivity;
 import com.ericsson.addroneapplication.viewmodel.StartViewModel;
 
-import java.util.ArrayList;
-
 public class StartActivity extends AppCompatActivity implements AddConnectionDialogFragment.AddConnectionDialogListener {
 
     private static final String DEBUG_TAG = "AdDrone:" + StartActivity.class.getSimpleName();
 
-    StartViewModel startViewModel;
+    private StartViewModel startViewModel;
 
     private AdDroneService service = null;
-    private Spinner spinnerConnection;
+
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder binderService) {
             AdDroneService.LocalBinder binder = (AdDroneService.LocalBinder) binderService;
             service = binder.getService();
-            service.attemptConnection(getSelectedConnection());
+            try {
+                service.attemptConnection(connectionsListAdapter.getChosenConnection());
+            } catch (Exception e) {
+                Log.e(DEBUG_TAG, e.getMessage() + " this should never happen here!");
+            }
         }
 
         @Override
@@ -48,6 +51,9 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
             Log.e(DEBUG_TAG, "Disconnected !!!");
         }
     };
+
+    private ListView listViewConnections;
+    private ConnectionsListAdapter connectionsListAdapter;
     private Button buttonConnect;
     private Button buttonAdd;
 
@@ -56,36 +62,65 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         Log.e(DEBUG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
-        // set default settings
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if(sharedPreferences.getString("saved_connections", "[]").equals("[]")) {
-            sharedPreferences.edit().putString("saved_connections", "[{ name=\"vpn\", connectionInfo={ ipAddress=\"1.1.1.1\", port=\"1\" } }]").apply();
-        }
-
-        setContentView(R.layout.activity_start);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        // find views
-        spinnerConnection = (Spinner) findViewById(R.id.spinner_connection);
-        buttonConnect = (Button) findViewById(R.id.button_connect);
-        buttonAdd = (Button) findViewById(R.id.button_add);
-
         startViewModel = new StartViewModel(this);
 
         // start service
         startService(new Intent(this, AdDroneService.class));
 
+        // set default settings
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+        setContentView(R.layout.activity_start);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        // initialize view
+        buttonConnect = (Button) findViewById(R.id.button_connect);
+        buttonAdd = (Button) findViewById(R.id.button_add);
+        listViewConnections = (ListView) findViewById(R.id.list_connection);
+
         // fill spinner with options
-        updateSpinner();
+        connectionsListAdapter = new ConnectionsListAdapter(this, R.layout.connection_list_row, startViewModel.getConnectionInfoMap()) {
+            @Override
+            public void onEdit(String connectionInfoName) {
+                ConnectionInfo connectionInfo = startViewModel.getConnectionInfo(connectionInfoName);
+                AddConnectionDialogFragment addDialogFragment = new AddConnectionDialogFragment();
+                addDialogFragment.setInitialConnection(connectionInfoName, connectionInfo);
+                addDialogFragment.show(getFragmentManager(), "MODIFY_DIALOG");
+            }
+
+            @Override
+            public void onDelete(String connectionInfoName) {
+                startViewModel.removeConnection(connectionInfoName);
+                connectionsListAdapter.remove(connectionInfoName);
+            }
+        };
+        connectionsListAdapter.setChosenRowValue(startViewModel.getLastChosenConnectionName());
+        listViewConnections.setAdapter(connectionsListAdapter);
+        listViewConnections.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                connectionsListAdapter.onItemClick(parent, view, position, id);
+                startViewModel.setLastChosenConnectionName(connectionsListAdapter.getItem(position));
+            }
+        });
 
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DialogFragment addDialogFragment = new AddConnectionDialogFragment();
                 addDialogFragment.show(getFragmentManager(), "ADD_DIALOG");
+            }
+        });
+
+        buttonConnect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    onConnect(connectionsListAdapter.getChosenConnection());
+                } catch (Exception e) {
+                    Toast.makeText(StartActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -108,35 +143,6 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         }
     }
 
-    private void updateSpinner() {
-        ArrayList<String> connections = startViewModel.getConnectionInfoNames();
-        if(connections.size() == 0) {
-            buttonConnect.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(StartActivity.this, R.string.add_one_to_connect, Toast.LENGTH_LONG).show();
-                }
-            });
-        } else {
-            buttonAdd.setEnabled(true);
-            buttonConnect.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onConnect(getSelectedConnection());
-                }
-            });
-        }
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, connections);
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerConnection.setAdapter(adapter);
-    }
-
-    private ConnectionInfo getSelectedConnection() {
-        return startViewModel.getConnectionInfo(StartViewModel.connectionNameToId(spinnerConnection.getSelectedItem().toString()));
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -151,7 +157,7 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        // TODO define rest of menu items: Exit, Add, Remove
+        // TODO define rest of menu items: Exit
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
@@ -164,8 +170,14 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
 
     @Override
     public void onAddConnection(String name, String ip, int port) {
-        Log.i(DEBUG_TAG, "Adding new connection " + name + ": " + ip + ":" + port);
         startViewModel.addConnection(name, ip, port);
-        updateSpinner();
+        connectionsListAdapter.add(name);
+    }
+
+    @Override
+    public void onModifyConnection(String name, String newName, String ip, int port) {
+        startViewModel.modifyConnection(name, newName, ip, port);
+        connectionsListAdapter.remove(name);
+        connectionsListAdapter.add(newName);
     }
 }

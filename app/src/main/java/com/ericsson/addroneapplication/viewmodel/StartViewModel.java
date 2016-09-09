@@ -22,6 +22,7 @@ import java.util.Map;
 public class StartViewModel implements ViewModel {
 
     private SharedPreferences preferences;
+
     private Map<String, ConnectionInfo> connectionInfoMap;
     private JSONArray jsonArray;
 
@@ -46,8 +47,13 @@ public class StartViewModel implements ViewModel {
         }
     }
 
-    public static String connectionNameToId(String name) {
-        return name.substring(0, name.lastIndexOf('(') - 1);
+    public void setLastChosenConnectionName(String name) {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("last_chosen_connection", name);
+        editor.apply();
+    }
+    public String getLastChosenConnectionName() {
+         return preferences.getString("last_chosen_connection", null);
     }
 
     public void addConnection(String name, String ip, int port) {
@@ -66,6 +72,34 @@ public class StartViewModel implements ViewModel {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void removeConnection(String connectionInfoName) {
+        connectionInfoMap.remove(connectionInfoName);
+
+        try {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                if (jsonObject.getString("name").equalsIgnoreCase(connectionInfoName)) {
+                    jsonArray.remove(i);
+                    break;
+                }
+            }
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("saved_connections", jsonArray.toString());
+            editor.apply();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void modifyConnection(String name, String newName, String ip, int port) {
+        removeConnection(name);
+        addConnection(newName, ip, port);
+    }
+
+    public Map<String, ConnectionInfo> getConnectionInfoMap() {
+        return connectionInfoMap;
     }
 
     public ArrayList<String> getConnectionInfoNames() {

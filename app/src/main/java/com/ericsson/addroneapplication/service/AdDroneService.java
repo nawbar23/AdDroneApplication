@@ -8,7 +8,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.ericsson.addroneapplication.StartActivity;
+import com.ericsson.addroneapplication.connection.StartActivity;
 import com.ericsson.addroneapplication.comunication.CommunicationHandler;
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
 import com.ericsson.addroneapplication.controller.ControlActivity;
