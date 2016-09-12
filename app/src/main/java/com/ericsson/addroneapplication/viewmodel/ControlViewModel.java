@@ -10,6 +10,7 @@ import com.ericsson.addroneapplication.comunication.messages.CommunicationMessag
 import com.ericsson.addroneapplication.controller.ControlActivity;
 import com.ericsson.addroneapplication.controller.ControlPadView;
 import com.ericsson.addroneapplication.controller.ControlThrottleView;
+import com.ericsson.addroneapplication.controller.IirLowpassFilter;
 import com.ericsson.addroneapplication.model.UIDataPack;
 import com.ericsson.addroneapplication.settings.SettingsActivity;
 
@@ -32,10 +33,17 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
     private long ping = 0;
     private Lock uiDataLock = new ReentrantLock();
 
+    IirLowpassFilter rollFilter, pitchFilter, yawFilter, throttleFilter;
+
     public ControlViewModel(ControlActivity activity) {
         this.activity = activity;
 
         delay = 1000 / SettingsActivity.getIntFromPreferences(activity.getApplicationContext(), SettingsActivity.KEY_PREF_UI_REFRESH_RATE, 2);
+
+        rollFilter = new IirLowpassFilter(0);
+        pitchFilter = new IirLowpassFilter(0);
+        yawFilter = new IirLowpassFilter(0);
+        throttleFilter = new IirLowpassFilter(0);
 
         resume();
     }
@@ -88,10 +96,18 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
         ControlData currentControlData = new ControlData(controlData);
         controlDataLock.unlock();
 
-        return currentControlData;
+        // controller inputs filtering
+        // TODO test this feature
+        ControlData filteredControlData = new ControlData(currentControlData);
+        filteredControlData.setRoll((float)rollFilter.update(currentControlData.getRoll()));
+        filteredControlData.setPitch((float)pitchFilter.update(currentControlData.getPitch()));
+        filteredControlData.setYaw((float)yawFilter.update(currentControlData.getYaw()));
+        filteredControlData.setThrottle((float)throttleFilter.update(currentControlData.getThrottle()));
+
+        return filteredControlData;
     }
 
-    public UIDataPack getcurrentUiDataPack() {
+    public UIDataPack getCurrentUiDataPack() {
         uiDataLock.lock();
         UIDataPack uiDataPack = new UIDataPack(debugData, autopilotData, ping);
         uiDataLock.unlock();
