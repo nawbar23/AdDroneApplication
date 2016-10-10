@@ -24,7 +24,7 @@
 
         <service android:name=".service.AdDroneService" />
         <activity
-            android:name=".StartActivity"
+            android:name=".connection.StartActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >

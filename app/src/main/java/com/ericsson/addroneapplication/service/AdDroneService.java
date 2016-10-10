@@ -1,5 +1,6 @@
 package com.ericsson.addroneapplication.service;
 
+import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
@@ -8,7 +9,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.ericsson.addroneapplication.StartActivity;
+import com.ericsson.addroneapplication.connection.StartActivity;
 import com.ericsson.addroneapplication.comunication.CommunicationHandler;
 import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
 import com.ericsson.addroneapplication.controller.ControlActivity;
@@ -31,6 +32,8 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
     private CommunicationHandler communicationHandler;
 
     private Handler handler;
+
+    ProgressDialog progressDialog;
 
     @Override
     public void onCreate() {
@@ -63,10 +66,11 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
         return communicationHandler;
     }
 
-    public void attemptConnection(ConnectionInfo connectionInfo) {
+    public void attemptConnection(ConnectionInfo connectionInfo, ProgressDialog progressDialog) {
         switch (state) {
             case CONNECTED:
                 Log.e(DEBUG_TAG, "attemptConnection at CONNECTED, starting activity");
+                progressDialog.dismiss();
                 startControlActivity();
                 break;
 
@@ -76,6 +80,8 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
 
             default:
                 Log.e(DEBUG_TAG, "attemptConnection at default, connecting...");
+                state = State.CONNECTING;
+                this.progressDialog = progressDialog;
                 communicationHandler.connect(connectionInfo);
                 break;
         }
@@ -130,6 +136,7 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
     public void onError(String message) {
         if (this.state == State.CONNECTING) {
             this.state = State.DISCONNECTED;
+            progressDialog.dismiss();
         }
         displayToast(message);
     }
@@ -143,6 +150,7 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
     @Override
     public void onConnected() {
         this.state = State.CONNECTED;
+        progressDialog.dismiss();
         startControlActivity();
     }
 

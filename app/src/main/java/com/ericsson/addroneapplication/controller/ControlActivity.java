@@ -46,7 +46,7 @@ public class ControlActivity extends AppCompatActivity {
                 ControlActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        hudView.updateUiDataPack(controlViewModel.getcurrentUiDataPack());
+                        hudView.updateUiDataPack(controlViewModel.getCurrentUiDataPack());
                     }
                 });
             }
