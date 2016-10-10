@@ -48,7 +48,7 @@ public class CommunicationHandler implements
     private ArrayList<CommunicationListener> listeners;
     private Context context;
 
-    private double commFreqequencyDivider;
+    private double commFrequencyDivider;
 
     private TcpSocket tcpSocket;
 
@@ -62,7 +62,7 @@ public class CommunicationHandler implements
 
         this.tcpSocket = new TcpSocket(new StreamProcessor(getSupportedMessagesMap(), this), this);
 
-        this.commFreqequencyDivider = 3.0;
+        this.commFrequencyDivider = 3.0;
 
         double controlFreq = 20;
         double pingFreq = 0.5;
@@ -74,12 +74,12 @@ public class CommunicationHandler implements
             controlFreq = Double.valueOf(prefs.getString(KEY_PREF_CON_CON_FREQ, "20.0"));
             pingFreq = Double.valueOf(prefs.getString(KEY_PREF_CON_PING_FREQ, "0.5"));
             autoFreq = Double.valueOf(prefs.getString(KEY_PREF_CON_AUTO_FREQ, "0.5"));
-            commFreqequencyDivider = Double.valueOf(prefs.getString(KEY_PREF_CON_DIVIDER, "3"));
+            commFrequencyDivider = Double.valueOf(prefs.getString(KEY_PREF_CON_DIVIDER, "3"));
         }
 
-        this.controlTask = new ControlTask(this, tcpSocket, controlFreq, commFreqequencyDivider);
+        this.controlTask = new ControlTask(this, tcpSocket, controlFreq, commFrequencyDivider);
         this.pingPongTask = new PingPongTask(this, tcpSocket, pingFreq);
-        this.autopilotTask = new AutopilotTask(this, tcpSocket, autoFreq, commFreqequencyDivider);
+        this.autopilotTask = new AutopilotTask(this, tcpSocket, autoFreq, commFrequencyDivider);
 
         if (prefs != null) {
             controlTask.setDefaultSolverMode(ControlData.SolverMode.getSolverMode(Byte.valueOf(prefs.getString(KEY_PREF_CON_SOLVER_MODE, "2"))));
@@ -172,7 +172,7 @@ public class CommunicationHandler implements
                     sharedPreferences.getString(KEY_PREF_CON_AUTO_FREQ, "0.5")));
         }
         if (key.equals(KEY_PREF_CON_CON_FREQ)) {
-            commFreqequencyDivider = Double.valueOf(
+            commFrequencyDivider = Double.valueOf(
                     sharedPreferences.getString(KEY_PREF_CON_DIVIDER, "3"));
         }
         if (key.equals(KEY_PREF_CON_CON_FREQ)) {
