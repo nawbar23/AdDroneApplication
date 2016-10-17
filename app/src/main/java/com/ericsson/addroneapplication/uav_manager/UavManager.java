@@ -75,10 +75,9 @@ public class UavManager {
                 commHandler.preformAction(CommHandlerAction.ActionType.APPLICATION_LOOP);
                 break;
 
-            case ERROR:
             case DISCONNECTED:
+            case ERROR:
                 commHandler.disconnectSocket();
-                commHandler.preformAction(CommHandlerAction.ActionType.IDLE);
                 break;
         }
     }

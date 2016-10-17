@@ -138,9 +138,12 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
                 break;
 
             case ERROR:
-                if (this.state == State.CONNECTING) {
-                    this.state = State.DISCONNECTED;
+                if (state == State.CONNECTING) {
+                    state = State.DISCONNECTED;
                     progressDialog.dismiss();
+                } else if (state == State.CONNECTED) {
+                    state = State.DISCONNECTED;
+                    startConnectionActivity();
                 }
                 displayToast(event.getMessage());
                 break;
