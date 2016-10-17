@@ -1,9 +1,9 @@
-package com.ericsson.addroneapplication.comunication.data;
+package com.ericsson.addroneapplication.communication.data;
 
-import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
-import com.ericsson.addroneapplication.comunication.messages.ControlMessage;
+import com.ericsson.addroneapplication.communication.CommMessage;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Created by nbar on 2016-08-19.
@@ -14,8 +14,7 @@ import java.nio.ByteBuffer;
  * - command - command for specific control type
  * - solver mode - (only in MANUAL command), defines way of euler angles interpretation
  */
-
-public class ControlData implements CommunicationMessageValue {
+public class ControlData {
 
     private float roll, pitch, yaw;
     private float throttle;
@@ -40,7 +39,7 @@ public class ControlData implements CommunicationMessageValue {
         this.mode = controlData.mode;
     }
 
-    public ControlData(ControlMessage message) {
+    public ControlData(CommMessage message) {
         ByteBuffer buffer = message.getByteBuffer();
         this.roll = buffer.getFloat();
         this.pitch= buffer.getFloat();
@@ -113,9 +112,18 @@ public class ControlData implements CommunicationMessageValue {
         return result;
     }
 
-    @Override
-    public CommunicationMessage getMessage() {
-        return new ControlMessage(this);
+    public CommMessage getMessage() {
+        byte[] payload = new byte[CommMessage.getPayloadSizeByType(CommMessage.MessageType.CONTROL)];
+        ByteBuffer buffer = ByteBuffer.allocate(payload.length);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.putFloat(getRoll());
+        buffer.putFloat(getPitch());
+        buffer.putFloat(getYaw());
+        buffer.putFloat(getThrottle());
+        buffer.putShort(getCommand().getValue());
+        buffer.put(getMode().getValue());
+        System.arraycopy(buffer.array(), 0, payload, 0, payload.length);
+        return new CommMessage(CommMessage.MessageType.CONTROL, payload);
     }
 
     public enum ControllerCommand {
@@ -189,4 +197,5 @@ public class ControlData implements CommunicationMessageValue {
             else return ANGLE_NO_YAW; // TODO throw some exception
         }
     }
+
 }

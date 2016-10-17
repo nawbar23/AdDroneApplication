@@ -1,6 +1,4 @@
-package com.ericsson.addroneapplication.comunication;
-
-import android.util.Log;
+package com.ericsson.addroneapplication.communication;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -10,23 +8,20 @@ import java.util.TimerTask;
  * Abstract class for all synchronous communication tasks.
  * Controlled by start and stop methods, dynamically responds for frequency change.
  */
+public abstract class CommTask {
+    private static final String DEBUG_TAG = "AdDrone:" + CommTask.class.getSimpleName();
 
-public abstract class CommunicationTask {
-    private static final String DEBUG_TAG = "AdDrone:" + CommunicationTask.class.getSimpleName();
-
-    protected CommunicationHandler communicationHandler;
-    protected TcpSocket tcpSocket;
+    private CommHandler commHandler;
 
     private Timer timer;
 
     // frequency of task [Hz]
-    protected double frequency;
+    private double frequency;
 
     private boolean isRunning;
 
-    CommunicationTask(CommunicationHandler communicationHandler, TcpSocket tcpSocket, double frequency) {
-        this.communicationHandler = communicationHandler;
-        this.tcpSocket = tcpSocket;
+    protected CommTask(CommHandler commHandler, double frequency) {
+        this.commHandler = commHandler;
         this.frequency = frequency;
         this.isRunning = false;
     }
@@ -35,8 +30,8 @@ public abstract class CommunicationTask {
         start(frequency);
     }
 
-    protected void start(double freq) {
-        this.timer = new Timer(getTaskName() + "_timer");
+    private void start(double freq) {
+        timer = new Timer(getTaskName() + "_timer");
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -45,21 +40,21 @@ public abstract class CommunicationTask {
         };
         long period = (long)((1.0 / freq) * 1000);
         long delay = period > 1000 ? period : 1000;
-        Log.e(DEBUG_TAG, "Starting " + getTaskName() + " task with freq: " + String.valueOf(freq) + " Hz, and delay: " + String.valueOf(delay) + " ms");
-        this.timer.scheduleAtFixedRate(timerTask, delay, period);
-        this.isRunning = true;
+        //Log.e(DEBUG_TAG, "Starting " + getTaskName() + " task with freq: " + String.valueOf(freq) + " Hz, and delay: " + String.valueOf(delay) + " ms");
+        timer.scheduleAtFixedRate(timerTask, delay, period);
+        isRunning = true;
     }
 
     public void stop() {
-        this.timer.cancel();
-        this.isRunning = false;
+        timer.cancel();
+        isRunning = false;
     }
 
     public void restart() {
         restart(frequency);
     }
 
-    protected void restart(double freq) {
+    private void restart(double freq) {
         stop();
         start(freq);
     }
@@ -74,7 +69,7 @@ public abstract class CommunicationTask {
         return isRunning;
     }
 
-    abstract String getTaskName();
+    protected abstract String getTaskName();
 
-    abstract void task();
+    protected abstract void task();
 }

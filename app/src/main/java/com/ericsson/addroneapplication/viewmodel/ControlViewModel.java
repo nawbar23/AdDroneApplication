@@ -2,17 +2,17 @@ package com.ericsson.addroneapplication.viewmodel;
 
 import android.util.Log;
 
-import com.ericsson.addroneapplication.comunication.CommunicationHandler;
-import com.ericsson.addroneapplication.comunication.data.AutopilotData;
-import com.ericsson.addroneapplication.comunication.data.ControlData;
-import com.ericsson.addroneapplication.comunication.data.DebugData;
-import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
+import com.ericsson.addroneapplication.communication.data.AutopilotData;
+import com.ericsson.addroneapplication.communication.data.ControlData;
+import com.ericsson.addroneapplication.communication.data.DebugData;
 import com.ericsson.addroneapplication.controller.ControlActivity;
 import com.ericsson.addroneapplication.controller.ControlPadView;
 import com.ericsson.addroneapplication.controller.ControlThrottleView;
 import com.ericsson.addroneapplication.controller.IirLowpassFilter;
 import com.ericsson.addroneapplication.model.UIDataPack;
 import com.ericsson.addroneapplication.settings.SettingsActivity;
+import com.ericsson.addroneapplication.uav_manager.UavEvent;
+import com.ericsson.addroneapplication.uav_manager.UavManager;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -20,7 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Created by Kamil on 8/23/2016.
  */
-public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadChangedListener, ControlThrottleView.setOnControlThrottlePadChangedListener, CommunicationHandler.CommunicationListener {
+public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadChangedListener, ControlThrottleView.setOnControlThrottlePadChangedListener, UavManager.UavManagerListener {
 
     ControlActivity activity;
     long delay;
@@ -118,40 +118,21 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
     // COMMUNICATION LISTENER METHODS
 
     @Override
-    public void onConnected() {
-
-    }
-
-    @Override
-    public void onDisconnected() {
-
-    }
-
-    @Override
-    public void onError(String message) {
-
-    }
-
-    @Override
-    public void onMessageReceived(CommunicationMessage message) {
+    public void handleUavEvent(UavEvent event, UavManager uavManager) {
         uiDataLock.lock();
 
-        switch (message.getMessageId()) {
-            case DEBUG_MESSAGE:
-                debugData = (DebugData) message.getValue();
+        switch (event.getType()) {
+            case DEBUG_UPDATED:
+                debugData = uavManager.getDebugData();
                 break;
-            case AUTOPILOT_MESSAGE:
-                autopilotData = (AutopilotData) message.getValue();
+            case AUTOPILOT_UPDATED:
+                autopilotData = uavManager.getAutopilotData();
+                break;
+            case PING_UPDATED:
+                ping = uavManager.getCommDelay();
                 break;
         }
 
-        uiDataLock.unlock();
-    }
-
-    @Override
-    public void onPingUpdated(long pingDelay) {
-        uiDataLock.lock();
-        ping = pingDelay;
         uiDataLock.unlock();
     }
 }

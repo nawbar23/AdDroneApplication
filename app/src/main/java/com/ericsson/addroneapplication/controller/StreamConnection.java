@@ -69,6 +69,7 @@ public class StreamConnection extends Thread {
 
         } catch (IOException e) {
             e.printStackTrace();
+
         }
 
         if(clientSocket != null)

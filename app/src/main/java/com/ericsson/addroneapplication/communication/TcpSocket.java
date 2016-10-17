@@ -1,8 +1,9 @@
-package com.ericsson.addroneapplication.comunication;
+package com.ericsson.addroneapplication.communication;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.ericsson.addroneapplication.communication.events.SocketErrorEvent;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 
 import java.io.DataInputStream;
@@ -20,8 +21,8 @@ import java.net.Socket;
 public class TcpSocket {
     private static final String DEBUG_TAG = "AdDrone:" + TcpSocket.class.getSimpleName();
 
-    private TcpSocketDataListener dataListener;
-    private TcpSocketEventListener eventListener;
+    private CommHandler commHandler;
+    private CommDispatcher commDispatcher;
     private State state;
 
     private Socket socket;
@@ -33,10 +34,9 @@ public class TcpSocket {
 
     private DataOutputStream outputStream;
 
-    public TcpSocket(TcpSocketDataListener dataListener, TcpSocketEventListener eventListener) {
-        this.dataListener = dataListener;
-        this.eventListener = eventListener;
-
+    public TcpSocket(CommHandler commHandler, CommDispatcher commDispatcher) {
+        this.commHandler = commHandler;
+        this.commDispatcher = commDispatcher;
         this.state = State.DISCONNECTED;
     }
 
@@ -60,28 +60,18 @@ public class TcpSocket {
             outputStream.write(packet, 0, packet.length);
         } catch (IOException e) {
             Log.e(DEBUG_TAG, "Error while sending: " + e.getMessage());
-            eventListener.onError("Error while sending: " + e.getMessage(), true);
+            commHandler.handleCommEvent(new SocketErrorEvent("Error while sending: " + e.getMessage()));
         }
     }
 
-    public interface TcpSocketDataListener {
-        void onPacketReceived(byte[] packet);
-    }
-
-    public interface TcpSocketEventListener {
-        void onConnected();
-        void onDisconnected();
-        void onError(String message, boolean critical);
-    }
-
-    public enum State {
+    private enum State {
         CONNECTED,
         CONNECTING,
         DISCONNECTING,
         DISCONNECTED
     }
 
-    public enum ConnectionThreadResult {
+    private enum ConnectionThreadResult {
         CONNECTION_ERROR,
         CONNECTION_INPUT_STREAM_ERROR,
         CONNECTION_OUTPUT_STREAM_ERROR,
@@ -126,7 +116,7 @@ public class TcpSocket {
             }
 
             state = State.CONNECTED;
-            eventListener.onConnected();
+            commHandler.notifySocketConnected();
 
             try {
                 while(state != State.DISCONNECTED) {
@@ -135,7 +125,7 @@ public class TcpSocket {
                     if (dataSize != -1) {
                         byte[] tempArray = new byte[dataSize];
                         System.arraycopy(buffer, 0, tempArray, 0, dataSize);
-                        dataListener.onPacketReceived(tempArray);
+                        commDispatcher.proceedReceiving(tempArray);
                     }
                 }
                 inputStream.close();
@@ -161,26 +151,22 @@ public class TcpSocket {
             switch (connectionThreadResult) {
                 case CONNECTION_ERROR:
                     Log.e(DEBUG_TAG, "Thread exits with CONNECTION_ERROR");
-                    eventListener.onError("Thread exits with CONNECTION_ERROR", false);
+                    commHandler.handleCommEvent(new SocketErrorEvent("Thread exits with CONNECTION_ERROR"));
                     break;
                 case CONNECTION_INPUT_STREAM_ERROR:
                     Log.e(DEBUG_TAG, "Thread exits with CONNECTION_INPUT_STREAM_ERROR");
-                    eventListener.onError("Thread exits with CONNECTION_INPUT_STREAM_ERROR", true);
-                    eventListener.onDisconnected();
+                    commHandler.handleCommEvent(new SocketErrorEvent("Thread exits with CONNECTION_INPUT_STREAM_ERROR"));
                     break;
                 case CONNECTION_OUTPUT_STREAM_ERROR:
                     Log.e(DEBUG_TAG, "Thread exits with CONNECTION_OUTPUT_STREAM_ERROR");
-                    eventListener.onError("Thread exits with CONNECTION_OUTPUT_STREAM_ERROR", true);
-                    eventListener.onDisconnected();
+                    commHandler.handleCommEvent(new SocketErrorEvent("Thread exits with CONNECTION_OUTPUT_STREAM_ERROR"));
                     break;
                 case RECEIVING_ERROR:
                     Log.e(DEBUG_TAG, "Thread exits with RECEIVING_ERROR");
-                    eventListener.onError("Thread exits with RECEIVING_ERROR", true);
-                    eventListener.onDisconnected();
+                    commHandler.handleCommEvent(new SocketErrorEvent("Thread exits with RECEIVING_ERROR"));
                     break;
                 case SUCCESS:
                     Log.e(DEBUG_TAG, "Thread exits with SUCCESS");
-                    eventListener.onDisconnected();
                     break;
             }
             state = State.DISCONNECTED;

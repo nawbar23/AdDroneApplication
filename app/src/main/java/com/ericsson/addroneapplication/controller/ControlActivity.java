@@ -18,7 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.ericsson.addroneapplication.R;
-import com.ericsson.addroneapplication.comunication.data.AutopilotData;
+import com.ericsson.addroneapplication.communication.data.AutopilotData;
 import com.ericsson.addroneapplication.service.AdDroneService;
 import com.ericsson.addroneapplication.viewmodel.ControlViewModel;
 
@@ -156,7 +156,7 @@ public class ControlActivity extends AppCompatActivity {
         autopilotData.setRelativeAltitude(10.0f);
         autopilotData.setFlags(0);
         Log.e("DDD", "Autopilot event: " + autopilotData.toString());
-        service.getCommunicationHandler().notifyAutopilotEvent(autopilotData);
+        service.getUavManager().notifyAutopilotEvent(autopilotData);
 
         frameLayout1.setLayoutParams(layoutParamsHidden);
         frameLayout2.setLayoutParams(layoutParamsFullscreen);

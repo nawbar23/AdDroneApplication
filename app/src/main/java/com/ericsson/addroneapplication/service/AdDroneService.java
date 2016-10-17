@@ -9,11 +9,12 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.ericsson.addroneapplication.communication.actions.CommHandlerAction;
 import com.ericsson.addroneapplication.connection.StartActivity;
-import com.ericsson.addroneapplication.comunication.CommunicationHandler;
-import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
 import com.ericsson.addroneapplication.controller.ControlActivity;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
+import com.ericsson.addroneapplication.uav_manager.UavEvent;
+import com.ericsson.addroneapplication.uav_manager.UavManager;
 import com.ericsson.addroneapplication.viewmodel.ControlViewModel;
 
 /**
@@ -22,14 +23,14 @@ import com.ericsson.addroneapplication.viewmodel.ControlViewModel;
  * Can be stopped only when state is DISCONNECTED
  */
 
-public class AdDroneService extends Service implements CommunicationHandler.CommunicationListener {
+public class AdDroneService extends Service implements UavManager.UavManagerListener {
     private static final String DEBUG_TAG = "AdDrone:" + AdDroneService.class.getSimpleName();
 
     private final IBinder mBinder = new LocalBinder();
     private State state;
 
-    // main communication handler for internet connection
-    private CommunicationHandler communicationHandler;
+    // main communication handler for UAV
+    private UavManager uavManager;
 
     private Handler handler;
 
@@ -40,8 +41,8 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
         super.onCreate();
         Log.e(DEBUG_TAG, "onCreate");
 
-        this.communicationHandler = new CommunicationHandler(getApplicationContext());
-        this.communicationHandler.registerListener(this);
+        this.uavManager = new UavManager();
+        this.uavManager.registerListener(this);
 
         this.state = State.DISABLED;
 
@@ -58,15 +59,14 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
     public void onDestroy() {
         super.onDestroy();
         Log.e(DEBUG_TAG, "onDestroy");
-
-        this.communicationHandler.unregisterListener(this);
+        uavManager.unregisterListener(this);
     }
 
-    public CommunicationHandler getCommunicationHandler() {
-        return communicationHandler;
+    public UavManager getUavManager() {
+        return uavManager;
     }
 
-    public void attemptConnection(ConnectionInfo connectionInfo, ProgressDialog progressDialog) {
+    public void attemptConnection(ConnectionInfo connectionInfo, ProgressDialog dialog) {
         switch (state) {
             case CONNECTED:
                 Log.e(DEBUG_TAG, "attemptConnection at CONNECTED, starting activity");
@@ -81,15 +81,15 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
             default:
                 Log.e(DEBUG_TAG, "attemptConnection at default, connecting...");
                 state = State.CONNECTING;
-                this.progressDialog = progressDialog;
-                communicationHandler.connect(connectionInfo);
+                progressDialog = dialog;
+                uavManager.getCommHandler().connectSocket(connectionInfo);
                 break;
         }
     }
 
     public void attemptDisconnection() {
-        this.state = State.DISCONNECTING;
-        this.communicationHandler.disconnect();
+        state = State.DISCONNECTING;
+        uavManager.preformAction(CommHandlerAction.ActionType.DISCONNECT);
     }
 
     private void startControlActivity() {
@@ -106,52 +106,49 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
         startActivity(intent);
     }
 
-    public void registerListener(CommunicationHandler.CommunicationListener listener) {
-        communicationHandler.registerListener(listener);
+    public void registerListener(UavManager.UavManagerListener listener) {
+        uavManager.registerListener(listener);
     }
 
-    public void unregisterListener(CommunicationHandler.CommunicationListener listener) {
-        communicationHandler.registerListener(listener);
+    public void unregisterListener(UavManager.UavManagerListener listener) {
+        uavManager.registerListener(listener);
     }
 
     public void setControlViewModel(ControlViewModel controlViewModel) {
-        communicationHandler.setControlViewModel(controlViewModel);
+        uavManager.setControlViewModel(controlViewModel);
     }
 
     public State getState() {
         return state;
     }
 
-    @Override
-    public void onPingUpdated(long pingDelay) {
-
-    }
 
     @Override
-    public void onMessageReceived(CommunicationMessage message) {
-        Log.e(DEBUG_TAG, message.getValue().toString());
-    }
+    public void handleUavEvent(UavEvent event, UavManager uavManager) {
+        switch (event.getType()) {
+            case CONNECTED:
+                state = State.CONNECTED;
+                progressDialog.dismiss();
+                startControlActivity();
+                break;
 
-    @Override
-    public void onError(String message) {
-        if (this.state == State.CONNECTING) {
-            this.state = State.DISCONNECTED;
-            progressDialog.dismiss();
+            case DISCONNECTED:
+                state = State.DISCONNECTED;
+                startConnectionActivity();
+                break;
+
+            case ERROR:
+                if (this.state == State.CONNECTING) {
+                    this.state = State.DISCONNECTED;
+                    progressDialog.dismiss();
+                }
+                displayToast(event.getMessage());
+                break;
+
+            case DEBUG_UPDATED:
+            case AUTOPILOT_UPDATED:
+            case PING_UPDATED:
         }
-        displayToast(message);
-    }
-
-    @Override
-    public void onDisconnected() {
-        this.state = State.DISCONNECTED;
-        startConnectionActivity();
-    }
-
-    @Override
-    public void onConnected() {
-        this.state = State.CONNECTED;
-        progressDialog.dismiss();
-        startControlActivity();
     }
 
     private void runOnUiThread(Runnable runnable) {
@@ -159,12 +156,14 @@ public class AdDroneService extends Service implements CommunicationHandler.Comm
     }
 
     public void displayToast(final String message) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-            }
-        });
+        if (message != null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     private enum State {

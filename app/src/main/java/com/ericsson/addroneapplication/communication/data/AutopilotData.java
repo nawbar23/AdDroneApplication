@@ -1,9 +1,9 @@
-package com.ericsson.addroneapplication.comunication.data;
+package com.ericsson.addroneapplication.communication.data;
 
-import com.ericsson.addroneapplication.comunication.messages.AutopilotMessage;
-import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
+import com.ericsson.addroneapplication.communication.CommMessage;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Created by nbar on 2016-08-22.
@@ -14,7 +14,7 @@ import java.nio.ByteBuffer;
  * - flags:
  * ..............
  */
-public class AutopilotData implements CommunicationMessageValue {
+public class AutopilotData {
 
     private double latitude, longitude;
     private float relativeAltitude;
@@ -25,7 +25,7 @@ public class AutopilotData implements CommunicationMessageValue {
 
     }
 
-    public AutopilotData(AutopilotMessage message) {
+    public AutopilotData(CommMessage message) {
         ByteBuffer buffer = message.getByteBuffer();
         this.latitude = buffer.getDouble();
         this.longitude = buffer.getDouble();
@@ -72,9 +72,15 @@ public class AutopilotData implements CommunicationMessageValue {
         return result;
     }
 
-    @Override
-    public CommunicationMessage getMessage() {
-        return new AutopilotMessage(this);
+    public CommMessage getMessage() {
+        byte[] payload = new byte[CommMessage.getPayloadSizeByType(CommMessage.MessageType.AUTOPILOT)];
+        ByteBuffer buffer = ByteBuffer.allocate(payload.length);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.putDouble(getLatitude());
+        buffer.putDouble(getLongitude());
+        buffer.putFloat(getRelativeAltitude());
+        buffer.putInt(getFlags());
+        return new CommMessage(CommMessage.MessageType.AUTOPILOT, payload);
     }
 
     public boolean isEqual(AutopilotData autopilotData) {

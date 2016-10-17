@@ -1,7 +1,7 @@
 package com.ericsson.addroneapplication.model;
 
-import com.ericsson.addroneapplication.comunication.data.AutopilotData;
-import com.ericsson.addroneapplication.comunication.data.DebugData;
+import com.ericsson.addroneapplication.communication.data.AutopilotData;
+import com.ericsson.addroneapplication.communication.data.DebugData;
 
 /**
  * Created by Kamil on 8/25/2016.

@@ -1,9 +1,8 @@
-package com.ericsson.addroneapplication.comunication.data;
+package com.ericsson.addroneapplication.communication.data;
 
 import android.util.Log;
 
-import com.ericsson.addroneapplication.comunication.messages.CommunicationMessage;
-import com.ericsson.addroneapplication.comunication.messages.DebugMessage;
+import com.ericsson.addroneapplication.communication.CommMessage;
 
 import java.nio.ByteBuffer;
 
@@ -18,8 +17,7 @@ import java.nio.ByteBuffer;
  * GPS fix | GPS 3D fix | low. bat. volt. | errorHandling | autopilotUsed | solver1 | solver2
  * - battery voltage [volts]
  */
-
-public class DebugData implements CommunicationMessageValue {
+public class DebugData {
     private static final String DEBUG_TAG = "AdDrone:" + DebugData.class.getSimpleName();
 
     private float roll, pitch, yaw;
@@ -30,7 +28,7 @@ public class DebugData implements CommunicationMessageValue {
     private float vLoc;
 
     private ControllerState controllerState;
-    private Flag flags;
+    private Flags flags;
 
     private byte battery;
 
@@ -38,7 +36,7 @@ public class DebugData implements CommunicationMessageValue {
 
     }
 
-    public DebugData(DebugMessage message) {
+    public DebugData(final CommMessage message) {
         ByteBuffer buffer = message.getByteBuffer();
         this.roll = buffer.getFloat();
         this.pitch = buffer.getFloat();
@@ -48,7 +46,7 @@ public class DebugData implements CommunicationMessageValue {
         this.relativeAltitude = buffer.getFloat();
         this.vLoc = buffer.getFloat();
         this.controllerState = ControllerState.getControllerState(buffer.getShort());
-        this.flags = new Flag(8, buffer.get());
+        this.flags = new Flags(8, buffer.get());
         this.battery = buffer.get();
     }
 
@@ -117,11 +115,11 @@ public class DebugData implements CommunicationMessageValue {
     }
 
     public byte getFlags() {
-        return (byte)flags.getFlag();
+        return (byte)flags.getFlags();
     }
 
     public void setFlags(byte flags) {
-        this.flags = new Flag(8, flags);
+        this.flags = new Flags(8, flags);
     }
 
     public boolean getFlagState(FlagId id) {
@@ -135,7 +133,7 @@ public class DebugData implements CommunicationMessageValue {
 
     public void setFLagState(FlagId id, boolean state) {
         try {
-            flags.setFlagState(id.getValue(), state);
+            flags.setFlagsState(id.getValue(), state);
         } catch (Exception e) {
             Log.e(DEBUG_TAG, e.getMessage());
         }
@@ -162,8 +160,7 @@ public class DebugData implements CommunicationMessageValue {
         return result;
     }
 
-    @Override
-    public CommunicationMessage getMessage() {
+    public CommMessage getMessage() {
         return null;
     }
 
