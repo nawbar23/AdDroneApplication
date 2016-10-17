@@ -17,6 +17,11 @@ public class SignalData {
         this.parameterValue = parameter.getValue();
     }
 
+    public SignalData(Command command, int parameterValue) {
+        this.commandValue = command.getValue();
+        this.parameterValue = parameterValue;
+    }
+
     public SignalData(CommMessage message) {
         ByteBuffer buffer = message.getByteBuffer();
         this.commandValue = buffer.getInt();
@@ -29,6 +34,10 @@ public class SignalData {
 
     public Parameter getParameter() {
         return Parameter.getParameter(parameterValue);
+    }
+
+    public int getParameterValue() {
+        return parameterValue;
     }
 
     public boolean equals(SignalData command) {

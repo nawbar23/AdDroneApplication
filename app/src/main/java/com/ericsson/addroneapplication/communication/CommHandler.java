@@ -1,10 +1,13 @@
 package com.ericsson.addroneapplication.communication;
 
+import android.util.Log;
+
 import com.ericsson.addroneapplication.communication.actions.*;
 import com.ericsson.addroneapplication.communication.data.SignalData;
 import com.ericsson.addroneapplication.communication.events.CommEvent;
 import com.ericsson.addroneapplication.communication.events.MessageEvent;
 import com.ericsson.addroneapplication.communication.events.SocketErrorEvent;
+import com.ericsson.addroneapplication.controller.StreamConnection;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 import com.ericsson.addroneapplication.uav_manager.UavEvent;
 import com.ericsson.addroneapplication.uav_manager.UavManager;
@@ -35,6 +38,7 @@ public class CommHandler {
     }
 
     public void disconnectSocket() {
+        pingTask.stop();
         socket.disconnect();
     }
 
@@ -43,7 +47,7 @@ public class CommHandler {
             commHandlerAction = actionFactory(actionType);
             commHandlerAction.start();
         } else {
-            throw new Exception("Previous action not ready, aborting...");
+            throw new Exception("Previous action not ready at state: " + commHandlerAction.getActionName() + ", aborting...");
         }
     }
 
@@ -55,7 +59,7 @@ public class CommHandler {
                 if (((MessageEvent)event).getMessageType() == CommMessage.MessageType.SIGNAL) {
                     SignalData signalData = new SignalData(((MessageEvent)event).getMessage());
                     if (signalData.getCommand() == SignalData.Command.PING_VALUE) {
-                        handlePongReception(signalData);
+                        uavManager.setCommDelay(handlePongReception(signalData));
                         return;
                     }
                 }
@@ -113,7 +117,13 @@ public class CommHandler {
         return pingTask;
     }
 
+    private SignalData sentPing;
+    private long timestamp;
+
+    private PingTaskState state = PingTaskState.CONFIRMED;
+
     private CommTask pingTask = new CommTask(this, 0.5) {
+
         @Override
         protected String getTaskName() {
             return "ping_task";
@@ -122,10 +132,34 @@ public class CommHandler {
         @Override
         protected void task() {
             System.out.println("Pinging...");
+            switch (state) {
+                case CONFIRMED:
+                    sentPing = new SignalData(SignalData.Command.PING_VALUE, (int) (Math.random() * 1000000000));
+                    send(sentPing.getMessage());
+                    timestamp = System.currentTimeMillis();
+                    break;
+
+                case WAITING:
+                    Log.e(getTaskName(), "Ping receiving timeout");
+                    state = PingTaskState.CONFIRMED;
+                    break;
+            }
         }
     };
 
-    private void handlePongReception(final SignalData signalData) {
-        System.out.println("Pong received...");
+    private long handlePongReception(final SignalData pingPongMessage) {
+        if (pingPongMessage.getParameterValue() == sentPing.getParameterValue()) {
+            // valid ping measurement, compute ping time
+            state = PingTaskState.CONFIRMED;
+            return (System.currentTimeMillis() - timestamp) / 2;
+        } else {
+            Log.e(pingTask.getTaskName(), "Pong key does not match to the ping key!");
+            return 0;
+        }
+    }
+
+    private enum PingTaskState {
+        WAITING,
+        CONFIRMED
     }
 }

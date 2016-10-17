@@ -115,8 +115,6 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
         return uiDataPack;
     }
 
-    // COMMUNICATION LISTENER METHODS
-
     @Override
     public void handleUavEvent(UavEvent event, UavManager uavManager) {
         uiDataLock.lock();

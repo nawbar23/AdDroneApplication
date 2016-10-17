@@ -158,6 +158,7 @@ public class UavManager {
 
     public void setCommDelay(long commDelay) {
         this.commDelay = commDelay;
+        notifyUavEvent(new UavEvent(UavEvent.Type.PING_UPDATED));
     }
 
     public ControlData getControlData() {
