@@ -92,6 +92,12 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
         uavManager.preformAction(CommHandlerAction.ActionType.DISCONNECT);
     }
 
+    public void attemptFlightLoop() {
+        if (state == State.CONNECTED) {
+            uavManager.preformAction(CommHandlerAction.ActionType.FLIGHT_LOOP);
+        }
+    }
+
     private void startControlActivity() {
         Intent intent = new Intent(getApplicationContext(), ControlActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -148,9 +154,9 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
                 displayToast(event.getMessage());
                 break;
 
-            case DEBUG_UPDATED:
-            case AUTOPILOT_UPDATED:
-            case PING_UPDATED:
+            case MESSAGE:
+                displayToast(event.getMessage());
+                break;
         }
     }
 

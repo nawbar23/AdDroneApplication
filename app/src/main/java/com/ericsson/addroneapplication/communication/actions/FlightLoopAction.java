@@ -1,7 +1,6 @@
 package com.ericsson.addroneapplication.communication.actions;
 
 import com.ericsson.addroneapplication.communication.CommHandler;
-import com.ericsson.addroneapplication.communication.CommMessage;
 import com.ericsson.addroneapplication.communication.CommTask;
 import com.ericsson.addroneapplication.communication.data.ControlData;
 import com.ericsson.addroneapplication.communication.data.DebugData;
@@ -18,8 +17,8 @@ public class FlightLoopAction extends CommHandlerAction {
     public enum FlightLoopState {
         IDLE,
         INITIAL_COMMAND,
-        FLING,
         FLING_STARTED,
+        FLING,
     }
 
     private FlightLoopState state;
@@ -51,14 +50,34 @@ public class FlightLoopAction extends CommHandlerAction {
         FlightLoopState actualState = state;
         switch (state) {
             case INITIAL_COMMAND:
+                if (event.getType() == CommEvent.EventType.MESSAGE_RECEIVED) {
+                    switch (((MessageEvent)event).getMessageType()) {
+                        case CONTROL:
+                            System.out.println("DebugData received when waiting for ACK on initial flight loop command");
+                            commHandler.getUavManager().setDebugData(new DebugData(((MessageEvent) event).getMessage()));
+                            break;
 
-                break;
+                        case SIGNAL:
+                            if (event.matchSignalData(new SignalData(SignalData.Command.FLIGHT_LOOP, SignalData.Parameter.ACK))) {
+                                System.out.println("Flight loop initial command successful");
+                                state = FlightLoopState.FLING;
+                                commHandler.getPingTask().start();
+                                controlTask.start();
+                                commHandler.getUavManager().notifyUavEvent(new UavEvent(UavEvent.Type.FLIGHT_STARTED));
 
-            case FLING_STARTED:
-                state = FlightLoopState.FLING;
-                commHandler.getPingTask().start();
-                controlTask.start();
-                commHandler.getUavManager().notifyUavEvent(new UavEvent(UavEvent.Type.FLIGHT_STARTED));
+                            } else if (event.matchSignalData(new SignalData(SignalData.Command.FLIGHT_LOOP, SignalData.Parameter.NOT_ALLOWED))) {
+                                System.out.println("Flight loop not allowed!");
+                                state = FlightLoopState.IDLE;
+                                flightLoopDone = true;
+                                commHandler.preformAction(ActionType.APPLICATION_LOOP);
+                                commHandler.getUavManager().notifyUavEvent(new UavEvent(UavEvent.Type.MESSAGE, "Flight loop not allowed!"));
+
+                            } else {
+                                System.out.println("Unexpected event received !!!");
+                            }
+                            break;
+                    }
+                }
                 break;
 
             case FLING:

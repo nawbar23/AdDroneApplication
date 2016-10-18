@@ -3,6 +3,7 @@ package com.ericsson.addroneapplication.communication;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.ericsson.addroneapplication.communication.events.SocketDisconnectedEvent;
 import com.ericsson.addroneapplication.communication.events.SocketErrorEvent;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 
@@ -169,6 +170,7 @@ public class TcpSocket {
                     Log.e(DEBUG_TAG, "Thread exits with SUCCESS");
                     break;
             }
+            commHandler.handleCommEvent(new SocketDisconnectedEvent());
             state = State.DISCONNECTED;
         }
     }

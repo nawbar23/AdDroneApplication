@@ -55,6 +55,8 @@ public class ControlActivity extends AppCompatActivity {
 
     private Button buttonChangeView;
     private Button buttonDisconnect;
+    private Button buttonFly;
+
     private ControlPadView controlPadView;
     private ControlThrottleView controlThrottleView;
 
@@ -100,6 +102,7 @@ public class ControlActivity extends AppCompatActivity {
         hudView = (HudView) findViewById(R.id.view_hud);
         buttonChangeView = (Button) findViewById(R.id.button_change_view);
         buttonDisconnect = (Button) findViewById(R.id.button_disconnect);
+        buttonFly = (Button) findViewById(R.id.button_fly);
         controlPadView = (ControlPadView) findViewById(R.id.joystick);
         controlThrottleView = (ControlThrottleView) findViewById(R.id.throttle);
 
@@ -128,6 +131,13 @@ public class ControlActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 service.attemptDisconnection();
+            }
+        });
+
+        buttonFly.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                service.attemptFlightLoop();
             }
         });
 

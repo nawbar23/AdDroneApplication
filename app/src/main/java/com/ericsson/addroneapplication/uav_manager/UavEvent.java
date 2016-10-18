@@ -8,6 +8,7 @@ public class UavEvent {
         CONNECTED,
         DISCONNECTED,
         ERROR,
+        MESSAGE,
         CALIBRATION_NON_STATIC,
         DEBUG_UPDATED,
         AUTOPILOT_UPDATED,

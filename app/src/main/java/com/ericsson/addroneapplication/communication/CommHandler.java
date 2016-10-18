@@ -66,8 +66,12 @@ public class CommHandler {
                 break;
 
             case SOCKET_ERROR:
-                commHandlerAction = new IdleAction(this);
                 uavManager.notifyUavEvent(new UavEvent(UavEvent.Type.ERROR, ((SocketErrorEvent)event).getMessage()));
+                return;
+
+            case SOCKET_DISCONNECTED:
+                commHandlerAction = new IdleAction(this);
+                uavManager.notifyUavEvent(new UavEvent(UavEvent.Type.DISCONNECTED));
                 return;
         }
 

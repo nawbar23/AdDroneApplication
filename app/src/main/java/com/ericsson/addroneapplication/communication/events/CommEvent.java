@@ -9,6 +9,7 @@ import com.ericsson.addroneapplication.communication.data.SignalData;
 public abstract class CommEvent {
     public enum EventType{
         SOCKET_ERROR,
+        SOCKET_DISCONNECTED,
         MESSAGE_RECEIVED,
         SIGNAL_PAYLOAD_RECEIVED,
     }

@@ -61,6 +61,12 @@
             android:id="@+id/button_disconnect"
             android:text="@string/disconnect" />
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_fly"
+            android:text="@string/flight" />
+
     </LinearLayout>
 
 </RelativeLayout>
