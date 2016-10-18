@@ -82,6 +82,16 @@ public class UavManager {
         }
     }
 
+    public void onFlightPush() {
+        if (commHandler.getCommActionType() == CommHandlerAction.ActionType.APPLICATION_LOOP) {
+            preformAction(CommHandlerAction.ActionType.FLIGHT_LOOP);
+        } else if (commHandler.getCommActionType() == CommHandlerAction.ActionType.FLIGHT_LOOP) {
+            commHandler.disconnectFlightLoop();
+        } else {
+            System.out.println("Flight button pushed in unexpected state");
+        }
+    }
+
     public void notifyAutopilotEvent(AutopilotData autopilotData) {
         // TODO implement this feature
     }

@@ -42,6 +42,10 @@ public class CommHandler {
         socket.disconnect();
     }
 
+    public void disconnectFlightLoop() {
+        ((FlightLoopAction)commHandlerAction).breakLoop();
+    }
+
     public void preformAction(CommHandlerAction.ActionType actionType) throws Exception {
         if (commHandlerAction.isActionDone()){
             commHandlerAction = actionFactory(actionType);
@@ -84,6 +88,10 @@ public class CommHandler {
 
     public UavManager getUavManager() {
         return uavManager;
+    }
+
+    public CommHandlerAction.ActionType getCommActionType(){
+        return commHandlerAction.getActionType();
     }
 
     public void send(CommMessage message) {

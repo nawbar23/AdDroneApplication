@@ -132,5 +132,15 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
         }
 
         uiDataLock.unlock();
+
+        switch (event.getType()) {
+            case FLIGHT_STARTED:
+
+                break;
+
+            case FLIGHT_ENDED:
+
+                break;
+        }
     }
 }

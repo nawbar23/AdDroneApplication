@@ -17,8 +17,8 @@ public class FlightLoopAction extends CommHandlerAction {
     public enum FlightLoopState {
         IDLE,
         INITIAL_COMMAND,
-        FLING_STARTED,
         FLING,
+        BREAKING,
     }
 
     private FlightLoopState state;
@@ -45,6 +45,10 @@ public class FlightLoopAction extends CommHandlerAction {
         commHandler.send(new SignalData(SignalData.Command.FLIGHT_LOOP, SignalData.Parameter.START).getMessage());
     }
 
+    public void breakLoop() {
+        state = FlightLoopState.BREAKING;
+    }
+
     @Override
     public void handleEvent(CommEvent event) throws Exception {
         FlightLoopState actualState = state;
@@ -64,10 +68,10 @@ public class FlightLoopAction extends CommHandlerAction {
                                 commHandler.getPingTask().start();
                                 controlTask.start();
                                 commHandler.getUavManager().notifyUavEvent(new UavEvent(UavEvent.Type.FLIGHT_STARTED));
+                                commHandler.send(new SignalData(SignalData.Command.FLIGHT_LOOP, SignalData.Parameter.READY).getMessage());
 
                             } else if (event.matchSignalData(new SignalData(SignalData.Command.FLIGHT_LOOP, SignalData.Parameter.NOT_ALLOWED))) {
                                 System.out.println("Flight loop not allowed!");
-                                state = FlightLoopState.IDLE;
                                 flightLoopDone = true;
                                 commHandler.preformAction(ActionType.APPLICATION_LOOP);
                                 commHandler.getUavManager().notifyUavEvent(new UavEvent(UavEvent.Type.MESSAGE, "Flight loop not allowed!"));
@@ -80,6 +84,7 @@ public class FlightLoopAction extends CommHandlerAction {
                 }
                 break;
 
+            case BREAKING:
             case FLING:
                 if (event.getType() == CommEvent.EventType.MESSAGE_RECEIVED) {
                     switch (((MessageEvent)event).getMessageType()) {
@@ -109,10 +114,17 @@ public class FlightLoopAction extends CommHandlerAction {
         if (command.getCommand() == SignalData.Command.FLIGHT_LOOP) {
 
             controlTask.stop();
+            commHandler.getPingTask().stop();
+
             state = FlightLoopState.IDLE;
             flightLoopDone = true;
+            try {
+                commHandler.preformAction(ActionType.APPLICATION_LOOP);
+            } catch (Exception e) {
+                // ignore this exception
+            }
 
-            if (command.getParameter() == SignalData.Parameter.BREAK) {
+            if (command.getParameter() == SignalData.Parameter.BREAK || state == FlightLoopState.BREAKING) {
                 commHandler.getUavManager().notifyUavEvent(new UavEvent(UavEvent.Type.FLIGHT_ENDED, "By user"));
             } else {
                 commHandler.getUavManager().notifyUavEvent(new UavEvent(UavEvent.Type.FLIGHT_ENDED, "By board"));
@@ -133,8 +145,12 @@ public class FlightLoopAction extends CommHandlerAction {
 
         @Override
         protected void task() {
-            System.out.println("Controlling...");
             ControlData controlData = commHandler.getUavManager().getControlViewModel().getCurrentControlData();
+            if (state == FlightLoopState.BREAKING) {
+                controlData.setStopCommand();
+            }
+            System.out.println("Controlling: " + controlData.toString());
+            commHandler.send(controlData.getMessage());
         }
     };
 }

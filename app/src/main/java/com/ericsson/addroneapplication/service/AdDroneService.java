@@ -92,9 +92,9 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
         uavManager.preformAction(CommHandlerAction.ActionType.DISCONNECT);
     }
 
-    public void attemptFlightLoop() {
+    public void onFlightPush() {
         if (state == State.CONNECTED) {
-            uavManager.preformAction(CommHandlerAction.ActionType.FLIGHT_LOOP);
+            uavManager.onFlightPush();
         }
     }
 
@@ -156,6 +156,14 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
 
             case MESSAGE:
                 displayToast(event.getMessage());
+                break;
+
+            case FLIGHT_STARTED:
+                displayToast("Flight started");
+                break;
+
+            case FLIGHT_ENDED:
+                displayToast("Flight ended: " + event.getMessage());
                 break;
         }
     }

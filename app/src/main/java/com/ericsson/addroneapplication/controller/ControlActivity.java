@@ -137,7 +137,7 @@ public class ControlActivity extends AppCompatActivity {
         buttonFly.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                service.attemptFlightLoop();
+                service.onFlightPush();
             }
         });
 

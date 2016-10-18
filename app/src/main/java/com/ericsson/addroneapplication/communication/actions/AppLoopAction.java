@@ -29,7 +29,6 @@ public class AppLoopAction extends CommHandlerAction {
 
     @Override
     public void start() {
-        // nothing to do here
         System.out.println("Starting app loop handling mode");
         commHandler.getPingTask().start();
     }
