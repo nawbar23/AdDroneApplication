@@ -16,6 +16,8 @@ public class StreamConnection extends Thread {
 
     private final static int MAX_BUFFER = 2500000;
 
+    private String address;
+
     public interface OnNewFrameListener {
         void setNewFrame(byte[] array, int length);
     }
@@ -23,7 +25,8 @@ public class StreamConnection extends Thread {
     private OnNewFrameListener listener;
     private boolean connected = false;
 
-    public StreamConnection(OnNewFrameListener onNewFrameListener) {
+    public StreamConnection(String address, OnNewFrameListener onNewFrameListener) {
+        this.address = address;
         listener = onNewFrameListener;
     }
 
@@ -32,8 +35,8 @@ public class StreamConnection extends Thread {
 
         Socket clientSocket = null;
         try {
-            clientSocket = new Socket("192.168.25.1", 25505);
-            Log.i("DDD", "connected");
+            clientSocket = new Socket(address, 25505);
+            Log.i("DDD", "connected, address: " + address);
             connected = true;
             DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
 

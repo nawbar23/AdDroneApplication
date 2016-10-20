@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.ericsson.addroneapplication.R;
+import com.ericsson.addroneapplication.service.AdDroneService;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -50,7 +51,7 @@ public class ControlPadFragment extends Fragment implements StreamConnection.OnN
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_camera, container, false);
 
-        streamConnection = new StreamConnection(this);
+        streamConnection = new StreamConnection(AdDroneService.actualConnection.getIpAddress(), this);
         imageView = (ImageView) root.findViewById(R.id.image_view);
 
         timer = new Timer();

@@ -36,6 +36,8 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
 
     ProgressDialog progressDialog;
 
+    public static ConnectionInfo actualConnection;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -82,6 +84,7 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
                 Log.e(DEBUG_TAG, "attemptConnection at default, connecting...");
                 state = State.CONNECTING;
                 progressDialog = dialog;
+                actualConnection = connectionInfo;
                 uavManager.getCommHandler().connectSocket(connectionInfo);
                 break;
         }
@@ -128,6 +131,9 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
         return state;
     }
 
+    public ConnectionInfo getActualConnection() {
+        return actualConnection;
+    }
 
     @Override
     public void handleUavEvent(UavEvent event, UavManager uavManager) {

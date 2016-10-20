@@ -166,6 +166,7 @@ public class UavManager {
     }
 
     public void setCommDelay(long commDelay) {
+        System.out.println("Ping delay updated: " + String.valueOf(commDelay) + " ms");
         this.commDelay = commDelay;
         notifyUavEvent(new UavEvent(UavEvent.Type.PING_UPDATED));
     }
