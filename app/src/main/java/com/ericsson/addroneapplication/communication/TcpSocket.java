@@ -47,10 +47,6 @@ public class TcpSocket {
         connection.execute(connectionInfo);
     }
 
-    public void startDisconnectAlgorithm() {
-        state =  State.DISCONNECTING;
-    }
-
     public void disconnect() {
         state =  State.DISCONNECTED;
     }
