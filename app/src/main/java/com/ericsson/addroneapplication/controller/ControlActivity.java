@@ -132,7 +132,7 @@ public class ControlActivity extends AppCompatActivity {
         buttonDisconnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                service.attemptDisconnection();
+                service.onDisconnectPush();
             }
         });
 
@@ -160,6 +160,16 @@ public class ControlActivity extends AppCompatActivity {
                 setCameraFragment();
             }
         });
+    }
+
+    public void notifyFlightStarted(){
+        buttonDisconnect.setText("End fly");
+        buttonFly.setVisibility(View.INVISIBLE);
+    }
+
+    public void notifyFlightEnded(){
+        buttonDisconnect.setText("Disconnect");
+        buttonFly.setVisibility(View.VISIBLE);
     }
 
     private void setCameraFragment() {

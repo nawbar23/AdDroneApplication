@@ -116,7 +116,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
     }
 
     @Override
-    public void handleUavEvent(UavEvent event, UavManager uavManager) {
+    public void handleUavEvent(final UavEvent event, UavManager uavManager) {
         uiDataLock.lock();
 
         switch (event.getType()) {
@@ -133,14 +133,20 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
         uiDataLock.unlock();
 
-        switch (event.getType()) {
-            case FLIGHT_STARTED:
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                switch (event.getType()) {
+                    case FLIGHT_STARTED:
+                        activity.notifyFlightStarted();
+                        break;
 
-                break;
+                    case FLIGHT_ENDED:
+                        activity.notifyFlightEnded();
+                        break;
+                }
+            }
+        });
 
-            case FLIGHT_ENDED:
-
-                break;
-        }
     }
 }

@@ -90,13 +90,18 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
         }
     }
 
-    public void attemptDisconnection() {
-        state = State.DISCONNECTING;
-        uavManager.preformAction(CommHandlerAction.ActionType.DISCONNECT);
+    public void onDisconnectPush() {
+        if (uavManager.getCommHandler().getCommActionType() == CommHandlerAction.ActionType.FLIGHT_LOOP) {
+            uavManager.onFlightPush();
+        } else {
+            state = State.DISCONNECTING;
+            uavManager.preformAction(CommHandlerAction.ActionType.DISCONNECT);
+        }
     }
 
     public void onFlightPush() {
         if (state == State.CONNECTED) {
+            Log.e(DEBUG_TAG, "onFLight push");
             uavManager.onFlightPush();
         }
     }
