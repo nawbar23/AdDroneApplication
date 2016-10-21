@@ -272,8 +272,8 @@ public class HudView extends View {
         float lineMax = width * .25f;
         float lineMin = width * .05f;
 
-        float dy = (float)Math.sin(uiDataPack.roll);
-        float dx = (float)Math.cos(uiDataPack.roll);
+        float dy = (float)Math.sin(-uiDataPack.roll);
+        float dx = (float)Math.cos(-uiDataPack.roll);
 
         canvas.drawLine(width * .5f - dx * lineMax, y - dy * lineMax, width * .5f - dx * lineMin, y - dy * lineMin, borderLinePaint);
         canvas.drawLine(width * .5f - dx * lineMax, y - dy * lineMax, width * .5f - dx * lineMin, y - dy * lineMin, linePaint);
