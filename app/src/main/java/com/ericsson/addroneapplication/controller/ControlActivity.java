@@ -1,10 +1,12 @@
 package com.ericsson.addroneapplication.controller;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -143,6 +145,8 @@ public class ControlActivity extends AppCompatActivity {
 
         hudViewUpdateTimer = new Timer();
         hudViewUpdateTimer.scheduleAtFixedRate(hudViewTimerUpdateTask, 1000, 80);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private void setMapFragment() {
