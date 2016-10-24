@@ -42,8 +42,10 @@ public class TcpSocket {
     }
 
     public void connect(ConnectionInfo connectionInfo) {
+        Log.e(DEBUG_TAG, "connect");
         state = State.CONNECTING;
         connection = new SocketConnection();
+        Log.e(DEBUG_TAG, "connect22");
         connection.execute(connectionInfo);
     }
 

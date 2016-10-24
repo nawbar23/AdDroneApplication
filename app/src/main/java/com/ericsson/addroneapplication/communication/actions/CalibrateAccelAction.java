@@ -42,7 +42,7 @@ public class CalibrateAccelAction extends CommHandlerAction {
         System.out.println("Starting connection procedure");
         calibrationProcedureDone = false;
         state = CalibrationState.INITIAL_COMMAND;
-        commHandler.getPingTask().stop();
+        commHandler.stopCommTask(commHandler.getPingTask());
         commHandler.send(new SignalData(SignalData.Command.CALIBRATE_ACCEL, SignalData.Parameter.START).getMessage());
     }
 

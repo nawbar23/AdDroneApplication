@@ -12,33 +12,35 @@ import com.ericsson.addroneapplication.model.ConnectionInfo;
 import com.ericsson.addroneapplication.uav_manager.UavEvent;
 import com.ericsson.addroneapplication.uav_manager.UavManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by NawBar on 2016-10-12.
  */
 public class CommHandler {
 
     private CommHandlerAction commHandlerAction;
-
     private TcpSocket socket;
-
-    private CommDispatcher commDispatcher;
     private UavManager uavManager;
+    private List<CommTask> runningTasks;
 
     public CommHandler(UavManager uavManager){
+
         this.commHandlerAction = new IdleAction(this);
-
-        this.commDispatcher = new CommDispatcher(this);
+        this.socket = new TcpSocket(this, new CommDispatcher(this));
         this.uavManager = uavManager;
-
-        this.socket = new TcpSocket(this, commDispatcher);
+        this.runningTasks = new ArrayList<>();
     }
 
     public void connectSocket(ConnectionInfo connectionInfo) {
+        System.out.println("CommHandler: connectSocket");
         socket.connect(connectionInfo);
     }
 
     public void disconnectSocket() {
-        pingTask.stop();
+        System.out.println("CommHandler: disconnectSocket");
+        stopAllTasks();
         socket.disconnect();
     }
 
@@ -51,12 +53,12 @@ public class CommHandler {
             commHandlerAction = actionFactory(actionType);
             commHandlerAction.start();
         } else {
-            throw new Exception("Previous action not ready at state: " + commHandlerAction.getActionName() + ", aborting...");
+            throw new Exception("CommHandler: Previous action not ready at state: " + commHandlerAction.getActionName() + ", aborting...");
         }
     }
 
     public void handleCommEvent(CommEvent event){
-        System.out.println("Event " + event.toString() + " received at action " + commHandlerAction.toString());
+        System.out.println("CommHandler: Event " + event.toString() + " received at action " + commHandlerAction.toString());
 
         switch (event.getType()) {
             case MESSAGE_RECEIVED:
@@ -95,11 +97,12 @@ public class CommHandler {
     }
 
     public void send(CommMessage message) {
-        System.out.println("Sending message: " + message.toString());
+        System.out.println("CommHandler: Sending message: " + message.toString());
         socket.send(message.getByteArray());
     }
 
     public void notifySocketConnected() {
+        System.out.println("CommHandler: notifySocketConnected");
         try {
             preformAction(CommHandlerAction.ActionType.CONNECT);
         } catch (Exception e) {
@@ -122,12 +125,8 @@ public class CommHandler {
                 return new FlightLoopAction(this);
 
             default:
-                throw new Exception("Unsupported action type");
+                throw new Exception("CommHandler: Unsupported action type");
         }
-    }
-
-    public CommTask getPingTask() {
-        return pingTask;
     }
 
     private SignalData sentPing;
@@ -144,7 +143,7 @@ public class CommHandler {
 
         @Override
         protected void task() {
-            System.out.println("Pinging...");
+            System.out.println("CommHandler: Pinging...");
             switch (state) {
                 case CONFIRMED:
                     sentPing = new SignalData(SignalData.Command.PING_VALUE, (int) (Math.random() * 1000000000));
@@ -153,7 +152,7 @@ public class CommHandler {
                     break;
 
                 case WAITING:
-                    Log.e(getTaskName(), "Ping receiving timeout");
+                    Log.e(getTaskName(), "CommHandler: Ping receiving timeout");
                     state = PingTaskState.CONFIRMED;
                     break;
             }
@@ -166,7 +165,7 @@ public class CommHandler {
             state = PingTaskState.CONFIRMED;
             return (System.currentTimeMillis() - timestamp) / 2;
         } else {
-            Log.e(pingTask.getTaskName(), "Pong key does not match to the ping key!");
+            Log.e(pingTask.getTaskName(), "CommHandler: Pong key does not match to the ping key!");
             return 0;
         }
     }
@@ -174,5 +173,26 @@ public class CommHandler {
     private enum PingTaskState {
         WAITING,
         CONFIRMED
+    }
+
+    public CommTask getPingTask() {
+        return pingTask;
+    }
+
+    public void startCommTask(CommTask task) {
+        task.start();
+        runningTasks.add(task);
+    }
+
+    public void stopCommTask(CommTask task) {
+        task.stop();
+        runningTasks.remove(task);
+    }
+
+    private void stopAllTasks() {
+        Log.e(pingTask.getTaskName(), "CommHandler: stopAllTasks");
+        for (CommTask task : runningTasks) {
+            task.stop();
+        }
     }
 }

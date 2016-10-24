@@ -136,10 +136,6 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
         return state;
     }
 
-    public ConnectionInfo getActualConnection() {
-        return actualConnection;
-    }
-
     @Override
     public void handleUavEvent(UavEvent event, UavManager uavManager) {
         switch (event.getType()) {
@@ -150,17 +146,19 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
                 break;
 
             case DISCONNECTED:
+                Log.e(DEBUG_TAG, "Disconnected event: " + event.getMessage() + " at state: " + state.toString());
+                if (state == State.CONNECTED || state == State.DISCONNECTING) {
+                    startConnectionActivity();
+                }
                 state = State.DISCONNECTED;
-                startConnectionActivity();
                 break;
 
             case ERROR:
+                Log.e(DEBUG_TAG, "Error event: " + event.getMessage() + " at state: " + state.toString());
                 if (state == State.CONNECTING) {
-                    state = State.DISCONNECTED;
                     progressDialog.dismiss();
                 } else if (state == State.CONNECTED) {
-                    state = State.DISCONNECTED;
-                    startConnectionActivity();
+                    state = State.DISCONNECTING;
                 }
                 displayToast(event.getMessage());
                 break;

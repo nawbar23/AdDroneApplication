@@ -62,7 +62,7 @@ public class UavManager {
             updateCommState(event);
         }
         catch (Exception e) {
-            System.out.println("Some error :-D : " + e.getMessage());
+            System.out.println("UavManager update comm state error: " + e.getMessage());
         }
         for (UavManagerListener listener : listeners) {
             listener.handleUavEvent(event, this);
@@ -76,7 +76,6 @@ public class UavManager {
                 break;
 
             case DISCONNECTED:
-            case ERROR:
                 commHandler.disconnectSocket();
                 break;
         }

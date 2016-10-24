@@ -39,7 +39,7 @@ public class FlightLoopAction extends CommHandlerAction {
     @Override
     public void start() {
         System.out.println("Starting flight loop");
-        commHandler.getPingTask().stop();
+        commHandler.stopCommTask(commHandler.getPingTask());
         flightLoopDone = false;
         state = FlightLoopState.INITIAL_COMMAND;
         commHandler.send(new SignalData(SignalData.Command.FLIGHT_LOOP, SignalData.Parameter.START).getMessage());
@@ -65,8 +65,10 @@ public class FlightLoopAction extends CommHandlerAction {
                             if (event.matchSignalData(new SignalData(SignalData.Command.FLIGHT_LOOP, SignalData.Parameter.ACK))) {
                                 System.out.println("Flight loop initial command successful");
                                 state = FlightLoopState.FLING;
-                                commHandler.getPingTask().start();
-                                controlTask.start();
+
+                                commHandler.startCommTask(commHandler.getPingTask());
+                                commHandler.startCommTask(controlTask);
+
                                 commHandler.getUavManager().notifyUavEvent(new UavEvent(UavEvent.Type.FLIGHT_STARTED));
                                 commHandler.send(new SignalData(SignalData.Command.FLIGHT_LOOP, SignalData.Parameter.READY).getMessage());
 
@@ -113,8 +115,8 @@ public class FlightLoopAction extends CommHandlerAction {
     private void handleSignalWhileFlying(final SignalData command) {
         if (command.getCommand() == SignalData.Command.FLIGHT_LOOP) {
 
-            controlTask.stop();
-            commHandler.getPingTask().stop();
+            commHandler.stopCommTask(controlTask);
+            commHandler.stopCommTask(commHandler.getPingTask());
 
             state = FlightLoopState.IDLE;
             flightLoopDone = true;

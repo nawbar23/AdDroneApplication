@@ -7,7 +7,7 @@ import com.ericsson.addroneapplication.communication.data.SignalData;
  * Created by NawBar on 2016-10-12.
  */
 public abstract class CommEvent {
-    public enum EventType{
+    public enum EventType {
         SOCKET_ERROR,
         SOCKET_DISCONNECTED,
         MESSAGE_RECEIVED,
