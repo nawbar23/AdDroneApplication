@@ -42,6 +42,6 @@
     <string name="battery">battery</string>
     <string name="latitude">lat</string>
     <string name="longitude">lon</string>
-    <string name="disconnect">Disconnect</string>
-    <string name="flight">Fly</string>
+    <string name="action">Action</string>
+==
 </resources>

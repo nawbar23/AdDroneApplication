@@ -1,12 +1,10 @@
 package com.ericsson.addroneapplication.controller;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -56,8 +54,7 @@ public class ControlActivity extends AppCompatActivity {
     };
 
     private Button buttonChangeView;
-    private Button buttonDisconnect;
-    private Button buttonFly;
+    private Button buttonAction;
 
     private ControlPadView controlPadView;
     private ControlThrottleView controlThrottleView;
@@ -74,6 +71,7 @@ public class ControlActivity extends AppCompatActivity {
             service = binder.getService();
             service.setControlViewModel(controlViewModel);
             service.registerListener(controlViewModel);
+            controlViewModel.setUavManager(service.getUavManager());
         }
 
         @Override
@@ -103,10 +101,12 @@ public class ControlActivity extends AppCompatActivity {
         frameLayout2 = (FrameLayout) findViewById(R.id.layout_container_2);
         hudView = (HudView) findViewById(R.id.view_hud);
         buttonChangeView = (Button) findViewById(R.id.button_change_view);
-        buttonDisconnect = (Button) findViewById(R.id.button_disconnect);
-        buttonFly = (Button) findViewById(R.id.button_fly);
+        buttonAction = (Button) findViewById(R.id.button_action);
         controlPadView = (ControlPadView) findViewById(R.id.joystick);
         controlThrottleView = (ControlThrottleView) findViewById(R.id.throttle);
+
+        controlPadView.setVisibility(View.INVISIBLE);
+        controlThrottleView.setVisibility(View.INVISIBLE);
 
         // Register GUI listeners
         controlPadView.setOnControlPadChangedListener(controlViewModel);
@@ -128,20 +128,7 @@ public class ControlActivity extends AppCompatActivity {
         layoutParamsHidden = new RelativeLayout.LayoutParams(0, 0);
 
         setMapFragment();
-
-        buttonDisconnect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                service.onDisconnectPush();
-            }
-        });
-
-        buttonFly.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                service.onFlightPush();
-            }
-        });
+        notifyFlightEnded();
 
         hudViewUpdateTimer = new Timer();
         hudViewUpdateTimer.scheduleAtFixedRate(hudViewTimerUpdateTask, 1000, 80);
@@ -163,13 +150,29 @@ public class ControlActivity extends AppCompatActivity {
     }
 
     public void notifyFlightStarted(){
-        buttonDisconnect.setText("End fly");
-        buttonFly.setVisibility(View.INVISIBLE);
+        buttonAction.setText("End fly");
+        controlPadView.setVisibility(View.VISIBLE);
+        controlThrottleView.setVisibility(View.VISIBLE);
+
+        buttonAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                controlViewModel.onEndFlightClick();
+            }
+        });
     }
 
     public void notifyFlightEnded(){
-        buttonDisconnect.setText("Disconnect");
-        buttonFly.setVisibility(View.VISIBLE);
+        buttonAction.setText("Action");
+        controlPadView.setVisibility(View.INVISIBLE);
+        controlThrottleView.setVisibility(View.INVISIBLE);
+
+        buttonAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                controlViewModel.onActionClick();
+            }
+        });
     }
 
     private void setCameraFragment() {

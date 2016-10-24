@@ -1,7 +1,12 @@
 package com.ericsson.addroneapplication.viewmodel;
 
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
+import android.view.Window;
 
+import com.ericsson.addroneapplication.R;
 import com.ericsson.addroneapplication.communication.data.AutopilotData;
 import com.ericsson.addroneapplication.communication.data.ControlData;
 import com.ericsson.addroneapplication.communication.data.DebugData;
@@ -22,8 +27,8 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadChangedListener, ControlThrottleView.setOnControlThrottlePadChangedListener, UavManager.UavManagerListener {
 
-    ControlActivity activity;
-    long delay;
+    private ControlActivity activity;
+    private long delay;
 
     private ControlData controlData = new ControlData();
     private Lock controlDataLock = new ReentrantLock();
@@ -33,17 +38,12 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
     private long ping = 0;
     private Lock uiDataLock = new ReentrantLock();
 
-    IirLowpassFilter rollFilter, pitchFilter, yawFilter, throttleFilter;
+    private UavManager uavManager;
 
     public ControlViewModel(ControlActivity activity) {
         this.activity = activity;
 
         delay = 1000 / SettingsActivity.getIntFromPreferences(activity.getApplicationContext(), SettingsActivity.KEY_PREF_UI_REFRESH_RATE, 2);
-
-        rollFilter = new IirLowpassFilter(0);
-        pitchFilter = new IirLowpassFilter(0);
-        yawFilter = new IirLowpassFilter(0);
-        throttleFilter = new IirLowpassFilter(0);
 
         resume();
     }
@@ -54,8 +54,12 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
     public void pause() {
 
-
     }
+
+    public void setUavManager(UavManager uavManager) {
+        this.uavManager = uavManager;
+    }
+
 
     @Override
     public void destroy() {
@@ -91,20 +95,26 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
         controlDataLock.unlock();
     }
 
+    public void onActionClick() {
+        //uavManager.disconnectApplicationLoop();
+        Dialog dialog = new Dialog(activity, android.R.style.Theme_Dialog);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.action_dialog);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setCancelable(true);
+        dialog.show();
+    }
+
+    public void onEndFlightClick() {
+        uavManager.endFlightLoop();
+    }
+
     public ControlData getCurrentControlData() {
         controlDataLock.lock();
         ControlData currentControlData = new ControlData(controlData);
         controlDataLock.unlock();
 
-        // controller inputs filtering
-        // TODO test this feature
-        ControlData filteredControlData = new ControlData(currentControlData);
-        filteredControlData.setRoll((float)rollFilter.update(currentControlData.getRoll()));
-        filteredControlData.setPitch((float)pitchFilter.update(currentControlData.getPitch()));
-        filteredControlData.setYaw((float)yawFilter.update(currentControlData.getYaw()));
-        filteredControlData.setThrottle((float)throttleFilter.update(currentControlData.getThrottle()));
-
-        return filteredControlData;
+        return currentControlData;
     }
 
     public UIDataPack getCurrentUiDataPack() {
