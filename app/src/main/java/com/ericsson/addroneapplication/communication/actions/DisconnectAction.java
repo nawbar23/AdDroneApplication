@@ -34,7 +34,7 @@ public class DisconnectAction extends CommHandlerAction  {
         if (event.matchSignalData(new SignalData(SignalData.Command.APP_LOOP, SignalData.Parameter.BREAK_ACK))) {
             // app loop disconnected
             disconnectionProcedureDone = true;
-            commHandler.getUavManager().notifyUavEvent(new UavEvent(UavEvent.Type.DISCONNECTED, "By user"));
+            commHandler.getUavManager().notifyUavEvent(new UavEvent(UavEvent.Type.DISCONNECTED));
         }
     }
 

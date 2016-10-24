@@ -48,7 +48,29 @@ public class UavManager {
         return commHandler;
     }
 
-    public void preformAction(CommHandlerAction.ActionType actionType) {
+    public void disconnectApplicationLoop() {
+        preformAction(CommHandlerAction.ActionType.DISCONNECT);
+    }
+
+    public void startFlightLoop() {
+        if (commHandler.getCommActionType() == CommHandlerAction.ActionType.APPLICATION_LOOP) {
+            preformAction(CommHandlerAction.ActionType.FLIGHT_LOOP);
+        }
+    }
+
+    public void endFlightLoop() {
+        if (commHandler.getCommActionType() == CommHandlerAction.ActionType.FLIGHT_LOOP) {
+            commHandler.endFlightLoop();
+        }
+    }
+
+    public void startAccelerometerCalibration() {
+        if (commHandler.getCommActionType() == CommHandlerAction.ActionType.APPLICATION_LOOP) {
+            preformAction(CommHandlerAction.ActionType.CALIBRATE_ACCELEROMETER);
+        }
+    }
+
+    private void preformAction(CommHandlerAction.ActionType actionType) {
         try {
             commHandler.preformAction(actionType);
         } catch (Exception e) {
@@ -78,16 +100,6 @@ public class UavManager {
             case DISCONNECTED:
                 commHandler.disconnectSocket();
                 break;
-        }
-    }
-
-    public void onFlightPush() {
-        if (commHandler.getCommActionType() == CommHandlerAction.ActionType.APPLICATION_LOOP) {
-            preformAction(CommHandlerAction.ActionType.FLIGHT_LOOP);
-        } else if (commHandler.getCommActionType() == CommHandlerAction.ActionType.FLIGHT_LOOP) {
-            commHandler.disconnectFlightLoop();
-        } else {
-            System.out.println("Flight button pushed in unexpected state");
         }
     }
 

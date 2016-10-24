@@ -92,17 +92,19 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
 
     public void onDisconnectPush() {
         if (uavManager.getCommHandler().getCommActionType() == CommHandlerAction.ActionType.FLIGHT_LOOP) {
-            uavManager.onFlightPush();
+            uavManager.endFlightLoop();
         } else {
             state = State.DISCONNECTING;
-            uavManager.preformAction(CommHandlerAction.ActionType.DISCONNECT);
+            uavManager.disconnectApplicationLoop();
         }
     }
 
     public void onFlightPush() {
-        if (state == State.CONNECTED) {
-            Log.e(DEBUG_TAG, "onFLight push");
-            uavManager.onFlightPush();
+        if (uavManager.getCommHandler().getCommActionType() == CommHandlerAction.ActionType.APPLICATION_LOOP) {
+            uavManager.startAccelerometerCalibration();
+            //uavManager.startFlightLoop();
+        } else if (uavManager.getCommHandler().getCommActionType() == CommHandlerAction.ActionType.FLIGHT_LOOP) {
+            //uavManager.endFlightLoop();
         }
     }
 
@@ -146,7 +148,7 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
                 break;
 
             case DISCONNECTED:
-                Log.e(DEBUG_TAG, "Disconnected event: " + event.getMessage() + " at state: " + state.toString());
+                Log.e(DEBUG_TAG, "Disconnected event received at state: " + state.toString());
                 if (state == State.CONNECTED || state == State.DISCONNECTING) {
                     startConnectionActivity();
                 }

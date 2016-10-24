@@ -99,7 +99,7 @@ public class HudView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         // draw drone state
-        Log.i("UDPa", uiDataPack.toString());
+        //Log.i("UDPa", uiDataPack.toString());
 
         // draw ping and autopilot availability
         String pingString = hudTextFactory.getLatencyString(uiDataPack.ping);

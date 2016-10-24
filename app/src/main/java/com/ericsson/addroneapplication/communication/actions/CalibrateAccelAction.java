@@ -39,7 +39,7 @@ public class CalibrateAccelAction extends CommHandlerAction {
 
     @Override
     public void start() {
-        System.out.println("Starting connection procedure");
+        System.out.println("Starting calibration accelerometer procedure");
         calibrationProcedureDone = false;
         state = CalibrationState.INITIAL_COMMAND;
         commHandler.stopCommTask(commHandler.getPingTask());
@@ -72,14 +72,15 @@ public class CalibrateAccelAction extends CommHandlerAction {
 
             case WAITING_FOR_CALIBRATION:
                 if (event.matchSignalData(
-                        new SignalData(SignalData.Command.CALIBRATION_SETTINGS, SignalData.Parameter.READY))) {
+                        new SignalData(SignalData.Command.CALIBRATE_ACCEL, SignalData.Parameter.DONE))) {
                     state = CalibrationState.WAITING_FOR_CALIBRATION_DATA;
                     System.out.println("Calibration done successfully, data ready");
                 } else  if (event.matchSignalData(
-                        new SignalData(SignalData.Command.CALIBRATION_SETTINGS, SignalData.Parameter.NON_STATIC))){
+                        new SignalData(SignalData.Command.CALIBRATE_ACCEL, SignalData.Parameter.NON_STATIC))){
                     System.out.println("Calibration non static");
                     commHandler.getUavManager().notifyUavEvent(new UavEvent(UavEvent.Type.MESSAGE, "Accelerometer calibration non static!"));
                     calibrationProcedureDone = true;
+                    commHandler.notifyActionDone();
                 } else {
                     System.out.println("Unexpected event received at state " + state.toString());
                 }
@@ -95,6 +96,7 @@ public class CalibrateAccelAction extends CommHandlerAction {
                     commHandler.send(new SignalData(SignalData.Command.CALIBRATION_SETTINGS, SignalData.Parameter.ACK).getMessage());
                     commHandler.getUavManager().setCalibrationSettings(((CalibrationSettings)signalEvent.getData()));
                     calibrationProcedureDone = true;
+                    commHandler.notifyActionDone();
                 } else {
                     System.out.println("Unexpected event received at state " + state.toString());
                 }

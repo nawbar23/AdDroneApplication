@@ -29,7 +29,7 @@ public class AppLoopAction extends CommHandlerAction {
 
     @Override
     public void start() {
-        System.out.println("Starting app loop handling mode");
+        System.out.println("AppLoopAction: Starting app loop handling mode");
         commHandler.startCommTask(commHandler.getPingTask());
     }
 
@@ -41,12 +41,8 @@ public class AppLoopAction extends CommHandlerAction {
             if (messageEvent.getMessageType() == CommMessage.MessageType.CONTROL) {
                 // debug data received
                 commHandler.getUavManager().setDebugData(new DebugData(messageEvent.getMessage()));
-
-            } else if (messageEvent.getMessageType() == CommMessage.MessageType.SIGNAL) {
-                if (messageEvent.matchSignalData(new SignalData(SignalData.Command.APP_LOOP, SignalData.Parameter.BREAK_ACK))) {
-                    // connection broken by board
-                    commHandler.getUavManager().notifyUavEvent(new UavEvent(UavEvent.Type.DISCONNECTED, "By board"));
-                }
+            } else {
+                System.out.println("AppLoopAction: Unexpected massage received: " + messageEvent.toString());
             }
         }
     }

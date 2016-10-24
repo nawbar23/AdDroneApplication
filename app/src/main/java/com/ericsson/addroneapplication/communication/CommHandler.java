@@ -44,7 +44,7 @@ public class CommHandler {
         socket.disconnect();
     }
 
-    public void disconnectFlightLoop() {
+    public void endFlightLoop() {
         ((FlightLoopAction)commHandlerAction).breakLoop();
     }
 
@@ -111,6 +111,15 @@ public class CommHandler {
         }
     }
 
+    public void notifyActionDone() {
+        System.out.println("CommHandler: notifyActionDone");
+        try {
+            preformAction(CommHandlerAction.ActionType.APPLICATION_LOOP);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private CommHandlerAction actionFactory(CommHandlerAction.ActionType actionType) throws Exception {
         switch (actionType){
             case IDLE:
@@ -123,6 +132,8 @@ public class CommHandler {
                 return new AppLoopAction(this);
             case FLIGHT_LOOP:
                 return new FlightLoopAction(this);
+            case CALIBRATE_ACCELEROMETER:
+                return new CalibrateAccelAction(this);
 
             default:
                 throw new Exception("CommHandler: Unsupported action type");

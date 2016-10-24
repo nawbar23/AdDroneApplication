@@ -75,7 +75,7 @@ public class FlightLoopAction extends CommHandlerAction {
                             } else if (event.matchSignalData(new SignalData(SignalData.Command.FLIGHT_LOOP, SignalData.Parameter.NOT_ALLOWED))) {
                                 System.out.println("Flight loop not allowed!");
                                 flightLoopDone = true;
-                                commHandler.preformAction(ActionType.APPLICATION_LOOP);
+                                commHandler.notifyActionDone();
                                 commHandler.getUavManager().notifyUavEvent(new UavEvent(UavEvent.Type.MESSAGE, "Flight loop not allowed!"));
 
                             } else {
@@ -120,11 +120,7 @@ public class FlightLoopAction extends CommHandlerAction {
 
             state = FlightLoopState.IDLE;
             flightLoopDone = true;
-            try {
-                commHandler.preformAction(ActionType.APPLICATION_LOOP);
-            } catch (Exception e) {
-                // ignore this exception
-            }
+            commHandler.notifyActionDone();
 
             if (command.getParameter() == SignalData.Parameter.BREAK || state == FlightLoopState.BREAKING) {
                 commHandler.getUavManager().notifyUavEvent(new UavEvent(UavEvent.Type.FLIGHT_ENDED, "By user"));
