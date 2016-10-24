@@ -73,11 +73,11 @@ public class CommHandler {
 
             case SOCKET_ERROR:
                 uavManager.notifyUavEvent(new UavEvent(UavEvent.Type.ERROR, ((SocketErrorEvent)event).getMessage()));
+                uavManager.notifyUavEvent(new UavEvent(UavEvent.Type.DISCONNECTED));
                 return;
 
             case SOCKET_DISCONNECTED:
                 commHandlerAction = new IdleAction(this);
-                uavManager.notifyUavEvent(new UavEvent(UavEvent.Type.DISCONNECTED));
                 return;
         }
 
@@ -190,9 +190,9 @@ public class CommHandler {
     }
 
     private void stopAllTasks() {
-        Log.e(pingTask.getTaskName(), "CommHandler: stopAllTasks");
+        System.out.println("CommHandler: stopAllTasks");
         for (CommTask task : runningTasks) {
-            task.stop();
+            stopCommTask(task);
         }
     }
 }
