@@ -14,6 +14,7 @@ import com.ericsson.addroneapplication.controller.ControlActivity;
 import com.ericsson.addroneapplication.controller.ControlPadView;
 import com.ericsson.addroneapplication.controller.ControlThrottleView;
 import com.ericsson.addroneapplication.controller.IirLowpassFilter;
+import com.ericsson.addroneapplication.model.ActionDialog;
 import com.ericsson.addroneapplication.model.UIDataPack;
 import com.ericsson.addroneapplication.settings.SettingsActivity;
 import com.ericsson.addroneapplication.uav_manager.UavEvent;
@@ -97,11 +98,25 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
     public void onActionClick() {
         //uavManager.disconnectApplicationLoop();
-        Dialog dialog = new Dialog(activity, android.R.style.Theme_Dialog);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.action_dialog);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.setCancelable(true);
+        final ActionDialog dialog = new ActionDialog(activity) {
+            @Override
+            public void onButtonClick(ButtonId buttonId) {
+                switch (buttonId) {
+                    case FLY:
+                        uavManager.startFlightLoop();
+                        break;
+
+                    case CALIB_ACCEL:
+                        uavManager.startAccelerometerCalibration();
+                        break;
+
+                    case DISCONNECT:
+                        uavManager.disconnectApplicationLoop();
+                        break;
+                }
+                dismiss();
+            }
+        };
         dialog.show();
     }
 

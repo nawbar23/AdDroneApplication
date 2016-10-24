@@ -95,6 +95,7 @@ public class CalibrateAccelAction extends CommHandlerAction {
                     System.out.println("Calibration settings received after accelerometer calibration");
                     commHandler.send(new SignalData(SignalData.Command.CALIBRATION_SETTINGS, SignalData.Parameter.ACK).getMessage());
                     commHandler.getUavManager().setCalibrationSettings(((CalibrationSettings)signalEvent.getData()));
+                    commHandler.getUavManager().notifyUavEvent(new UavEvent(UavEvent.Type.MESSAGE, "Accelerometer calibration successful"));
                     calibrationProcedureDone = true;
                     commHandler.notifyActionDone();
                 } else {
