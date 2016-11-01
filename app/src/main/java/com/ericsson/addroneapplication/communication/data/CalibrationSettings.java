@@ -26,6 +26,7 @@ public class CalibrationSettings implements SignalPayloadData {
         data.magnetSoft[8] = 1.0f;
 
         data.altimeterSetting = 1013.2f;
+        data.temperatureSetting = 288.15f;
 
         data.crcValue = CommMessage.computeCrc32(data.serialize());
     }
@@ -83,6 +84,7 @@ public class CalibrationSettings implements SignalPayloadData {
         float[] magnetSoft; // Mat3Df
         float[] magnetHard; // Vect3Df
         float altimeterSetting;
+        float temperatureSetting;
         float[] radioLevels; // Mat4Df
         byte[] pwmInputLevels; // 8 params
         int boardType;
@@ -99,7 +101,7 @@ public class CalibrationSettings implements SignalPayloadData {
         }
 
         int getDataArraySize() {
-            return 194;
+            return 198;
         }
 
         byte[] serialize() {
@@ -121,6 +123,7 @@ public class CalibrationSettings implements SignalPayloadData {
             }
 
             buffer.putFloat(data.altimeterSetting);
+            buffer.putFloat(data.temperatureSetting);
 
             for (int i = 0; i < data.radioLevels.length; i++) {
                 buffer.putFloat(data.radioLevels[i]);
@@ -160,6 +163,10 @@ public class CalibrationSettings implements SignalPayloadData {
 
     public float getAltimeterSetting() {
         return data.altimeterSetting;
+    }
+
+    public float getTemperatureSetting() {
+        return data.temperatureSetting;
     }
 
     public float[] getRadioLevels() {
