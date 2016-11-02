@@ -3,8 +3,10 @@ package com.ericsson.addroneapplication.communication;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.ericsson.addroneapplication.communication.events.SocketDisconnectedEvent;
-import com.ericsson.addroneapplication.communication.events.SocketErrorEvent;
+import com.ericsson.addroneapplication.multicopter.CommDispatcher;
+import com.ericsson.addroneapplication.multicopter.CommHandler;
+import com.ericsson.addroneapplication.multicopter.events.SocketDisconnectedEvent;
+import com.ericsson.addroneapplication.multicopter.events.SocketErrorEvent;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 
 import java.io.DataInputStream;
@@ -19,8 +21,8 @@ import java.net.Socket;
  * Provides connect, disconnect and send methods and interface for onPacketReceived event
  */
 
-public class TcpSocket {
-    private static final String DEBUG_TAG = "AdDrone:" + TcpSocket.class.getSimpleName();
+public class TcpClientSocket {
+    private static final String DEBUG_TAG = "AdDrone:" + TcpClientSocket.class.getSimpleName();
 
     private CommHandler commHandler;
     private CommDispatcher commDispatcher;
@@ -35,7 +37,7 @@ public class TcpSocket {
 
     private DataOutputStream outputStream;
 
-    public TcpSocket(CommHandler commHandler, CommDispatcher commDispatcher) {
+    public TcpClientSocket(CommHandler commHandler, CommDispatcher commDispatcher) {
         this.commHandler = commHandler;
         this.commDispatcher = commDispatcher;
         this.state = State.DISCONNECTED;

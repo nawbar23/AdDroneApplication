@@ -1,19 +1,13 @@
 package com.ericsson.addroneapplication.viewmodel;
 
-import android.app.Dialog;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
-import android.view.Window;
 
-import com.ericsson.addroneapplication.R;
-import com.ericsson.addroneapplication.communication.data.AutopilotData;
-import com.ericsson.addroneapplication.communication.data.ControlData;
-import com.ericsson.addroneapplication.communication.data.DebugData;
+import com.ericsson.addroneapplication.multicopter.data.AutopilotData;
+import com.ericsson.addroneapplication.multicopter.data.ControlData;
+import com.ericsson.addroneapplication.multicopter.data.DebugData;
 import com.ericsson.addroneapplication.controller.ControlActivity;
 import com.ericsson.addroneapplication.controller.ControlPadView;
 import com.ericsson.addroneapplication.controller.ControlThrottleView;
-import com.ericsson.addroneapplication.controller.IirLowpassFilter;
 import com.ericsson.addroneapplication.model.ActionDialog;
 import com.ericsson.addroneapplication.model.UIDataPack;
 import com.ericsson.addroneapplication.settings.SettingsActivity;

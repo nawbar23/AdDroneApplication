@@ -18,7 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.ericsson.addroneapplication.R;
-import com.ericsson.addroneapplication.communication.data.AutopilotData;
+import com.ericsson.addroneapplication.multicopter.data.AutopilotData;
 import com.ericsson.addroneapplication.service.AdDroneService;
 import com.ericsson.addroneapplication.viewmodel.ControlViewModel;
 

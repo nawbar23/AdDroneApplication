@@ -9,7 +9,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.ericsson.addroneapplication.communication.actions.CommHandlerAction;
+import com.ericsson.addroneapplication.multicopter.actions.CommHandlerAction;
 import com.ericsson.addroneapplication.connection.StartActivity;
 import com.ericsson.addroneapplication.controller.ControlActivity;
 import com.ericsson.addroneapplication.model.ConnectionInfo;

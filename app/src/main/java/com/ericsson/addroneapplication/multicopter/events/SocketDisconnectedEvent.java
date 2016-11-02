@@ -1,4 +1,4 @@
-package com.ericsson.addroneapplication.communication.events;
+package com.ericsson.addroneapplication.multicopter.events;
 
 /**
  * Created by nawba on 18.10.2016.

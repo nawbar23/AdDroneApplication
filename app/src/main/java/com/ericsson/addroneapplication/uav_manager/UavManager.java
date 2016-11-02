@@ -1,8 +1,8 @@
 package com.ericsson.addroneapplication.uav_manager;
 
-import com.ericsson.addroneapplication.communication.CommHandler;
-import com.ericsson.addroneapplication.communication.actions.CommHandlerAction;
-import com.ericsson.addroneapplication.communication.data.*;
+import com.ericsson.addroneapplication.multicopter.CommHandler;
+import com.ericsson.addroneapplication.multicopter.actions.CommHandlerAction;
+import com.ericsson.addroneapplication.multicopter.data.*;
 import com.ericsson.addroneapplication.viewmodel.ControlViewModel;
 
 import java.util.ArrayList;

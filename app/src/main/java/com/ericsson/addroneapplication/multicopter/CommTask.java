@@ -1,4 +1,4 @@
-package com.ericsson.addroneapplication.communication;
+package com.ericsson.addroneapplication.multicopter;
 
 import java.util.Timer;
 import java.util.TimerTask;

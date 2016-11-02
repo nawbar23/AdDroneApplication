@@ -1,8 +1,8 @@
-package com.ericsson.addroneapplication.communication.data;
+package com.ericsson.addroneapplication.multicopter.data;
 
 import android.util.Log;
 
-import com.ericsson.addroneapplication.communication.CommMessage;
+import com.ericsson.addroneapplication.multicopter.CommMessage;
 
 import java.nio.ByteBuffer;
 

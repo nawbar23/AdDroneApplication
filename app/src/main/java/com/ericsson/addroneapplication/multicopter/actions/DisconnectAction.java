@@ -1,8 +1,8 @@
-package com.ericsson.addroneapplication.communication.actions;
+package com.ericsson.addroneapplication.multicopter.actions;
 
-import com.ericsson.addroneapplication.communication.CommHandler;
-import com.ericsson.addroneapplication.communication.data.SignalData;
-import com.ericsson.addroneapplication.communication.events.CommEvent;
+import com.ericsson.addroneapplication.multicopter.CommHandler;
+import com.ericsson.addroneapplication.multicopter.data.SignalData;
+import com.ericsson.addroneapplication.multicopter.events.CommEvent;
 import com.ericsson.addroneapplication.uav_manager.UavEvent;
 
 /**

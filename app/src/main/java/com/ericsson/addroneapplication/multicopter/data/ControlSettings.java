@@ -1,4 +1,4 @@
-package com.ericsson.addroneapplication.communication.data;
+package com.ericsson.addroneapplication.multicopter.data;
 
 /**
  * Created by ebarnaw on 2016-10-14.

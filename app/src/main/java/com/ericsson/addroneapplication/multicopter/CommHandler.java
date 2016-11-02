@@ -1,13 +1,12 @@
-package com.ericsson.addroneapplication.communication;
+package com.ericsson.addroneapplication.multicopter;
 
 import android.util.Log;
 
-import com.ericsson.addroneapplication.communication.actions.*;
-import com.ericsson.addroneapplication.communication.data.SignalData;
-import com.ericsson.addroneapplication.communication.events.CommEvent;
-import com.ericsson.addroneapplication.communication.events.MessageEvent;
-import com.ericsson.addroneapplication.communication.events.SocketErrorEvent;
-import com.ericsson.addroneapplication.controller.StreamConnection;
+import com.ericsson.addroneapplication.multicopter.actions.*;
+import com.ericsson.addroneapplication.multicopter.data.SignalData;
+import com.ericsson.addroneapplication.multicopter.events.CommEvent;
+import com.ericsson.addroneapplication.multicopter.events.MessageEvent;
+import com.ericsson.addroneapplication.multicopter.events.SocketErrorEvent;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
 import com.ericsson.addroneapplication.uav_manager.UavEvent;
 import com.ericsson.addroneapplication.uav_manager.UavManager;
