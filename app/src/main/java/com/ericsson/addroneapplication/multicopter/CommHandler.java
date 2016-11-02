@@ -20,27 +20,28 @@ import java.util.List;
 public class CommHandler {
 
     private CommHandlerAction commHandlerAction;
-    private TcpSocket socket;
+    private CommInterface commInterface;
     private UavManager uavManager;
     private List<CommTask> runningTasks;
 
-    public CommHandler(UavManager uavManager){
+    public CommHandler(UavManager uavManager, CommInterface commInterface){
 
         this.commHandlerAction = new IdleAction(this);
-        this.socket = new TcpSocket(this, new CommDispatcher(this));
+        this.commInterface = commInterface;
+        this.commInterface.setCommDispatcher(new CommDispatcher(this));
         this.uavManager = uavManager;
         this.runningTasks = new ArrayList<>();
     }
 
     public void connectSocket(ConnectionInfo connectionInfo) {
         System.out.println("CommHandler: connectSocket");
-        socket.connect(connectionInfo);
+        commInterface.connect(connectionInfo);
     }
 
     public void disconnectSocket() {
         System.out.println("CommHandler: disconnectSocket");
         stopAllTasks();
-        socket.disconnect();
+        commInterface.disconnect();
     }
 
     public void endFlightLoop() {
@@ -97,7 +98,7 @@ public class CommHandler {
 
     public void send(CommMessage message) {
         System.out.println("CommHandler: Sending message: " + message.toString());
-        socket.send(message.getByteArray());
+        commInterface.send(message.getByteArray());
     }
 
     public void notifySocketConnected() {

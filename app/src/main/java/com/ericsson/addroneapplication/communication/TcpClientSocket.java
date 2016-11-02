@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.ericsson.addroneapplication.multicopter.CommDispatcher;
 import com.ericsson.addroneapplication.multicopter.CommHandler;
+import com.ericsson.addroneapplication.multicopter.CommInterface;
 import com.ericsson.addroneapplication.multicopter.events.SocketDisconnectedEvent;
 import com.ericsson.addroneapplication.multicopter.events.SocketErrorEvent;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
@@ -21,11 +22,10 @@ import java.net.Socket;
  * Provides connect, disconnect and send methods and interface for onPacketReceived event
  */
 
-public class TcpClientSocket {
+public class TcpClientSocket extends CommInterface {
     private static final String DEBUG_TAG = "AdDrone:" + TcpClientSocket.class.getSimpleName();
 
     private CommHandler commHandler;
-    private CommDispatcher commDispatcher;
     private State state;
 
     private Socket socket;
@@ -37,9 +37,8 @@ public class TcpClientSocket {
 
     private DataOutputStream outputStream;
 
-    public TcpClientSocket(CommHandler commHandler, CommDispatcher commDispatcher) {
+    public TcpClientSocket(CommHandler commHandler) {
         this.commHandler = commHandler;
-        this.commDispatcher = commDispatcher;
         this.state = State.DISCONNECTED;
     }
 
@@ -100,7 +99,7 @@ public class TcpClientSocket {
             try {
                 outputStream = new DataOutputStream(socket.getOutputStream());
             } catch (IOException e) {
-                Log.e(DEBUG_TAG, "Error while connecting output stream: " + e.getMessage());
+                Log.e(DEBUG_TAG, "Error while connecting output streawm: " + e.getMessage());
                 return ConnectionThreadResult.CONNECTION_OUTPUT_STREAM_ERROR;
             }
 
@@ -124,7 +123,7 @@ public class TcpClientSocket {
                     if (dataSize != -1) {
                         byte[] tempArray = new byte[dataSize];
                         System.arraycopy(buffer, 0, tempArray, 0, dataSize);
-                        commDispatcher.proceedReceiving(tempArray);
+                        onDataReceived(tempArray);
                     }
                 }
                 inputStream.close();

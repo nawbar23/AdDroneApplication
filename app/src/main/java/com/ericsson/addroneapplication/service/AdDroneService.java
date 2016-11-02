@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.ericsson.addroneapplication.communication.TcpClientSocket;
 import com.ericsson.addroneapplication.multicopter.actions.CommHandlerAction;
 import com.ericsson.addroneapplication.connection.StartActivity;
 import com.ericsson.addroneapplication.controller.ControlActivity;
@@ -43,7 +44,7 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
         super.onCreate();
         Log.e(DEBUG_TAG, "onCreate");
 
-        this.uavManager = new UavManager();
+        this.uavManager = new UavManager(new TcpClientSocket(this.uavManager.getCommHandler()));
         this.uavManager.registerListener(this);
 
         this.state = State.DISABLED;

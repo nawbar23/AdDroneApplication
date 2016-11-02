@@ -1,6 +1,8 @@
 package com.ericsson.addroneapplication.uav_manager;
 
+import com.ericsson.addroneapplication.communication.TcpClientSocket;
 import com.ericsson.addroneapplication.multicopter.CommHandler;
+import com.ericsson.addroneapplication.multicopter.CommInterface;
 import com.ericsson.addroneapplication.multicopter.actions.CommHandlerAction;
 import com.ericsson.addroneapplication.multicopter.data.*;
 import com.ericsson.addroneapplication.viewmodel.ControlViewModel;
@@ -37,11 +39,11 @@ public class UavManager {
 
     private ControlViewModel controlViewModel;
 
-    public UavManager() {
+    public UavManager(CommInterface commInterface) {
         this.listeners = new ArrayList<>();
         this.commDelay = 0;
 
-        this.commHandler = new CommHandler(this);
+        this.commHandler = new CommHandler(this, commInterface);
     }
 
     public CommHandler getCommHandler() {
