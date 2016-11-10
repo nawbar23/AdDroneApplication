@@ -5,7 +5,7 @@ import com.ericsson.addroneapplication.multicopter.data.SignalData;
 import com.ericsson.addroneapplication.multicopter.events.CommEvent;
 import com.ericsson.addroneapplication.multicopter.CommHandler;
 import com.ericsson.addroneapplication.multicopter.events.SignalPayloadEvent;
-import com.ericsson.addroneapplication.uav_manager.UavEvent;
+import com.ericsson.addroneapplication.multicopter.UavEvent;
 
 import static com.ericsson.addroneapplication.multicopter.actions.CommHandlerAction.ActionType.CONNECT;
 

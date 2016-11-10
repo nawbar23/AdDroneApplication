@@ -14,8 +14,8 @@ import com.ericsson.addroneapplication.multicopter.actions.CommHandlerAction;
 import com.ericsson.addroneapplication.connection.StartActivity;
 import com.ericsson.addroneapplication.controller.ControlActivity;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
-import com.ericsson.addroneapplication.uav_manager.UavEvent;
-import com.ericsson.addroneapplication.uav_manager.UavManager;
+import com.ericsson.addroneapplication.multicopter.UavEvent;
+import com.ericsson.addroneapplication.multicopter.UavManager;
 import com.ericsson.addroneapplication.viewmodel.ControlViewModel;
 
 /**
@@ -44,7 +44,7 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
         super.onCreate();
         Log.e(DEBUG_TAG, "onCreate");
 
-        this.uavManager = new UavManager(new TcpClientSocket(this.uavManager.getCommHandler()));
+        this.uavManager = new UavManager(new TcpClientSocket());
         this.uavManager.registerListener(this);
 
         this.state = State.DISABLED;

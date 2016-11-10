@@ -1,4 +1,4 @@
-package com.ericsson.addroneapplication.uav_manager;
+package com.ericsson.addroneapplication.multicopter;
 
 /**
  * Created by ebarnaw on 2016-10-14.

@@ -1,8 +1,5 @@
-package com.ericsson.addroneapplication.uav_manager;
+package com.ericsson.addroneapplication.multicopter;
 
-import com.ericsson.addroneapplication.communication.TcpClientSocket;
-import com.ericsson.addroneapplication.multicopter.CommHandler;
-import com.ericsson.addroneapplication.multicopter.CommInterface;
 import com.ericsson.addroneapplication.multicopter.actions.CommHandlerAction;
 import com.ericsson.addroneapplication.multicopter.data.*;
 import com.ericsson.addroneapplication.viewmodel.ControlViewModel;

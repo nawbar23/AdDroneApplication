@@ -3,7 +3,7 @@ package com.ericsson.addroneapplication.multicopter.actions;
 import com.ericsson.addroneapplication.multicopter.CommHandler;
 import com.ericsson.addroneapplication.multicopter.data.SignalData;
 import com.ericsson.addroneapplication.multicopter.events.CommEvent;
-import com.ericsson.addroneapplication.uav_manager.UavEvent;
+import com.ericsson.addroneapplication.multicopter.UavEvent;
 
 /**
  * Created by nawba on 17.10.2016.

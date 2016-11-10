@@ -6,30 +6,33 @@ import com.ericsson.addroneapplication.multicopter.actions.*;
 import com.ericsson.addroneapplication.multicopter.data.SignalData;
 import com.ericsson.addroneapplication.multicopter.events.CommEvent;
 import com.ericsson.addroneapplication.multicopter.events.MessageEvent;
-import com.ericsson.addroneapplication.multicopter.events.SocketErrorEvent;
 import com.ericsson.addroneapplication.model.ConnectionInfo;
-import com.ericsson.addroneapplication.uav_manager.UavEvent;
-import com.ericsson.addroneapplication.uav_manager.UavManager;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by NawBar on 2016-10-12.
  */
-public class CommHandler {
+public class CommHandler implements CommInterface.CommInterfaceListener {
 
     private CommHandlerAction commHandlerAction;
     private CommInterface commInterface;
+    private CommDispatcher dispatcher;
+
     private UavManager uavManager;
+
     private List<CommTask> runningTasks;
 
     public CommHandler(UavManager uavManager, CommInterface commInterface){
-
         this.commHandlerAction = new IdleAction(this);
         this.commInterface = commInterface;
-        this.commInterface.setCommDispatcher(new CommDispatcher(this));
+        this.commInterface.setListener(this);
+        this.dispatcher = new CommDispatcher(this);
+
         this.uavManager = uavManager;
+
         this.runningTasks = new ArrayList<>();
     }
 
@@ -70,15 +73,6 @@ public class CommHandler {
                     }
                 }
                 break;
-
-            case SOCKET_ERROR:
-                uavManager.notifyUavEvent(new UavEvent(UavEvent.Type.ERROR, ((SocketErrorEvent)event).getMessage()));
-                uavManager.notifyUavEvent(new UavEvent(UavEvent.Type.DISCONNECTED));
-                return;
-
-            case SOCKET_DISCONNECTED:
-                commHandlerAction = new IdleAction(this);
-                return;
         }
 
         try {
@@ -99,16 +93,6 @@ public class CommHandler {
     public void send(CommMessage message) {
         System.out.println("CommHandler: Sending message: " + message.toString());
         commInterface.send(message.getByteArray());
-    }
-
-    public void notifySocketConnected() {
-        System.out.println("CommHandler: notifySocketConnected");
-        try {
-            preformAction(CommHandlerAction.ActionType.CONNECT);
-        } catch (Exception e) {
-            e.printStackTrace();
-            uavManager.notifyUavEvent(new UavEvent(UavEvent.Type.ERROR, e.getMessage()));
-        }
     }
 
     public void notifyActionDone() {
@@ -137,6 +121,35 @@ public class CommHandler {
 
             default:
                 throw new Exception("CommHandler: Unsupported action type");
+        }
+    }
+
+    @Override
+    public void onDataReceived(byte[] data) {
+        dispatcher.proceedReceiving(data);
+    }
+
+    @Override
+    public void onError(IOException e) {
+        System.out.println("CommHandler: onError: " + e.getMessage());
+        uavManager.notifyUavEvent(new UavEvent(UavEvent.Type.ERROR, e.getMessage()));
+        uavManager.notifyUavEvent(new UavEvent(UavEvent.Type.DISCONNECTED));
+    }
+
+    @Override
+    public void onDisconnected() {
+        System.out.println("CommHandler: onDisconnected");
+        commHandlerAction = new IdleAction(this);
+    }
+
+    @Override
+    public void onConnected() {
+        System.out.println("CommHandler: onConnected");
+        try {
+            preformAction(CommHandlerAction.ActionType.CONNECT);
+        } catch (Exception e) {
+            e.printStackTrace();
+            uavManager.notifyUavEvent(new UavEvent(UavEvent.Type.ERROR, e.getMessage()));
         }
     }
 

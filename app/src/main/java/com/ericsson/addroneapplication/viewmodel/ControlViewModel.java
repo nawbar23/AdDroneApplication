@@ -11,8 +11,8 @@ import com.ericsson.addroneapplication.controller.ControlThrottleView;
 import com.ericsson.addroneapplication.model.ActionDialog;
 import com.ericsson.addroneapplication.model.UIDataPack;
 import com.ericsson.addroneapplication.settings.SettingsActivity;
-import com.ericsson.addroneapplication.uav_manager.UavEvent;
-import com.ericsson.addroneapplication.uav_manager.UavManager;
+import com.ericsson.addroneapplication.multicopter.UavEvent;
+import com.ericsson.addroneapplication.multicopter.UavManager;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
