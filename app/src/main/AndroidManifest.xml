@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ericsson.addroneapplication" >
+    package="com.addrone" >
 
-    <permission android:name="com.ericsson.addroneapplication.permission.MAPS_RECEIVE" android:protectionLevel="signature" />
-    <uses-permission android:name="com.ericsson.addroneapplication.permission.MAPS_RECEIVE" />
+    <permission android:name="com.addrone.permission.MAPS_RECEIVE" android:protectionLevel="signature" />
+    <uses-permission android:name="com.addroneapplication.permission.MAPS_RECEIVE" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -22,9 +22,9 @@
 
         <uses-library android:name="com.google.android.maps" android:required="true" />
 
-        <service android:name=".service.AdDroneService" />
+        <service android:name="com.addrone.service.AdDroneService" />
         <activity
-            android:name=".connection.StartActivity"
+            android:name="com.addrone.connection.StartActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
@@ -35,7 +35,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".settings.SettingsActivity"
+        <activity android:name="com.addrone.settings.SettingsActivity"
             android:label="@string/settings"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
@@ -46,7 +46,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".controller.ControlActivity"
+        <activity android:name="com.addrone.controller.ControlActivity"
             android:screenOrientation="landscape"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>

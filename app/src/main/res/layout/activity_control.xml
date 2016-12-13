@@ -16,12 +16,12 @@
 
     </FrameLayout>
 
-    <com.ericsson.addroneapplication.controller.HudView
+    <com.addrone.controller.HudView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/view_hud"/>
 
-    <com.ericsson.addroneapplication.controller.ControlThrottleView
+    <com.addrone.controller.ControlThrottleView
         android:layout_width="60dp"
         android:layout_height="240dp"
         android:layout_alignParentStart="true"
@@ -32,7 +32,7 @@
         android:layout_marginBottom="@dimen/margin_sm"
         android:id="@+id/throttle"/>
 
-    <com.ericsson.addroneapplication.controller.ControlPadView
+    <com.addrone.controller.ControlPadView
         android:layout_width="140dp"
         android:layout_height="140dp"
         android:layout_alignParentEnd="true"
