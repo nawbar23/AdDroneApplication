@@ -1,7 +1,7 @@
 package com.addrone.model;
 
-import com.addrone.multicopter.data.AutopilotData;
-import com.addrone.multicopter.data.DebugData;
+import com.multicopter.java.data.AutopilotData;
+import com.multicopter.java.data.DebugData;
 
 /**
  * Created by Kamil on 8/25/2016.

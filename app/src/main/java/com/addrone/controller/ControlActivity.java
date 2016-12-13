@@ -19,7 +19,7 @@ import android.widget.RelativeLayout;
 
 import com.addrone.viewmodel.ControlViewModel;
 import com.addrone.R;
-import com.addrone.multicopter.data.AutopilotData;
+import com.multicopter.java.data.AutopilotData;
 import com.addrone.service.AdDroneService;
 
 import java.util.Timer;

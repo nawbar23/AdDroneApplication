@@ -12,11 +12,12 @@ import android.widget.Toast;
 import com.addrone.communication.TcpClientSocket;
 import com.addrone.connection.StartActivity;
 import com.addrone.controller.ControlActivity;
-import com.addrone.multicopter.UavEvent;
-import com.addrone.multicopter.UavManager;
-import com.addrone.multicopter.actions.CommHandlerAction;
+import com.multicopter.java.UavEvent;
+import com.multicopter.java.UavManager;
+import com.multicopter.java.actions.CommHandlerAction;
 import com.addrone.viewmodel.ControlViewModel;
 import com.addrone.model.ConnectionInfo;
+import com.multicopter.java.data.ControlData;
 
 /**
  * Created by nbar on 2016-08-19.
@@ -32,6 +33,7 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
 
     // main communication handler for UAV
     private UavManager uavManager;
+    private ControlForwarder controlForwarder;
 
     private Handler handler;
 
@@ -86,7 +88,7 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
                 state = State.CONNECTING;
                 progressDialog = dialog;
                 actualConnection = connectionInfo;
-                uavManager.getCommHandler().connectSocket(connectionInfo);
+                uavManager.getCommHandler().connectSocket(connectionInfo.getIpAddress(), connectionInfo.getPort());
                 break;
         }
     }
@@ -132,7 +134,8 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
     }
 
     public void setControlViewModel(ControlViewModel controlViewModel) {
-        uavManager.setControlViewModel(controlViewModel);
+        controlForwarder = new ControlForwarder(controlViewModel);
+        uavManager.setControlDataSource(controlForwarder);
     }
 
     public State getState() {
@@ -206,6 +209,19 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
     public class LocalBinder extends Binder {
         public AdDroneService getService() {
             return AdDroneService.this;
+        }
+    }
+
+    public class ControlForwarder implements UavManager.ControlDataSource {
+        ControlViewModel controlViewModel;
+
+        public ControlForwarder(ControlViewModel controlViewModel) {
+            this.controlViewModel = controlViewModel;
+        }
+
+        @Override
+        public ControlData getControlData() {
+            return controlViewModel.getCurrentControlData();
         }
     }
 }

@@ -4,12 +4,12 @@ import android.util.Log;
 
 import com.addrone.controller.ControlPadView;
 import com.addrone.model.UIDataPack;
-import com.addrone.multicopter.UavEvent;
-import com.addrone.multicopter.UavManager;
+import com.multicopter.java.UavEvent;
+import com.multicopter.java.UavManager;
 import com.addrone.settings.SettingsActivity;
-import com.addrone.multicopter.data.AutopilotData;
-import com.addrone.multicopter.data.ControlData;
-import com.addrone.multicopter.data.DebugData;
+import com.multicopter.java.data.AutopilotData;
+import com.multicopter.java.data.ControlData;
+import com.multicopter.java.data.DebugData;
 import com.addrone.controller.ControlActivity;
 import com.addrone.controller.ControlThrottleView;
 import com.addrone.model.ActionDialog;

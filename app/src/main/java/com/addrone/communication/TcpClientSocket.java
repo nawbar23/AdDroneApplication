@@ -3,7 +3,7 @@ package com.addrone.communication;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.addrone.multicopter.CommInterface;
+import com.multicopter.java.CommInterface;
 import com.addrone.model.ConnectionInfo;
 
 import java.io.DataInputStream;
@@ -34,10 +34,10 @@ public class TcpClientSocket extends CommInterface {
         return state;
     }
 
-    public void connect(ConnectionInfo connectionInfo) {
+    public void connect(String ipAddress, int port) {
         state = State.CONNECTING;
         SocketConnection connection = new SocketConnection();
-        connection.execute(connectionInfo);
+        connection.execute(new ConnectionInfo(ipAddress, port));
     }
 
     public void disconnect() {
