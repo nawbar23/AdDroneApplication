@@ -24,6 +24,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
     private ControlActivity activity;
     private long delay;
+    private static final String TAG="ControlViewModel";
 
     private ControlData controlData = new ControlData();
     private Lock controlDataLock = new ReentrantLock();
@@ -34,6 +35,8 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
     private Lock uiDataLock = new ReentrantLock();
 
     private UavManager uavManager;
+
+    private ActionDialog.ButtonId buttonIdd;
 
     public ControlViewModel(ControlActivity activity) {
         this.activity = activity;
@@ -95,19 +98,9 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
         final ActionDialog dialog = new ActionDialog(activity) {
             @Override
             public void onButtonClick(ButtonId buttonId) {
-                switch (buttonId) {
-                    case FLY:
-                        uavManager.startFlightLoop();
-                        break;
 
-                    case CALIB_ACCEL:
-                        uavManager.startAccelerometerCalibration();
-                        break;
-
-                    case DISCONNECT:
-                        uavManager.disconnectApplicationLoop();
-                        break;
-                }
+                buttonIdd=buttonId;
+                new Thread(new ActionMenu()).start();
                 dismiss();
             }
         };
@@ -167,5 +160,25 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
             }
         });
 
+    }
+
+
+    private class ActionMenu implements Runnable {
+        @Override
+        public void run() {
+            switch (buttonIdd) {
+                case FLY:
+                    uavManager.startFlightLoop();
+                    break;
+
+                case CALIB_ACCEL:
+                    uavManager.startAccelerometerCalibration();
+                    break;
+
+                case DISCONNECT:
+                    uavManager.disconnectApplicationLoop();
+                    break;
+            }
+        }
     }
 }
