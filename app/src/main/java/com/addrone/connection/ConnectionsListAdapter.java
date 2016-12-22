@@ -75,7 +75,7 @@ public abstract class ConnectionsListAdapter extends ArrayAdapter<String> {
             holder.edit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final int position = ((ListView) v.getParent().getParent()).getPositionForView((View)v.getParent());
+                    final int position = ((ListView) v.getParent().getParent().getParent()).getPositionForView((View)v.getParent());
                     onEdit(getItem(position));
                 }
             });
@@ -83,7 +83,7 @@ public abstract class ConnectionsListAdapter extends ArrayAdapter<String> {
             holder.remove.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final int position = ((ListView) v.getParent().getParent()).getPositionForView((View)v.getParent());
+                    final int position = ((ListView) v.getParent().getParent().getParent()).getPositionForView((View)v.getParent());
                     onDelete(getItem(position));
                 }
             });
