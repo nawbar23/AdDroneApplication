@@ -17,7 +17,7 @@
             android:id="@+id/connection_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Name"
+            android:text="@string/connection_name"
             android:textStyle="bold"
             android:layout_toLeftOf="@+id/split_name_description"
             android:textColor="@android:color/black"/>
@@ -25,7 +25,7 @@
             android:id="@+id/connection_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Description"
+            android:text="@string/connection_description"
             android:layout_toRightOf="@id/connection_name"
             android:layout_alignTop="@+id/connection_name"
             android:layout_marginLeft="10dp"
@@ -43,18 +43,19 @@
 
         <Button
             android:id="@+id/connection_edit"
-            android:text="Edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:background="@drawable/edit_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_alignParentRight="true"
-
+            android:layout_marginRight="5dp"
             />
 
         <Button
             android:id="@+id/connection_remove"
-            android:text="Remove"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:background="@drawable/remove_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="5dp"
             android:layout_below="@+id/layout_decription"
             android:layout_toStartOf="@+id/connection_edit" />
 

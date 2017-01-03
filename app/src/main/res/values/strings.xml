@@ -43,5 +43,8 @@
     <string name="latitude">lat</string>
     <string name="longitude">lon</string>
     <string name="action">Action</string>
+
+    <string name="connection_name">Name</string>
+    <string name="connection_description">Description</string>
 ==
 </resources>

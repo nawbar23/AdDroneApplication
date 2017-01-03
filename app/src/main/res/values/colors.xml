@@ -3,6 +3,6 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="connection_chosen_color">#94FF70</color>
+    <color name="connection_chosen_color">#ccccff</color>
     <color name="action_dialog_background">#80191919</color>
 </resources>
