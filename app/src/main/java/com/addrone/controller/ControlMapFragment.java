@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.addrone.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -21,7 +22,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 /**
  * Created by Kamil on 8/23/2016.
  */
-public class ControlMapFragment extends Fragment implements OnMapReadyCallback {
+public class ControlMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
 
     MapView mapView;
     private GoogleMap googleMap;
@@ -71,12 +72,24 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
 
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(-34, 151)).zoom(12).build();
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(50.03, 19.94)).zoom(12).build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        googleMap.setOnMapClickListener(this);
+        googleMap.setOnMapLongClickListener(this);
+    }
+
+    public void onMapClick(LatLng point) {
+        Toast.makeText(getActivity(), "Tapped... " + "\npoint lat: " + point.latitude + "\nlong: " + point.longitude,
+                Toast.LENGTH_SHORT).show();
+    }
+
+    public void onMapLongClick(LatLng point) {
+        Toast.makeText(getActivity(), "Long pressed... " + "\npoint lat: " + point.latitude + "\nlong: " + point.longitude,
+                Toast.LENGTH_SHORT).show();
     }
 
     public void updatePosition(LatLng latLng) {
-        if(marker == null) {
+        if (marker == null) {
             marker = googleMap.addMarker(new MarkerOptions().position(latLng));
         } else {
             marker.setPosition(latLng);
