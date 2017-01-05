@@ -81,11 +81,13 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
     public void onMapClick(LatLng point) {
         Toast.makeText(getActivity(), "Tapped... " + "\npoint lat: " + point.latitude + "\nlong: " + point.longitude,
                 Toast.LENGTH_SHORT).show();
+        updatePosition(point);
     }
 
     public void onMapLongClick(LatLng point) {
         Toast.makeText(getActivity(), "Long pressed... " + "\npoint lat: " + point.latitude + "\nlong: " + point.longitude,
                 Toast.LENGTH_SHORT).show();
+        ((ControlActivity) getActivity()).setAutopilotData(point);
     }
 
     public void updatePosition(LatLng latLng) {

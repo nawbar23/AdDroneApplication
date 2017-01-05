@@ -17,10 +17,11 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
-import com.addrone.viewmodel.ControlViewModel;
 import com.addrone.R;
-import com.multicopter.java.data.AutopilotData;
 import com.addrone.service.AdDroneService;
+import com.addrone.viewmodel.ControlViewModel;
+import com.google.android.gms.maps.model.LatLng;
+import com.multicopter.java.data.AutopilotData;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -42,7 +43,7 @@ public class ControlActivity extends AppCompatActivity {
     private TimerTask hudViewTimerUpdateTask = new TimerTask() {
         @Override
         public void run() {
-            if(controlViewModel != null) {
+            if (controlViewModel != null) {
                 ControlActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -149,8 +150,8 @@ public class ControlActivity extends AppCompatActivity {
         });
     }
 
-    public void notifyFlightStarted(){
-        buttonAction.setText("End fly");
+    public void notifyFlightStarted() {
+        buttonAction.setText(R.string.end_fly);
         controlPadView.setVisibility(View.VISIBLE);
         controlThrottleView.setVisibility(View.VISIBLE);
 
@@ -162,8 +163,8 @@ public class ControlActivity extends AppCompatActivity {
         });
     }
 
-    public void notifyFlightEnded(){
-        buttonAction.setText("Action");
+    public void notifyFlightEnded() {
+        buttonAction.setText(R.string.action);
         controlPadView.setVisibility(View.INVISIBLE);
         controlThrottleView.setVisibility(View.INVISIBLE);
 
@@ -173,6 +174,16 @@ public class ControlActivity extends AppCompatActivity {
                 controlViewModel.onActionClick();
             }
         });
+    }
+
+    public void setAutopilotData(LatLng point) {
+        AutopilotData autopilotData = new AutopilotData();
+        autopilotData.setLatitude(point.latitude);
+        autopilotData.setLongitude(point.longitude);
+        autopilotData.setRelativeAltitude(10.0f);
+        autopilotData.setFlags(0);
+        Log.e("AUTO_PILOT_DATA_UPDATE", "Autopilot event: " + autopilotData.toString());
+        service.getUavManager().notifyAutopilotEvent(autopilotData);
     }
 
     private void setCameraFragment() {
