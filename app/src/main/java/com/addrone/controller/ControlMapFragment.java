@@ -14,19 +14,26 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
+
 /**
  * Created by Kamil on 8/23/2016.
  */
-public class ControlMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
+public class ControlMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
     MapView mapView;
     private GoogleMap googleMap;
     private Marker marker;
+    private Marker autopilotDestinationMarker;
+    private final LatLng WADOWICKA_6 = new LatLng(50.034, 19.940);
+    private final int ZOOM_VAL = 15;
 
     @Nullable
     @Override
@@ -72,22 +79,26 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
 
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(new LatLng(50.03, 19.94)).zoom(12).build();
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(WADOWICKA_6).zoom(ZOOM_VAL).build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        googleMap.setOnMapClickListener(this);
         googleMap.setOnMapLongClickListener(this);
-    }
 
-    public void onMapClick(LatLng point) {
-        Toast.makeText(getActivity(), "Tapped... " + "\npoint lat: " + point.latitude + "\nlong: " + point.longitude,
-                Toast.LENGTH_SHORT).show();
-        updatePosition(point);
+        autopilotDestinationMarker = googleMap.addMarker(new MarkerOptions()
+                        .position(WADOWICKA_6)
+                        .title(getString(R.string.autopilot_destination))
+                        .icon(BitmapDescriptorFactory.defaultMarker(HUE_AZURE))
+                        .visible(false)
+        );
     }
 
     public void onMapLongClick(LatLng point) {
-        Toast.makeText(getActivity(), "Long pressed... " + "\npoint lat: " + point.latitude + "\nlong: " + point.longitude,
+        Toast.makeText(getActivity(), "Autopilot destination has been set to: " + "\npoint lat: " + point.latitude + "\nlong: " + point.longitude,
                 Toast.LENGTH_SHORT).show();
         ((ControlActivity) getActivity()).setAutopilotData(point);
+
+        autopilotDestinationMarker.setPosition(point);
+        if (!autopilotDestinationMarker.isVisible())
+            autopilotDestinationMarker.setVisible(true);
     }
 
     public void updatePosition(LatLng latLng) {
