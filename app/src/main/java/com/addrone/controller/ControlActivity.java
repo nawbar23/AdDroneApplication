@@ -64,6 +64,7 @@ public class ControlActivity extends AppCompatActivity {
     private RelativeLayout.LayoutParams layoutParamsHidden;
 
     private AdDroneService service = null;
+    private long tmp;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -209,15 +210,11 @@ public class ControlActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        controlViewModel.resume();
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
         controlViewModel.pause();
+        Log.d("ControlAcivity","onPause sie wywolalo");
+
     }
 
     @Override
@@ -229,4 +226,45 @@ public class ControlActivity extends AppCompatActivity {
             unbindService(serviceConnection);
         }
     }
+
+    @Override
+    protected void onRestart()
+    {
+        super.onRestart();
+        hudViewUpdateTimer.purge();
+        Log.d("ControlAcivity","onRestrat sie wywolalo");
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        controlViewModel.stop();
+        tmp = System.currentTimeMillis();
+        Log.d("ControlAcivity", "onStop sie wywolalo");
+        hudViewTimerUpdateTask.cancel();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        controlViewModel.start();
+
+
+        Log.d("ControlAcivity", "onStart sie wywolalo");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        controlViewModel.resume();
+        }
+
+
+    protected void onSaveInstanceState(Bundle savedInstanceState){
+        super.onSaveInstanceState(savedInstanceState);
+        getDelegate().onSaveInstanceState(savedInstanceState);
+
+    }
+
 }

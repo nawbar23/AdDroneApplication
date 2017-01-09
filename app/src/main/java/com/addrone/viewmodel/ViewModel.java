@@ -8,4 +8,5 @@ public interface ViewModel {
 
     void destroy();
 
+    void stop();
 }
