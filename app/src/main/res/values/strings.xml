@@ -46,5 +46,6 @@
 
     <string name="connection_name">Name</string>
     <string name="connection_description">Description</string>
+    <string name="control_name">AdDroneApplication</string>
 ==
 </resources>

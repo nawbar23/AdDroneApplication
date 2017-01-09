@@ -47,8 +47,11 @@
         </activity>
 
         <activity android:name="com.addrone.controller.ControlActivity"
+            android:label="@string/control_name"
             android:screenOrientation="landscape"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            >
+            
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
