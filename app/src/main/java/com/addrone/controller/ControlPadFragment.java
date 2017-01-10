@@ -63,7 +63,14 @@ public class ControlPadFragment extends Fragment implements StreamConnection.OnN
     public void onResume() {
         super.onResume();
         streamConnection.start();
-        timer.scheduleAtFixedRate(timerUpdateTask, 0, 40);
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask(){
+                @Override
+                public void run() {
+                    bitmapLock.lock();
+                    ControlPadFragment.this.getActivity().runOnUiThread(setImageBitmapRunnable);
+                    bitmapLock.unlock();}
+        }, 0, 40);
     }
 
     @Override

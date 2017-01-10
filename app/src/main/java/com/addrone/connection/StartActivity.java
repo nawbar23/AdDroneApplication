@@ -20,11 +20,14 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.addrone.viewmodel.StartViewModel;
 import com.addrone.R;
 import com.addrone.model.ConnectionInfo;
 import com.addrone.service.AdDroneService;
 import com.addrone.settings.SettingsActivity;
+import com.addrone.viewmodel.StartViewModel;
+
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class StartActivity extends AppCompatActivity implements AddConnectionDialogFragment.AddConnectionDialogListener {
 
@@ -55,10 +58,13 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         }
     };
 
-    private ListView listViewConnections;
     private ConnectionsListAdapter connectionsListAdapter;
-    private Button buttonConnect;
-    private Button buttonAdd;
+
+
+    @BindView(R.id.button_connect) private Button buttonConnect;
+    @BindView(R.id.button_add) private Button buttonAdd;
+    @BindView(R.id.list_connection) private ListView listViewConnections;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +84,9 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         setSupportActionBar(toolbar);
 
         // initialize view
-        buttonConnect = (Button) findViewById(R.id.button_connect);
-        buttonAdd = (Button) findViewById(R.id.button_add);
         listViewConnections = (ListView) findViewById(R.id.list_connection);
+        ButterKnife.bind(this);
+
 
         connectionsListAdapter = new ConnectionsListAdapter(this, R.layout.connection_list_row, startViewModel.getConnectionInfoMap()) {
             @Override
@@ -104,25 +110,6 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 connectionsListAdapter.onItemClick(parent, view, position, id);
                 startViewModel.setLastChosenConnectionName(connectionsListAdapter.getItem(position));
-            }
-        });
-
-        buttonAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DialogFragment addDialogFragment = new AddConnectionDialogFragment();
-                addDialogFragment.show(getFragmentManager(), "ADD_DIALOG");
-            }
-        });
-
-        buttonConnect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    onConnect(connectionsListAdapter.getChosenConnection());
-                } catch (Exception e) {
-                    Toast.makeText(StartActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
             }
         });
 
@@ -197,4 +184,23 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         connectionsListAdapter.remove(name);
         connectionsListAdapter.add(newName);
     }
+
+
+    @OnClick(R.id.button_add)
+    public void clickButtonAdd(){
+                DialogFragment addDialogFragment = new AddConnectionDialogFragment();
+        addDialogFragment.show(getFragmentManager(), "ADD_DIALOG");
+    }
+
+
+    @OnClick(R.id.button_connect)
+    public void clickButtonConnect() {
+                try {
+                    onConnect(connectionsListAdapter.getChosenConnection());
+                } catch (Exception e) {
+                    Toast.makeText(StartActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
 }
+
+
