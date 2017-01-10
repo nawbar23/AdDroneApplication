@@ -3,6 +3,7 @@ package com.addrone.controller;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -22,22 +22,26 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
+import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_GREEN;
 
 /**
  * Created by Kamil on 8/23/2016.
  */
 public class ControlMapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
 
-    MapView mapView;
-    private GoogleMap googleMap;
-    private Marker marker;
-    private Marker autopilotDestinationMarker;
+    private static final String DEBUG_TAG = ControlMapFragment.class.getSimpleName();
     private final LatLng WADOWICKA_6 = new LatLng(50.034, 19.940);
     private final int ZOOM_VAL = 15;
+    MapView mapView;
+    private GoogleMap googleMap;
+    private Marker droneMarker;
+    private Marker autopilotDestinationMarker;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d(DEBUG_TAG, "onCreateView");
+
         View root = inflater.inflate(R.layout.fragment_map, container, false);
 
         mapView = (MapView) root.findViewById(R.id.map_view);
@@ -77,6 +81,7 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Log.d(DEBUG_TAG, "onMapReady");
         this.googleMap = googleMap;
 
         CameraPosition cameraPosition = new CameraPosition.Builder().target(WADOWICKA_6).zoom(ZOOM_VAL).build();
@@ -84,28 +89,36 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
         googleMap.setOnMapLongClickListener(this);
 
         autopilotDestinationMarker = googleMap.addMarker(new MarkerOptions()
-                        .position(WADOWICKA_6)
-                        .title(getString(R.string.autopilot_destination))
-                        .icon(BitmapDescriptorFactory.defaultMarker(HUE_AZURE))
-                        .visible(false)
+                .position(WADOWICKA_6)
+                .title(getString(R.string.autopilot_destination))
+                .icon(BitmapDescriptorFactory.defaultMarker(HUE_AZURE))
+                .visible(false)
         );
     }
 
     public void onMapLongClick(LatLng point) {
-        Toast.makeText(getActivity(), "Autopilot destination has been set to: " + "\npoint lat: " + point.latitude + "\nlong: " + point.longitude,
+        Toast.makeText(getActivity(), "Autopilot destination has been set to: "
+                        + "\npoint lat: " + point.latitude + "\nlong: " + point.longitude,
                 Toast.LENGTH_SHORT).show();
-        ((ControlActivity) getActivity()).setAutopilotData(point);
 
+        ((ControlActivity) getActivity()).setAutopilotData(point);
         autopilotDestinationMarker.setPosition(point);
         if (!autopilotDestinationMarker.isVisible())
             autopilotDestinationMarker.setVisible(true);
     }
 
-    public void updatePosition(LatLng latLng) {
-        if (marker == null) {
-            marker = googleMap.addMarker(new MarkerOptions().position(latLng));
+    public void updatePosition(boolean gpsFix, LatLng latLng) {
+        if (gpsFix) {
+            Log.d(DEBUG_TAG, "updatePosition: GPS fix available. updating position");
+            if (droneMarker == null) {
+                droneMarker = googleMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title(getString(R.string.drone_position)).icon(BitmapDescriptorFactory.defaultMarker(HUE_GREEN)));
+            } else {
+                droneMarker.setPosition(latLng);
+            }
         } else {
-            marker.setPosition(latLng);
+            Log.d(DEBUG_TAG, "updatePosition: GPS not available.");
         }
     }
 }

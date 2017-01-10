@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.addrone.R;
+import com.addrone.model.UIDataPack;
 import com.addrone.service.AdDroneService;
 import com.addrone.viewmodel.ControlViewModel;
 import com.google.android.gms.maps.model.LatLng;
@@ -39,6 +40,7 @@ public class ControlActivity extends AppCompatActivity {
     private FrameLayout frameLayout2;
 
     private HudView hudView;
+    private UIDataPack currentUIDataPack;
     private Timer hudViewUpdateTimer;
     private TimerTask hudViewTimerUpdateTask = new TimerTask() {
         @Override
@@ -47,7 +49,10 @@ public class ControlActivity extends AppCompatActivity {
                 ControlActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        hudView.updateUiDataPack(controlViewModel.getCurrentUiDataPack());
+                        currentUIDataPack = controlViewModel.getCurrentUiDataPack();
+                        hudView.updateUiDataPack(currentUIDataPack);
+                        ControlMapFragment fragment = (ControlMapFragment) getSupportFragmentManager().findFragmentById(R.id.layout_container_1);
+                        fragment.updatePosition(currentUIDataPack.gpsFix, new LatLng(currentUIDataPack.lat, currentUIDataPack.lng));
                     }
                 });
             }
@@ -183,7 +188,7 @@ public class ControlActivity extends AppCompatActivity {
         autopilotData.setLongitude(point.longitude);
         autopilotData.setRelativeAltitude(10.0f);
         autopilotData.setFlags(0);
-        Log.e("AUTO_PILOT_DATA_UPDATE", "Autopilot event: " + autopilotData.toString());
+        Log.e(ControlActivity.class.getSimpleName(), "Created AutopilotData: " + autopilotData.toString());
         service.getUavManager().notifyAutopilotEvent(autopilotData);
     }
 

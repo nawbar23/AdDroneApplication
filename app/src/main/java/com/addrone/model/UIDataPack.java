@@ -20,6 +20,8 @@ public class UIDataPack {
 
     public float battery;
 
+    public boolean gpsFix;
+
     public UIDataPack() {
 
     }
@@ -39,6 +41,8 @@ public class UIDataPack {
 
         this.altitude = debugData.getRelativeAltitude();
         this.velocity = debugData.getVLoc();
+
+        this.gpsFix = (debugData.getFlagState(DebugData.FlagId.GPS_FIX) || debugData.getFlagState(DebugData.FlagId.GPS_FIX_3D));
 
         // TODO: compute battery percentage
         this.battery = (float)debugData.getBattery() / 255;
