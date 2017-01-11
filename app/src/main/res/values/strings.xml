@@ -50,5 +50,6 @@
     <string name="end_fly">End fly</string>
     <string name="autopilot_destination">Autopilot destination</string>
     <string name="drone_position">Position of the drone</string>
+    <string name="following_drone">Following the drone.</string>
     ==
 </resources>
