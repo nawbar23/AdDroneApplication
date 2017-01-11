@@ -117,4 +117,8 @@ public class StartViewModel implements ViewModel {
     @Override
     public void destroy() {
     }
+
+    @Override
+    public void stop() {
+    }
 }

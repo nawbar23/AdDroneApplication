@@ -76,6 +76,11 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
     }
 
     @Override
+    public void stop() {
+
+    }
+
+    @Override
     public void onControlPadChanged(float x, float y) {
         Log.v("CONTROLS_UPDATE", "Received pad update: "  + x + " " + y);
 
@@ -173,6 +178,9 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
             }
         });
 
+    }
+
+    public void start() {
     }
 
 
