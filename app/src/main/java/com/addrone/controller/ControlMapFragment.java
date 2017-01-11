@@ -117,6 +117,7 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
             } else {
                 droneMarker.setPosition(latLng);
             }
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         } else {
             Log.d(DEBUG_TAG, "updatePosition: GPS not available.");
         }
