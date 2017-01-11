@@ -1,7 +1,10 @@
 package com.addrone.controller;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -18,6 +21,7 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.addrone.R;
+import com.addrone.connection.StartActivity;
 import com.addrone.model.UIDataPack;
 import com.addrone.service.AdDroneService;
 import com.addrone.viewmodel.ControlViewModel;
@@ -38,6 +42,7 @@ public class ControlActivity extends AppCompatActivity {
 
     private FrameLayout frameLayout1;
     private FrameLayout frameLayout2;
+    private ControlReceiver mControlReceiver;
 
     private HudView hudView;
     private UIDataPack currentUIDataPack;
@@ -218,7 +223,7 @@ public class ControlActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         controlViewModel.pause();
-        Log.d("ControlAcivity","onPause sie wywolalo");
+        Log.d("ControlAcivity", "onPause sie wywolalo");
 
     }
 
@@ -233,11 +238,10 @@ public class ControlActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onRestart()
-    {
+    protected void onRestart() {
         super.onRestart();
         hudViewUpdateTimer.purge();
-        Log.d("ControlAcivity","onRestrat sie wywolalo");
+        Log.d("ControlAcivity", "onRestrat sie wywolalo");
 
     }
 
@@ -248,6 +252,8 @@ public class ControlActivity extends AppCompatActivity {
         tmp = System.currentTimeMillis();
         Log.d("ControlAcivity", "onStop sie wywolalo");
         hudViewTimerUpdateTask.cancel();
+
+        unregisterReceiver(mControlReceiver);
     }
 
     @Override
@@ -255,6 +261,10 @@ public class ControlActivity extends AppCompatActivity {
         super.onStart();
         controlViewModel.start();
 
+        mControlReceiver = new ControlReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(AdDroneService.CONTROL_ACTIVITY);
+        registerReceiver(mControlReceiver, intentFilter);
 
         Log.d("ControlAcivity", "onStart sie wywolalo");
     }
@@ -263,13 +273,30 @@ public class ControlActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         controlViewModel.resume();
-        }
+    }
 
 
-    protected void onSaveInstanceState(Bundle savedInstanceState){
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         getDelegate().onSaveInstanceState(savedInstanceState);
 
     }
 
+    public class ControlReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO Auto-generated method stub
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(getApplicationContext(), StartActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                }
+            });
+        }
+    }
 }

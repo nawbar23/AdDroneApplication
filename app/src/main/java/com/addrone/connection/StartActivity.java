@@ -66,9 +66,12 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
     private ConnectionsListAdapter connectionsListAdapter;
 
 
-    @BindView(R.id.button_connect) private Button buttonConnect;
-    @BindView(R.id.button_add) private Button buttonAdd;
-    @BindView(R.id.list_connection) private ListView listViewConnections;
+    @BindView(R.id.button_connect)
+    private Button buttonConnect;
+    @BindView(R.id.button_add)
+    private Button buttonAdd;
+    @BindView(R.id.list_connection)
+    private ListView listViewConnections;
 
 
     @Override
@@ -126,10 +129,10 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
     @Override
     protected void onStart() {
         super.onStart();
-        mIntentReceiver=new IntentReceiver();
-        IntentFilter intentFilter =new IntentFilter();
+        mIntentReceiver = new IntentReceiver();
+        IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(AdDroneService.START_ACTIVITY);
-        registerReceiver(mIntentReceiver,intentFilter);
+        registerReceiver(mIntentReceiver, intentFilter);
     }
 
     @Override
@@ -207,20 +210,20 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
 
 
     @OnClick(R.id.button_add)
-    public void clickButtonAdd(){
-                DialogFragment addDialogFragment = new AddConnectionDialogFragment();
+    public void clickButtonAdd() {
+        DialogFragment addDialogFragment = new AddConnectionDialogFragment();
         addDialogFragment.show(getFragmentManager(), "ADD_DIALOG");
     }
 
 
     @OnClick(R.id.button_connect)
     public void clickButtonConnect() {
-                try {
-                    onConnect(connectionsListAdapter.getChosenConnection());
-                } catch (Exception e) {
-                    Toast.makeText(StartActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
+        try {
+            onConnect(connectionsListAdapter.getChosenConnection());
+        } catch (Exception e) {
+            Toast.makeText(StartActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
 
     public class IntentReceiver extends BroadcastReceiver {
 
