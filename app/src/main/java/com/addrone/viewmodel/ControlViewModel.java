@@ -107,6 +107,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
             controlData.setYaw(0.0f);
         }
         controlData.setThrottle(y);
+        setTimeStamp();
 
         controlDataLock.unlock();
     }

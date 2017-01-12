@@ -7,6 +7,7 @@ import android.preference.PreferenceFragment;
 
 import com.addrone.R;
 
+
 /**
  * Created by Kamil on 8/22/2016.
  */
@@ -15,7 +16,6 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         addPreferencesFromResource(R.xml.preferences);
     }
 
