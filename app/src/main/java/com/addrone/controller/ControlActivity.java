@@ -137,6 +137,10 @@ public class ControlActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
+    public Fragment getCameraFragment() {
+        return cameraFragment;
+    }
+
     private void setMapFragment() {
         frameLayout1.setLayoutParams(layoutParamsFullscreen);
         frameLayout2.setLayoutParams(layoutParamsHidden);
@@ -202,8 +206,6 @@ public class ControlActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         controlViewModel.pause();
-        Log.d("ControlAcivity","onPause sie wywolalo");
-
     }
 
     @Override
@@ -221,8 +223,6 @@ public class ControlActivity extends AppCompatActivity {
     {
         super.onRestart();
         hudViewUpdateTimer.purge();
-        Log.d("ControlAcivity","onRestrat sie wywolalo");
-
     }
 
     @Override
@@ -230,7 +230,6 @@ public class ControlActivity extends AppCompatActivity {
         super.onStop();
         controlViewModel.stop();
         tmp = System.currentTimeMillis();
-        Log.d("ControlAcivity", "onStop sie wywolalo");
         hudViewTimerUpdateTask.cancel();
     }
 
@@ -238,9 +237,6 @@ public class ControlActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         controlViewModel.start();
-
-
-        Log.d("ControlAcivity", "onStart sie wywolalo");
     }
 
     @Override
@@ -255,5 +251,4 @@ public class ControlActivity extends AppCompatActivity {
         getDelegate().onSaveInstanceState(savedInstanceState);
 
     }
-
 }
