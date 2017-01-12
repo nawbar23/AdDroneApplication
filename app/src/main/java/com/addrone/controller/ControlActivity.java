@@ -1,7 +1,10 @@
 package com.addrone.controller;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -18,8 +21,11 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.addrone.R;
+import com.addrone.connection.StartActivity;
+import com.addrone.model.UIDataPack;
 import com.addrone.service.AdDroneService;
 import com.addrone.viewmodel.ControlViewModel;
+import com.google.android.gms.maps.model.LatLng;
 import com.multicopter.java.data.AutopilotData;
 
 import java.util.Timer;
@@ -36,17 +42,22 @@ public class ControlActivity extends AppCompatActivity {
 
     private FrameLayout frameLayout1;
     private FrameLayout frameLayout2;
+    private ControlReceiver mControlReceiver;
 
     private HudView hudView;
+    private UIDataPack currentUIDataPack;
     private Timer hudViewUpdateTimer;
     private TimerTask hudViewTimerUpdateTask = new TimerTask() {
         @Override
         public void run() {
-            if(controlViewModel != null) {
+            if (controlViewModel != null) {
                 ControlActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        hudView.updateUiDataPack(controlViewModel.getCurrentUiDataPack());
+                        currentUIDataPack = controlViewModel.getCurrentUiDataPack();
+                        hudView.updateUiDataPack(currentUIDataPack);
+                        ControlMapFragment fragment = (ControlMapFragment) getSupportFragmentManager().findFragmentById(R.id.layout_container_1);
+                        fragment.updatePosition(currentUIDataPack.gpsFix, new LatLng(currentUIDataPack.lat, currentUIDataPack.lng));
                     }
                 });
             }
@@ -154,8 +165,8 @@ public class ControlActivity extends AppCompatActivity {
         });
     }
 
-    public void notifyFlightStarted(){
-        buttonAction.setText("End fly");
+    public void notifyFlightStarted() {
+        buttonAction.setText(R.string.end_fly);
         controlPadView.setVisibility(View.VISIBLE);
         controlThrottleView.setVisibility(View.VISIBLE);
 
@@ -167,8 +178,8 @@ public class ControlActivity extends AppCompatActivity {
         });
     }
 
-    public void notifyFlightEnded(){
-        buttonAction.setText("Action");
+    public void notifyFlightEnded() {
+        buttonAction.setText(R.string.action);
         controlPadView.setVisibility(View.INVISIBLE);
         controlThrottleView.setVisibility(View.INVISIBLE);
 
@@ -178,6 +189,16 @@ public class ControlActivity extends AppCompatActivity {
                 controlViewModel.onActionClick();
             }
         });
+    }
+
+    public void setAutopilotData(LatLng point) {
+        AutopilotData autopilotData = new AutopilotData();
+        autopilotData.setLatitude(point.latitude);
+        autopilotData.setLongitude(point.longitude);
+        autopilotData.setRelativeAltitude(10.0f);
+        autopilotData.setFlags(0);
+        Log.e(ControlActivity.class.getSimpleName(), "Created AutopilotData: " + autopilotData.toString());
+        service.getUavManager().notifyAutopilotEvent(autopilotData);
     }
 
     private void setCameraFragment() {
@@ -219,8 +240,7 @@ public class ControlActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onRestart()
-    {
+    protected void onRestart() {
         super.onRestart();
         hudViewUpdateTimer.purge();
     }
@@ -231,24 +251,49 @@ public class ControlActivity extends AppCompatActivity {
         controlViewModel.stop();
         tmp = System.currentTimeMillis();
         hudViewTimerUpdateTask.cancel();
+
+        unregisterReceiver(mControlReceiver);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         controlViewModel.start();
+        mControlReceiver = new ControlReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(AdDroneService.CONTROL_ACTIVITY);
+        registerReceiver(mControlReceiver, intentFilter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         controlViewModel.resume();
-        }
+    }
 
 
-    protected void onSaveInstanceState(Bundle savedInstanceState){
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         getDelegate().onSaveInstanceState(savedInstanceState);
 
+    }
+
+
+    public class ControlReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO Auto-generated method stub
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(getApplicationContext(), StartActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                }
+            });
+        }
     }
 }

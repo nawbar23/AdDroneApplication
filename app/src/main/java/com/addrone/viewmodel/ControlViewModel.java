@@ -15,6 +15,7 @@ import com.multicopter.java.data.AutopilotData;
 import com.multicopter.java.data.ControlData;
 import com.multicopter.java.data.DebugData;
 
+import java.sql.Timestamp;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -40,12 +41,22 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
     private ActionDialog.ButtonId buttonIdd;
 
+    private long lastUpdate;
+
     public ControlViewModel(ControlActivity activity) {
         this.activity = activity;
 
         delay = 1000 / SettingsActivity.getIntFromPreferences(activity.getApplicationContext(), SettingsActivity.KEY_PREF_UI_REFRESH_RATE, 2);
 
         resume();
+    }
+
+    public long getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setTimeStamp(){
+        this.lastUpdate = new Timestamp(System.currentTimeMillis()).getTime();
     }
 
     public void resume() {
@@ -79,8 +90,10 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
         controlData.setRoll(x);
         controlData.setPitch(y);
+        setTimeStamp();
 
         controlDataLock.unlock();
+
     }
 
     @Override

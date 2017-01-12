@@ -47,5 +47,9 @@
     <string name="connection_name">Name</string>
     <string name="connection_description">Description</string>
     <string name="control_name">AdDroneApplication</string>
-==
+    <string name="end_fly">End fly</string>
+    <string name="autopilot_destination">Autopilot destination</string>
+    <string name="drone_position">Position of the drone</string>
+    <string name="following_drone">Following the drone.</string>
+    ==
 </resources>
