@@ -31,6 +31,9 @@ import com.multicopter.java.data.ControlData;
 public class AdDroneService extends Service implements UavManager.UavManagerListener {
     private static final String DEBUG_TAG = "AdDrone:" + AdDroneService.class.getSimpleName();
 
+    public final static String START_ACTIVITY = "START_CONTROL_ACTIVITY";
+    public final static String CONTROL_ACTIVITY = "START_START_ACTIVITY";
+
     private final IBinder mBinder = new LocalBinder();
     private State state;
 
@@ -128,17 +131,15 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
     }
 
     private void startControlActivity() {
-        Intent intent = new Intent(getApplicationContext(), ControlActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        Intent intent = new Intent();
+        intent.setAction(START_ACTIVITY);
+        sendBroadcast(intent);
     }
 
     private void startConnectionActivity() {
-        Intent intent = new Intent(getApplicationContext(), StartActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+        Intent intent = new Intent();
+        intent.setAction(CONTROL_ACTIVITY);
+        sendBroadcast(intent);
     }
 
     public void registerListener(UavManager.UavManagerListener listener) {

@@ -33,6 +33,7 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
     private final LatLng WADOWICKA_6 = new LatLng(50.034, 19.940);
     private final int ZOOM_VAL = 15;
     MapView mapView;
+    private boolean followDrone = false;
     private GoogleMap googleMap;
     private Marker droneMarker;
     private Marker autopilotDestinationMarker;
@@ -94,13 +95,33 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
                 .icon(BitmapDescriptorFactory.defaultMarker(HUE_AZURE))
                 .visible(false)
         );
+
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker droneMarker) {
+                if (droneMarker.getTitle().equals(getString(R.string.drone_position))) {
+                    Toast.makeText(getActivity(), R.string.following_drone, Toast.LENGTH_SHORT).show();
+                    startFollowingDrone();
+                }
+                return true;
+            }
+        });
+
+        googleMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+            @Override
+            public void onCameraMoveStarted(int reason) {
+                if (reason == REASON_GESTURE) {
+                    stopFollowingDrone();
+                }
+            }
+        });
     }
 
     public void onMapLongClick(LatLng point) {
         Toast.makeText(getActivity(), "Autopilot destination has been set to: "
                         + "\npoint lat: " + point.latitude + "\nlong: " + point.longitude,
                 Toast.LENGTH_SHORT).show();
-
+        stopFollowingDrone();
         ((ControlActivity) getActivity()).setAutopilotData(point);
         autopilotDestinationMarker.setPosition(point);
         if (!autopilotDestinationMarker.isVisible())
@@ -114,11 +135,23 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
                 droneMarker = googleMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .title(getString(R.string.drone_position)).icon(BitmapDescriptorFactory.defaultMarker(HUE_GREEN)));
+                startFollowingDrone();
             } else {
                 droneMarker.setPosition(latLng);
+            }
+            if (followDrone) {
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             }
         } else {
             Log.d(DEBUG_TAG, "updatePosition: GPS not available.");
         }
+    }
+
+    private void stopFollowingDrone() {
+        followDrone = false;
+    }
+
+    private void startFollowingDrone() {
+        followDrone = true;
     }
 }

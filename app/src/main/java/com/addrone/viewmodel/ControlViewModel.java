@@ -2,17 +2,18 @@ package com.addrone.viewmodel;
 
 import android.util.Log;
 
+import com.addrone.controller.ControlActivity;
+import com.addrone.controller.ControlPadFragment;
 import com.addrone.controller.ControlPadView;
+import com.addrone.controller.ControlThrottleView;
+import com.addrone.model.ActionDialog;
 import com.addrone.model.UIDataPack;
+import com.addrone.settings.SettingsActivity;
 import com.multicopter.java.UavEvent;
 import com.multicopter.java.UavManager;
-import com.addrone.settings.SettingsActivity;
 import com.multicopter.java.data.AutopilotData;
 import com.multicopter.java.data.ControlData;
 import com.multicopter.java.data.DebugData;
-import com.addrone.controller.ControlActivity;
-import com.addrone.controller.ControlThrottleView;
-import com.addrone.model.ActionDialog;
 
 import java.sql.Timestamp;
 import java.util.concurrent.locks.Lock;
@@ -36,6 +37,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
     private Lock uiDataLock = new ReentrantLock();
 
     private UavManager uavManager;
+    public float rotation = 0;
 
     private ActionDialog.ButtonId buttonIdd;
 
@@ -192,13 +194,15 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
                 case FLY:
                     uavManager.startFlightLoop();
                     break;
-
                 case CALIB_ACCEL:
                     uavManager.startAccelerometerCalibration();
                     break;
-
                 case DISCONNECT:
                     uavManager.disconnectApplicationLoop();
+                    break;
+                case CHANGE_VIEW:
+                    ((ControlPadFragment)activity.getCameraFragment()).getImageView().getRotation();
+                    ((ControlPadFragment)activity.getCameraFragment()).getImageView().setRotation(rotation+=180);
                     break;
             }
         }

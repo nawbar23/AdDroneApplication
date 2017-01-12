@@ -2,9 +2,11 @@ package com.addrone.connection;
 
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -21,6 +23,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.addrone.R;
+import com.addrone.controller.ControlActivity;
 import com.addrone.model.ConnectionInfo;
 import com.addrone.service.AdDroneService;
 import com.addrone.settings.SettingsActivity;
@@ -38,6 +41,8 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
     private AdDroneService service = null;
 
     private ProgressDialog progressDialog;
+
+    private IntentReceiver mIntentReceiver;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -61,9 +66,12 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
     private ConnectionsListAdapter connectionsListAdapter;
 
 
-    @BindView(R.id.button_connect) private Button buttonConnect;
-    @BindView(R.id.button_add) private Button buttonAdd;
-    @BindView(R.id.list_connection) private ListView listViewConnections;
+    @BindView(R.id.button_connect)
+    private Button buttonConnect;
+    @BindView(R.id.button_add)
+    private Button buttonAdd;
+    @BindView(R.id.list_connection)
+    private ListView listViewConnections;
 
 
     @Override
@@ -116,6 +124,21 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Connecting...");
         progressDialog.setCancelable(false);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mIntentReceiver = new IntentReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(AdDroneService.START_ACTIVITY);
+        registerReceiver(mIntentReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(mIntentReceiver);
     }
 
     @Override
@@ -187,20 +210,38 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
 
 
     @OnClick(R.id.button_add)
-    public void clickButtonAdd(){
-                DialogFragment addDialogFragment = new AddConnectionDialogFragment();
+    public void clickButtonAdd() {
+        DialogFragment addDialogFragment = new AddConnectionDialogFragment();
         addDialogFragment.show(getFragmentManager(), "ADD_DIALOG");
     }
 
 
     @OnClick(R.id.button_connect)
     public void clickButtonConnect() {
-                try {
-                    onConnect(connectionsListAdapter.getChosenConnection());
-                } catch (Exception e) {
-                    Toast.makeText(StartActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        try {
+            onConnect(connectionsListAdapter.getChosenConnection());
+        } catch (Exception e) {
+            Toast.makeText(StartActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public class IntentReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO Auto-generated method stub
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(getApplicationContext(), ControlActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                 }
-            }
+            });
+        }
+    }
 }
 
 

@@ -1,9 +1,11 @@
 package com.addrone.connection;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,7 +70,7 @@ public abstract class ConnectionsListAdapter extends ArrayAdapter<String> {
         View rowView = convertView;
         if (rowView == null) {
             rowView = layoutInflater.inflate(R.layout.connection_list_row, parent, false);
-            Holder holder = new Holder();
+            final Holder holder = new Holder();
             holder.name = (TextView) rowView.findViewById(R.id.connection_name);
             holder.description = (TextView) rowView.findViewById(R.id.connection_description);
             holder.edit = (Button) rowView.findViewById(R.id.connection_edit);
@@ -84,7 +86,26 @@ public abstract class ConnectionsListAdapter extends ArrayAdapter<String> {
                 @Override
                 public void onClick(View v) {
                     final int position = ((ListView) v.getParent().getParent().getParent()).getPositionForView((View)v.getParent());
-                    onDelete(getItem(position));
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setMessage("Are you sure you want to delete the connection?");
+                    builder.setCancelable(true);
+
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            onDelete(getItem(position));
+                        }
+                    });
+
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+
                 }
             });
             rowView.setTag(holder);
