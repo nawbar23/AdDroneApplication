@@ -189,21 +189,11 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
             @Override
             public void run() {
                 Log.d(TAG, "showCalibrationMethod");
-                String calibrationSettingsString = calibrationSettings.toString();
-                final CalibrationInfoDialog dialog = new CalibrationInfoDialog(activity);
-                dialog.setTextView(calibrationSettingsString);
-
+                CalibrationInfoDialog dialog = new CalibrationInfoDialog(activity);
+                dialog.setCalibrationSettings(calibrationSettings);
                 dialog.show();
             }
         });
-
-//        Log.d(TAG, "showCalibrationMethod");
-//        String calibrationSettingsString = calibrationSettings.toString();
-//        final CalibrationInfoDialog dialog = new CalibrationInfoDialog(activity);
-//        dialog.setTextView(calibrationSettingsString);
-//
-//        dialog.show();
-
     }
 
     private class ActionMenu implements Runnable {

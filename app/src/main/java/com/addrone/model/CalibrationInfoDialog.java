@@ -6,17 +6,17 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.addrone.R;
 import com.addrone.connection.BindView;
+import com.multicopter.java.data.CalibrationSettings;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class CalibrationInfoDialog extends Dialog {
 
-    private TextView textView;
+    private CalibrationSettings cs;
 
     @BindView(R.id.btnClose)
     private Button closeButton;
@@ -28,12 +28,12 @@ public class CalibrationInfoDialog extends Dialog {
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         setCancelable(true);
 
-        textView = (TextView) this.findViewById(R.id.calibration_text);
         ButterKnife.bind(this);
     }
 
-    public void setTextView(String text) {
-        textView.setText(text);
+
+    public void setCalibrationSettings(CalibrationSettings cs) {
+        this.cs = cs;
     }
 
     @OnClick(R.id.btnClose)
