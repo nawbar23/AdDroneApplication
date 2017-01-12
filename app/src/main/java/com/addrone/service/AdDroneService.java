@@ -62,7 +62,7 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
                 getString(R.string.pref_key_freq), Context.MODE_PRIVATE);
         float freq = sharedPrefFreq.getFloat(getString(R.string.pref_key_freq), defaultFreq);
 
-        this.uavManager = new UavManager(new TcpClientSocket(), ping, freq);
+        this.uavManager = new UavManager(new TcpClientSocket());
         this.uavManager.registerListener(this);
 
         this.state = State.DISABLED;
