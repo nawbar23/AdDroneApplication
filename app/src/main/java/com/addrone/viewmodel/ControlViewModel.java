@@ -161,6 +161,11 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
             case PING_UPDATED:
                 ping = uavManager.getCommDelay();
                 break;
+            case MAGENT_CALIB_STARTED:
+                // ..
+                break;
+
+
         }
 
         uiDataLock.unlock();
@@ -196,6 +201,10 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
                 case CALIB_ACCEL:
                     uavManager.startAccelerometerCalibration();
                     break;
+                case CALIB_MAGNET:
+                    uavManager.startMagnetometerCalibration();
+                    break;
+
                 case DISCONNECT:
                     uavManager.disconnectApplicationLoop();
                     break;
