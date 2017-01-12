@@ -51,5 +51,12 @@
     <string name="autopilot_destination">Autopilot destination</string>
     <string name="drone_position">Position of the drone</string>
     <string name="following_drone">Following the drone.</string>
+    <string name="close">Close</string>
+    <string name="fly">Fly</string>
+    <string name="calibrate_accelerometer">Calibrate accelerometer</string>
+    <string name="calibrate_magnetometer">Calibrate magnetometer</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="view_calibration">View calibration</string>
+    <string name="view_control">View control</string>
     ==
 </resources>

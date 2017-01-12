@@ -2,17 +2,19 @@ package com.addrone.viewmodel;
 
 import android.util.Log;
 
-import com.addrone.controller.ControlPadView;
-import com.addrone.model.UIDataPack;
-import com.multicopter.java.UavEvent;
-import com.multicopter.java.UavManager;
-import com.addrone.settings.SettingsActivity;
-import com.multicopter.java.data.AutopilotData;
-import com.multicopter.java.data.ControlData;
-import com.multicopter.java.data.DebugData;
 import com.addrone.controller.ControlActivity;
+import com.addrone.controller.ControlPadView;
 import com.addrone.controller.ControlThrottleView;
 import com.addrone.model.ActionDialog;
+import com.addrone.model.CalibrationInfoDialog;
+import com.addrone.model.UIDataPack;
+import com.addrone.settings.SettingsActivity;
+import com.multicopter.java.UavEvent;
+import com.multicopter.java.UavManager;
+import com.multicopter.java.data.AutopilotData;
+import com.multicopter.java.data.CalibrationSettings;
+import com.multicopter.java.data.ControlData;
+import com.multicopter.java.data.DebugData;
 
 import java.sql.Timestamp;
 import java.util.concurrent.locks.Lock;
@@ -23,10 +25,9 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadChangedListener, ControlThrottleView.setOnControlThrottlePadChangedListener, UavManager.UavManagerListener {
 
+    private static final String TAG = "ControlViewModel";
     private ControlActivity activity;
     private long delay;
-    private static final String TAG="ControlViewModel";
-
     private ControlData controlData = new ControlData();
     private Lock controlDataLock = new ReentrantLock();
 
@@ -53,7 +54,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
         return lastUpdate;
     }
 
-    public void setTimeStamp(){
+    public void setTimeStamp() {
         this.lastUpdate = new Timestamp(System.currentTimeMillis()).getTime();
     }
 
@@ -82,7 +83,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
     @Override
     public void onControlPadChanged(float x, float y) {
-        Log.v("CONTROLS_UPDATE", "Received pad update: "  + x + " " + y);
+        Log.v("CONTROLS_UPDATE", "Received pad update: " + x + " " + y);
 
         controlDataLock.lock();
 
@@ -96,7 +97,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
     @Override
     public void onControlThrottlePadChangedListener(float x, float y) {
-        Log.v("CONTROLS_UPDATE", "Received throttle update: "  + x + " " + y);
+        Log.v("CONTROLS_UPDATE", "Received throttle update: " + x + " " + y);
 
         controlDataLock.lock();
 
@@ -117,7 +118,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
             @Override
             public void onButtonClick(ButtonId buttonId) {
 
-                buttonIdd=buttonId;
+                buttonIdd = buttonId;
                 new Thread(new ActionMenu()).start();
                 dismiss();
             }
@@ -183,6 +184,27 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
     public void start() {
     }
 
+    public void showCalibration(final CalibrationSettings calibrationSettings) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "showCalibrationMethod");
+                String calibrationSettingsString = calibrationSettings.toString();
+                final CalibrationInfoDialog dialog = new CalibrationInfoDialog(activity);
+                dialog.setTextView(calibrationSettingsString);
+
+                dialog.show();
+            }
+        });
+
+//        Log.d(TAG, "showCalibrationMethod");
+//        String calibrationSettingsString = calibrationSettings.toString();
+//        final CalibrationInfoDialog dialog = new CalibrationInfoDialog(activity);
+//        dialog.setTextView(calibrationSettingsString);
+//
+//        dialog.show();
+
+    }
 
     private class ActionMenu implements Runnable {
         @Override
@@ -198,6 +220,10 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
                 case DISCONNECT:
                     uavManager.disconnectApplicationLoop();
+                    break;
+
+                case VIEW_CALIB:
+                    showCalibration(uavManager.getCalibrationSettings());
                     break;
             }
         }

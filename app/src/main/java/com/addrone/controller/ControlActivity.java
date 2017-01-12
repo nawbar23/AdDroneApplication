@@ -36,6 +36,8 @@ import java.util.TimerTask;
  */
 public class ControlActivity extends AppCompatActivity {
 
+    private static final String DEBUG_TAG = ControlActivity.class.getSimpleName();
+
     private Fragment mapFragment;
     private Fragment cameraFragment;
     private ControlViewModel controlViewModel;
@@ -74,7 +76,6 @@ public class ControlActivity extends AppCompatActivity {
     private RelativeLayout.LayoutParams layoutParamsHidden;
 
     private AdDroneService service = null;
-    private long tmp;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -193,7 +194,7 @@ public class ControlActivity extends AppCompatActivity {
         autopilotData.setLongitude(point.longitude);
         autopilotData.setRelativeAltitude(10.0f);
         autopilotData.setFlags(0);
-        Log.e(ControlActivity.class.getSimpleName(), "Created AutopilotData: " + autopilotData.toString());
+        Log.d(ControlActivity.class.getSimpleName(), "Created AutopilotData: " + autopilotData.toString());
         service.getUavManager().notifyAutopilotEvent(autopilotData);
     }
 
@@ -223,7 +224,7 @@ public class ControlActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         controlViewModel.pause();
-        Log.d("ControlAcivity", "onPause sie wywolalo");
+        Log.d(DEBUG_TAG, "onPause()");
 
     }
 
@@ -241,7 +242,7 @@ public class ControlActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         hudViewUpdateTimer.purge();
-        Log.d("ControlAcivity", "onRestrat sie wywolalo");
+        Log.d(DEBUG_TAG, "onRestart()");
 
     }
 
@@ -249,8 +250,8 @@ public class ControlActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         controlViewModel.stop();
-        tmp = System.currentTimeMillis();
-        Log.d("ControlAcivity", "onStop sie wywolalo");
+        long tmp = System.currentTimeMillis();
+        Log.d(DEBUG_TAG, "onStop()");
         hudViewTimerUpdateTask.cancel();
 
         unregisterReceiver(mControlReceiver);
@@ -266,7 +267,7 @@ public class ControlActivity extends AppCompatActivity {
         intentFilter.addAction(AdDroneService.CONTROL_ACTIVITY);
         registerReceiver(mControlReceiver, intentFilter);
 
-        Log.d("ControlAcivity", "onStart sie wywolalo");
+        Log.d(DEBUG_TAG, "onStart()");
     }
 
     @Override

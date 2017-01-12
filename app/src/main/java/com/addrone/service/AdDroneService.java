@@ -10,13 +10,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.addrone.communication.TcpClientSocket;
-import com.addrone.connection.StartActivity;
-import com.addrone.controller.ControlActivity;
+import com.addrone.model.ConnectionInfo;
+import com.addrone.viewmodel.ControlViewModel;
 import com.multicopter.java.UavEvent;
 import com.multicopter.java.UavManager;
 import com.multicopter.java.actions.CommHandlerAction;
-import com.addrone.viewmodel.ControlViewModel;
-import com.addrone.model.ConnectionInfo;
 import com.multicopter.java.data.ControlData;
 
 /**
@@ -26,28 +24,22 @@ import com.multicopter.java.data.ControlData;
  */
 
 public class AdDroneService extends Service implements UavManager.UavManagerListener {
-    private static final String DEBUG_TAG = "AdDrone:" + AdDroneService.class.getSimpleName();
-
     public final static String START_ACTIVITY = "START_CONTROL_ACTIVITY";
     public final static String CONTROL_ACTIVITY = "START_START_ACTIVITY";
-
+    private static final String DEBUG_TAG = "AdDrone:" + AdDroneService.class.getSimpleName();
+    public static ConnectionInfo actualConnection;
     private final IBinder mBinder = new LocalBinder();
+    ProgressDialog progressDialog;
     private State state;
-
     // main communication handler for UAV
     private UavManager uavManager;
     private ControlForwarder controlForwarder;
-
     private Handler handler;
-
-    ProgressDialog progressDialog;
-
-    public static ConnectionInfo actualConnection;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.e(DEBUG_TAG, "onCreate");
+        Log.d(DEBUG_TAG, "onCreate");
 
         this.uavManager = new UavManager(new TcpClientSocket());
         this.uavManager.registerListener(this);
@@ -59,14 +51,14 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
 
     @Override
     public IBinder onBind(final Intent intent) {
-        Log.e(DEBUG_TAG, "onBind");
+        Log.d(DEBUG_TAG, "onBind");
         return mBinder;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.e(DEBUG_TAG, "onDestroy");
+        Log.d(DEBUG_TAG, "onDestroy");
         uavManager.unregisterListener(this);
     }
 
@@ -77,17 +69,17 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
     public void attemptConnection(ConnectionInfo connectionInfo, ProgressDialog dialog) {
         switch (state) {
             case CONNECTED:
-                Log.e(DEBUG_TAG, "attemptConnection at CONNECTED, starting activity");
+                Log.d(DEBUG_TAG, "attemptConnection at CONNECTED, starting activity");
                 progressDialog.dismiss();
                 startControlActivity();
                 break;
 
             case CONNECTING:
-                Log.e(DEBUG_TAG, "attemptConnection at CONNECTING, skipping");
+                Log.d(DEBUG_TAG, "attemptConnection at CONNECTING, skipping");
                 break;
 
             default:
-                Log.e(DEBUG_TAG, "attemptConnection at default, connecting...");
+                Log.d(DEBUG_TAG, "attemptConnection at default, connecting...");
                 state = State.CONNECTING;
                 progressDialog = dialog;
                 actualConnection = connectionInfo;
@@ -153,7 +145,7 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
                 break;
 
             case DISCONNECTED:
-                Log.e(DEBUG_TAG, "Disconnected event received at state: " + state.toString());
+                Log.d(DEBUG_TAG, "Disconnected event received at state: " + state.toString());
                 if (state == State.CONNECTED || state == State.DISCONNECTING) {
                     startConnectionActivity();
                 }

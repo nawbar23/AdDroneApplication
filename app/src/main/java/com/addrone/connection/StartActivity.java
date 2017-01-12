@@ -44,6 +44,8 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
 
     private IntentReceiver mIntentReceiver;
 
+    private ConnectionsListAdapter connectionsListAdapter;
+
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder binderService) {
@@ -62,10 +64,6 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
             Log.e(DEBUG_TAG, "Disconnected !!!");
         }
     };
-
-    private ConnectionsListAdapter connectionsListAdapter;
-
-
     @BindView(R.id.button_connect)
     private Button buttonConnect;
     @BindView(R.id.button_add)
@@ -76,7 +74,7 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.e(DEBUG_TAG, "onCreate");
+        Log.d(DEBUG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
         startViewModel = new StartViewModel(this);
@@ -143,7 +141,7 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
 
     @Override
     protected void onDestroy() {
-        Log.e(DEBUG_TAG, "onDestroy");
+        Log.d(DEBUG_TAG, "onDestroy");
         super.onDestroy();
         if (service != null) {
             unbindService(serviceConnection);
@@ -151,7 +149,7 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
     }
 
     private void onConnect(ConnectionInfo connectionInfo) {
-        Log.e(DEBUG_TAG, "onConnect, " + connectionInfo.toString());
+        Log.d(DEBUG_TAG, "onConnect, " + connectionInfo.toString());
         if (service != null) {
             showProgressDialog();
             service.attemptConnection(connectionInfo, progressDialog);
