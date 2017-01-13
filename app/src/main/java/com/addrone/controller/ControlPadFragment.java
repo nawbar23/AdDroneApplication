@@ -86,4 +86,8 @@ public class ControlPadFragment extends Fragment implements StreamConnection.OnN
         bitmap = BitmapFactory.decodeByteArray(array, 0, length);
         bitmapLock.unlock();
     }
+
+    public ImageView getImageView() {
+        return imageView;
+    }
 }

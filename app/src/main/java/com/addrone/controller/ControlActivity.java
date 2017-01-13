@@ -149,6 +149,10 @@ public class ControlActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
+    public Fragment getCameraFragment() {
+        return cameraFragment;
+    }
+
     private void setMapFragment() {
         frameLayout1.setLayoutParams(layoutParamsFullscreen);
         frameLayout2.setLayoutParams(layoutParamsHidden);
@@ -261,7 +265,6 @@ public class ControlActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         controlViewModel.start();
-
         mControlReceiver = new ControlReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(AdDroneService.CONTROL_ACTIVITY);

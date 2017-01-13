@@ -88,24 +88,6 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
         }
     }
 
-    public void onDisconnectPush() {
-        if (uavManager.getCommHandler().getCommActionType() == CommHandlerAction.ActionType.FLIGHT_LOOP) {
-            uavManager.endFlightLoop();
-        } else {
-            state = State.DISCONNECTING;
-            uavManager.disconnectApplicationLoop();
-        }
-    }
-
-    public void onFlightPush() {
-        if (uavManager.getCommHandler().getCommActionType() == CommHandlerAction.ActionType.APPLICATION_LOOP) {
-            uavManager.startAccelerometerCalibration();
-            //uavManager.startFlightLoop();
-        } else if (uavManager.getCommHandler().getCommActionType() == CommHandlerAction.ActionType.FLIGHT_LOOP) {
-            //uavManager.endFlightLoop();
-        }
-    }
-
     private void startControlActivity() {
         Intent intent = new Intent();
         intent.setAction(START_ACTIVITY);

@@ -95,6 +95,23 @@
                 android:textStyle="bold"
                 style="@style/Widget.AppCompat.Button.Borderless" />
         </TableRow>
+        <TableRow>
+            android:id="@+id/tableRow4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+            <Button
+                android:id="@+id/btnChangeView"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Flip"
+                android:padding="5dp"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                style="@style/Widget.AppCompat.Button.Borderless" />
+
+        </TableRow>
 
     </TableLayout>
 
