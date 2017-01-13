@@ -58,5 +58,14 @@
     <string name="disconnect">Disconnect</string>
     <string name="view_calibration">View calibration</string>
     <string name="view_control">View control</string>
+    <string name="flip">Flip</string>
+    <string name="gyro">Gyro:</string>
+    <string name="magnet">Magnet Soft:</string>
+    <string name="hard">Magnet Hard:</string>
+    <string name="altimeter">Altimeter:</string>
+    <string name="temperature">Temperature:</string>
+    <string name="celcius">Celcius</string>
+    <string name="board_type">Board type:</string>
+    <string name="acceleration">Acceleration:</string>
     ==
 </resources>

@@ -259,7 +259,6 @@ public class ControlActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         controlViewModel.stop();
-        long tmp = System.currentTimeMillis();
         Log.d(DEBUG_TAG, "onStop()");
         hudViewTimerUpdateTask.cancel();
 

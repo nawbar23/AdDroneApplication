@@ -30,7 +30,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="Acceleration:"
+                    android:text="@string/acceleration"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -147,7 +147,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="Gyro:"
+                    android:text="@string/gyro"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -159,6 +159,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/gyroX"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -166,6 +167,7 @@
                     android:text="gyroX" />
 
                 <TextView
+                    android:id="@+id/gyroY"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -173,6 +175,7 @@
                     android:text="gyroY" />
 
                 <TextView
+                    android:id="@+id/gyroZ"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -208,7 +211,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="Magnet:"
+                    android:text="@string/magnet"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -219,25 +222,28 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/soft0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="mag[]" />
+                    android:text="soft[0]" />
 
                 <TextView
+                    android:id="@+id/soft3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="mag[]" />
+                    android:text="soft[3]" />
 
                 <TextView
+                    android:id="@+id/soft6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="mag[]" />
+                    android:text="soft[6]" />
             </LinearLayout>
 
             <LinearLayout
@@ -247,25 +253,28 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/soft1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="mag[]" />
+                    android:text="soft[1]" />
 
                 <TextView
+                    android:id="@+id/soft4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="mag[]" />
+                    android:text="soft[4]" />
 
                 <TextView
+                    android:id="@+id/soft7"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="mag[]" />
+                    android:text="soft[7]" />
             </LinearLayout>
 
             <LinearLayout
@@ -275,25 +284,28 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/soft2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="mag[]" />
+                    android:text="soft[2]" />
 
                 <TextView
+                    android:id="@+id/soft5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="mag[]" />
+                    android:text="soft[5]" />
 
                 <TextView
+                    android:id="@+id/soft8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="mag[]" />
+                    android:text="soft[8]" />
             </LinearLayout>
 
         </LinearLayout>
@@ -315,7 +327,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="Hard:"
+                    android:text="@string/hard"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -328,6 +340,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/hardX"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -335,6 +348,7 @@
                     android:text="hardX" />
 
                 <TextView
+                    android:id="@+id/hardY"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -342,6 +356,7 @@
                     android:text="hardY" />
 
                 <TextView
+                    android:id="@+id/hardZ"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -369,10 +384,11 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="3dp"
-                android:text="Altimeter:"
+                android:text="@string/altimeter"
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/altimeter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -392,15 +408,16 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="3dp"
-                android:text="Temperature:"
+                android:text="@string/temperature"
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/temperature"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="3dp"
-                android:text="Celcius" />
+                android:text="@string/celcius" />
 
         </LinearLayout>
 
@@ -415,10 +432,11 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="3dp"
-                android:text="Board type:"
+                android:text="@string/board_type"
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/board_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"

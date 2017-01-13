@@ -177,7 +177,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
     public void start() {
     }
 
-    public void showCalibration(final CalibrationSettings calibrationSettings) {
+    private void showCalibration(final CalibrationSettings calibrationSettings) {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {

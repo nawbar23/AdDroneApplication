@@ -14,7 +14,6 @@ import com.addrone.model.ConnectionInfo;
 import com.addrone.viewmodel.ControlViewModel;
 import com.multicopter.java.UavEvent;
 import com.multicopter.java.UavManager;
-import com.multicopter.java.actions.CommHandlerAction;
 import com.multicopter.java.data.ControlData;
 
 /**
