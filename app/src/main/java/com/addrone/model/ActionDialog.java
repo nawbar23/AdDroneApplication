@@ -22,7 +22,7 @@ public abstract class ActionDialog extends Dialog {
         DISCONNECT,
         VIEW_CALIB,
         VIEW_CONTROL,
-        CHANGE_VIEW;
+        CHANGE_VIEW
     }
 
     public ActionDialog(Context context) {
@@ -68,7 +68,6 @@ public abstract class ActionDialog extends Dialog {
                 onButtonClick(ButtonId.VIEW_CONTROL);
             }
         });
-
         findViewById(R.id.btnChangeView).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

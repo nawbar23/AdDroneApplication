@@ -59,7 +59,12 @@ public class ControlActivity extends AppCompatActivity {
                         currentUIDataPack = controlViewModel.getCurrentUiDataPack();
                         hudView.updateUiDataPack(currentUIDataPack);
                         ControlMapFragment fragment = (ControlMapFragment) getSupportFragmentManager().findFragmentById(R.id.layout_container_1);
-                        fragment.updatePosition(currentUIDataPack.gpsFix, new LatLng(currentUIDataPack.lat, currentUIDataPack.lng));
+                        try {
+                            fragment.updatePosition(currentUIDataPack.gpsFix, new LatLng(currentUIDataPack.lat, currentUIDataPack.lng));
+                        } catch (Exception e) {
+                            Log.e(ControlActivity.class.getSimpleName(), "Can't updatePosition because of lack of data." + e.getMessage());
+                            e.printStackTrace();
+                        }
                     }
                 });
             }

@@ -41,6 +41,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/acc0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -48,18 +49,20 @@
                     android:text="acc[0]" />
 
                 <TextView
+                    android:id="@+id/acc3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="acc[]" />
+                    android:text="acc[3]" />
 
                 <TextView
+                    android:id="@+id/acc6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="acc[]" />
+                    android:text="acc[6]" />
             </LinearLayout>
 
             <LinearLayout
@@ -69,25 +72,28 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/acc1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="acc[]" />
+                    android:text="acc[1]" />
 
                 <TextView
+                    android:id="@+id/acc4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="acc[]" />
+                    android:text="acc[4]" />
 
                 <TextView
+                    android:id="@+id/acc7"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="acc[]" />
+                    android:text="acc[7]" />
             </LinearLayout>
 
             <LinearLayout
@@ -97,25 +103,28 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/acc2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="acc[]" />
+                    android:text="acc[2]" />
 
                 <TextView
+                    android:id="@+id/acc5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="acc[]" />
+                    android:text="acc[5]" />
 
                 <TextView
+                    android:id="@+id/acc8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:padding="3dp"
-                    android:text="acc[]" />
+                    android:text="acc[8]" />
             </LinearLayout>
 
 

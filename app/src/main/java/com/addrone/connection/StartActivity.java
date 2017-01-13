@@ -18,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -29,6 +28,7 @@ import com.addrone.service.AdDroneService;
 import com.addrone.settings.SettingsActivity;
 import com.addrone.viewmodel.StartViewModel;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -64,12 +64,9 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
             Log.e(DEBUG_TAG, "Disconnected !!!");
         }
     };
-    @BindView(R.id.button_connect)
-    private Button buttonConnect;
-    @BindView(R.id.button_add)
-    private Button buttonAdd;
+
     @BindView(R.id.list_connection)
-    private ListView listViewConnections;
+    public ListView listViewConnections;
 
 
     @Override
@@ -90,7 +87,6 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         setSupportActionBar(toolbar);
 
         // initialize view
-        listViewConnections = (ListView) findViewById(R.id.list_connection);
         ButterKnife.bind(this);
 
 
