@@ -18,7 +18,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -29,6 +28,7 @@ import com.addrone.service.AdDroneService;
 import com.addrone.settings.SettingsActivity;
 import com.addrone.viewmodel.StartViewModel;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -43,6 +43,8 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
     private ProgressDialog progressDialog;
 
     private IntentReceiver mIntentReceiver;
+
+    private ConnectionsListAdapter connectionsListAdapter;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -63,20 +65,13 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         }
     };
 
-    private ConnectionsListAdapter connectionsListAdapter;
-
-
-    @BindView(R.id.button_connect)
-    private Button buttonConnect;
-    @BindView(R.id.button_add)
-    private Button buttonAdd;
     @BindView(R.id.list_connection)
-    private ListView listViewConnections;
+    public ListView listViewConnections;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.e(DEBUG_TAG, "onCreate");
+        Log.d(DEBUG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
         startViewModel = new StartViewModel(this);
@@ -92,7 +87,6 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         setSupportActionBar(toolbar);
 
         // initialize view
-        listViewConnections = (ListView) findViewById(R.id.list_connection);
         ButterKnife.bind(this);
 
 
@@ -143,7 +137,7 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
 
     @Override
     protected void onDestroy() {
-        Log.e(DEBUG_TAG, "onDestroy");
+        Log.d(DEBUG_TAG, "onDestroy");
         super.onDestroy();
         if (service != null) {
             unbindService(serviceConnection);
@@ -151,7 +145,7 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
     }
 
     private void onConnect(ConnectionInfo connectionInfo) {
-        Log.e(DEBUG_TAG, "onConnect, " + connectionInfo.toString());
+        Log.d(DEBUG_TAG, "onConnect, " + connectionInfo.toString());
         if (service != null) {
             showProgressDialog();
             service.attemptConnection(connectionInfo, progressDialog);

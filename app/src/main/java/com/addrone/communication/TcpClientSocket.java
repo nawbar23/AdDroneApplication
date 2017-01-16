@@ -3,8 +3,8 @@ package com.addrone.communication;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.multicopter.java.CommInterface;
 import com.addrone.model.ConnectionInfo;
+import com.multicopter.java.CommInterface;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -41,7 +41,7 @@ public class TcpClientSocket extends CommInterface {
     }
 
     public void disconnect() {
-        state =  State.DISCONNECTING;
+        state = State.DISCONNECTING;
     }
 
     public void send(byte[] packet) {
@@ -69,7 +69,7 @@ public class TcpClientSocket extends CommInterface {
 
             ConnectionInfo connectionInfo = params[0];
 
-            Log.e(DEBUG_TAG, "Successfully started thread, " + connectionInfo.toString());
+            Log.d(DEBUG_TAG, "Successfully started thread, " + connectionInfo.toString());
 
             socket = new Socket();
 
@@ -91,13 +91,13 @@ public class TcpClientSocket extends CommInterface {
                 return null;
             }
 
-            Log.e(DEBUG_TAG, "Connected connected stream");
+            Log.d(DEBUG_TAG, "Connected connected stream");
 
             DataInputStream inputStream;
             try {
                 inputStream = new DataInputStream(socket.getInputStream());
 
-            } catch (IOException e){
+            } catch (IOException e) {
                 Log.e(DEBUG_TAG, "Error while connecting input stream: " + e.getMessage());
                 listener.onError(e);
                 return null;
@@ -107,7 +107,7 @@ public class TcpClientSocket extends CommInterface {
             listener.onConnected();
 
             try {
-                while(state != State.DISCONNECTING) {
+                while (state != State.DISCONNECTING) {
                     byte buffer[] = new byte[1024];
                     int dataSize = inputStream.read(buffer, 0, buffer.length);
                     if (dataSize != -1) {

@@ -43,8 +43,8 @@ public abstract class ConnectionsListAdapter extends ArrayAdapter<String> {
 
     public abstract void onDelete(String connectionInfoName);
 
-    public void setChosenRowValue(String chosenRowValue){
-        this.chosenRowValue =chosenRowValue;
+    public void setChosenRowValue(String chosenRowValue) {
+        this.chosenRowValue = chosenRowValue;
     }
 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -52,7 +52,7 @@ public abstract class ConnectionsListAdapter extends ArrayAdapter<String> {
         notifyDataSetChanged();
     }
 
-    public ConnectionInfo getChosenConnection() throws Exception{
+    public ConnectionInfo getChosenConnection() throws Exception {
         if (getCount() < 1) {
             throw new Exception("At least one connection must be defined to proceeded!");
         }
@@ -77,7 +77,7 @@ public abstract class ConnectionsListAdapter extends ArrayAdapter<String> {
             holder.edit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final int position = ((ListView) v.getParent().getParent().getParent()).getPositionForView((View)v.getParent());
+                    final int position = ((ListView) v.getParent().getParent().getParent()).getPositionForView((View) v.getParent());
                     onEdit(getItem(position));
                 }
             });
@@ -85,7 +85,7 @@ public abstract class ConnectionsListAdapter extends ArrayAdapter<String> {
             holder.remove.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final int position = ((ListView) v.getParent().getParent().getParent()).getPositionForView((View)v.getParent());
+                    final int position = ((ListView) v.getParent().getParent().getParent()).getPositionForView((View) v.getParent());
                     final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setMessage("Are you sure you want to delete the connection?");
                     builder.setCancelable(true);
@@ -119,7 +119,7 @@ public abstract class ConnectionsListAdapter extends ArrayAdapter<String> {
             holder.name.setText(connectionInfoName);
             holder.description.setText(connectionInfo.toString());
 
-            if (connectionInfoName.equalsIgnoreCase(chosenRowValue)){
+            if (connectionInfoName.equalsIgnoreCase(chosenRowValue)) {
                 rowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.connection_chosen_color));
             } else {
                 rowView.setBackgroundColor(Color.WHITE);
