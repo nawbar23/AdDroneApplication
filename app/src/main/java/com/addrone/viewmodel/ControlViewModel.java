@@ -1,12 +1,15 @@
 package com.addrone.viewmodel;
 
 import android.util.Log;
+import android.widget.ImageView;
 
+import com.addrone.R;
 import com.addrone.controller.ControlActivity;
 import com.addrone.controller.ControlPadFragment;
 import com.addrone.controller.ControlPadView;
 import com.addrone.controller.ControlThrottleView;
 import com.addrone.model.ActionDialog;
+import com.addrone.model.MagnetCalibDialog;
 import com.addrone.model.UIDataPack;
 import com.addrone.settings.SettingsActivity;
 import com.multicopter.java.UavEvent;
@@ -26,7 +29,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
     private ControlActivity activity;
     private long delay;
-    private static final String TAG="ControlViewModel";
+    private static final String TAG = "ControlViewModel";
 
     private ControlData controlData = new ControlData();
     private Lock controlDataLock = new ReentrantLock();
@@ -40,6 +43,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
     public float rotation = 0;
 
     private ActionDialog.ButtonId buttonIdd;
+    private MagnetCalibDialog.ButtonCalibId buttonCalibIdd;
 
     private long lastUpdate;
 
@@ -55,7 +59,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
         return lastUpdate;
     }
 
-    public void setTimeStamp(){
+    public void setTimeStamp() {
         this.lastUpdate = new Timestamp(System.currentTimeMillis()).getTime();
     }
 
@@ -84,7 +88,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
     @Override
     public void onControlPadChanged(float x, float y) {
-        Log.v("CONTROLS_UPDATE", "Received pad update: "  + x + " " + y);
+        Log.v("CONTROLS_UPDATE", "Received pad update: " + x + " " + y);
 
         controlDataLock.lock();
 
@@ -98,7 +102,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
     @Override
     public void onControlThrottlePadChangedListener(float x, float y) {
-        Log.v("CONTROLS_UPDATE", "Received throttle update: "  + x + " " + y);
+        Log.v("CONTROLS_UPDATE", "Received throttle update: " + x + " " + y);
 
         controlDataLock.lock();
 
@@ -119,7 +123,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
             @Override
             public void onButtonClick(ButtonId buttonId) {
 
-                buttonIdd=buttonId;
+                buttonIdd = buttonId;
                 new Thread(new ActionMenu()).start();
                 dismiss();
             }
@@ -203,16 +207,49 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
                     break;
                 case CALIB_MAGNET:
                     uavManager.startMagnetometerCalibration();
+                    onCalibMagnetClick();
                     break;
-
                 case DISCONNECT:
                     uavManager.disconnectApplicationLoop();
                     break;
                 case CHANGE_VIEW:
-                    ((ControlPadFragment)activity.getCameraFragment()).getImageView().getRotation();
-                    ((ControlPadFragment)activity.getCameraFragment()).getImageView().setRotation(rotation+=180);
+                    ((ControlPadFragment) activity.getCameraFragment()).getImageView().getRotation();
+                    ((ControlPadFragment) activity.getCameraFragment()).getImageView().setRotation(rotation += 180);
                     break;
             }
         }
+    }
+
+    private class MagnetCalibMenu implements Runnable {
+
+        @Override
+        public void run() {
+            switch (buttonCalibIdd) {
+                case DONE:
+                    break;
+                case CANCEL:
+                    break;
+            }
+        }
+    }
+
+    private void onCalibMagnetClick() {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                final MagnetCalibDialog dialog = new MagnetCalibDialog(activity) {
+
+                    @Override
+                    public void onButtonMagnetCalibClick(ButtonCalibId buttonCalibId) {
+                        buttonCalibIdd = buttonCalibId;
+
+                        new Thread(new MagnetCalibMenu()).start();
+                        dismiss();
+                    }
+                };
+                dialog.show();
+            }
+        });
     }
 }
