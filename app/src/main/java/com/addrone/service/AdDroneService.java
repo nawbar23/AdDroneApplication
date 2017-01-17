@@ -2,13 +2,16 @@ package com.addrone.service;
 
 import android.app.ProgressDialog;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.addrone.R;
 import com.addrone.communication.TcpClientSocket;
 import com.addrone.model.ConnectionInfo;
 import com.addrone.viewmodel.ControlViewModel;
@@ -39,6 +42,19 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
     public void onCreate() {
         super.onCreate();
         Log.d(DEBUG_TAG, "onCreate");
+
+        Context context = getApplicationContext();
+
+        float defaultPing = Float.parseFloat(getResources().getString(R.string.pref_key__freq_default));
+        SharedPreferences sharedPrefPing = context.getSharedPreferences(
+                getString(R.string.pref_key_ping), Context.MODE_PRIVATE);
+        float ping = sharedPrefPing.getFloat(getString(R.string.pref_key_ping), defaultPing);
+
+
+        float defaultFreq = Float.parseFloat(getResources().getString(R.string.pref_key__freq_default));
+        SharedPreferences sharedPrefFreq = context.getSharedPreferences(
+                getString(R.string.pref_key_freq), Context.MODE_PRIVATE);
+        float freq = sharedPrefFreq.getFloat(getString(R.string.pref_key_freq), defaultFreq);
 
         this.uavManager = new UavManager(new TcpClientSocket());
         this.uavManager.registerListener(this);
