@@ -158,8 +158,8 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
             case PING_UPDATED:
                 ping = uavManager.getCommDelay();
                 break;
-            case MAGENTOMETER_CALIBRATION_STARTED:
-                // ..
+            case MAGNETOMETER_CALIBRATION_STARTED:
+//                uavManager.getCalibrationSettings();
                 break;
         }
         uiDataLock.unlock();
@@ -230,8 +230,18 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
         public void run() {
             switch (buttonCalibIdd) {
                 case DONE:
+                    try {
+                        uavManager.doneMagnetometerCalibration();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case CANCEL:
+                    try {
+                        uavManager.cancelMagnetometerCalibration();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     break;
             }
         }

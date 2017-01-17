@@ -3,12 +3,12 @@
                 android:oneshot="false">
     <item
         android:drawable="@drawable/calib_maget_1"
-        android:duration="2000"/>
+        android:duration="6000"/>
     <item
         android:drawable="@drawable/calib_maget_2"
-        android:duration="2000"/>
+        android:duration="6000"/>
     <item
         android:drawable="@drawable/calib_maget_3"
-        android:duration="2000"/>
+        android:duration="6000"/>
 
 </animation-list>
