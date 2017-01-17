@@ -268,7 +268,6 @@ public class ControlActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        controlViewModel.start();
         mControlReceiver = new ControlReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(AdDroneService.CONTROL_ACTIVITY);

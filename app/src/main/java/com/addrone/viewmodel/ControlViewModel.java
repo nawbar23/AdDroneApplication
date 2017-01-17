@@ -42,9 +42,6 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
     private UavManager uavManager;
 
-    private ActionDialog.ButtonId buttonIdd;
-    private MagnetCalibDialog.ButtonCalibId buttonCalibIdd;
-
     private long lastUpdate;
 
     public ControlViewModel(ControlActivity activity) {
@@ -115,8 +112,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
         final ActionDialog dialog = new ActionDialog(activity) {
             @Override
             public void onButtonClick(ButtonId buttonId) {
-                buttonIdd = buttonId;
-                new Thread(new ActionMenu()).start();
+                new Thread(new ActionMenu(buttonId)).start();
                 dismiss();
             }
         };
@@ -158,9 +154,6 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
             case PING_UPDATED:
                 ping = uavManager.getCommDelay();
                 break;
-            case MAGNETOMETER_CALIBRATION_STARTED:
-//                uavManager.getCalibrationSettings();
-                break;
         }
         uiDataLock.unlock();
 
@@ -171,17 +164,16 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
                     case FLIGHT_STARTED:
                         activity.notifyFlightStarted();
                         break;
-
                     case FLIGHT_ENDED:
                         activity.notifyFlightEnded();
+                        break;
+                    case MAGNETOMETER_CALIBRATION_STARTED:
+                        startMagnetCalibDialog();
                         break;
                 }
             }
         });
 
-    }
-
-    public void start() {
     }
 
     private void showCalibration(final CalibrationSettings calibrationSettings) {
@@ -196,10 +188,28 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
         });
     }
 
+    private void startMagnetCalibDialog() {
+        final MagnetCalibDialog dialog = new MagnetCalibDialog(activity) {
+            @Override
+            public void onButtonMagnetCalibClick(ButtonCalibId buttonCalibId) {
+                new Thread(new MagnetCalibMenu(buttonCalibId)).start();
+                dismiss();
+            }
+        };
+        dialog.show();
+    }
+
     private class ActionMenu implements Runnable {
+
+        private ActionDialog.ButtonId buttonId;
+
+        ActionMenu(ActionDialog.ButtonId buttonId) {
+            this.buttonId = buttonId;
+        }
+
         @Override
         public void run() {
-            switch (buttonIdd) {
+            switch (buttonId) {
                 case FLY:
                     uavManager.startFlightLoop();
                     break;
@@ -208,7 +218,6 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
                     break;
                 case CALIB_MAGNET:
                     uavManager.startMagnetometerCalibration();
-                    onCalibMagnetClick();
                     break;
                 case DISCONNECT:
                     uavManager.disconnectApplicationLoop();
@@ -226,9 +235,15 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
     private class MagnetCalibMenu implements Runnable {
 
+        private MagnetCalibDialog.ButtonCalibId buttonCalibId;
+
+        MagnetCalibMenu(MagnetCalibDialog.ButtonCalibId buttonCalibId) {
+            this.buttonCalibId = buttonCalibId;
+        }
+
         @Override
         public void run() {
-            switch (buttonCalibIdd) {
+            switch (buttonCalibId) {
                 case DONE:
                     try {
                         uavManager.doneMagnetometerCalibration();
@@ -245,25 +260,5 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
                     break;
             }
         }
-    }
-
-    private void onCalibMagnetClick() {
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
-                final MagnetCalibDialog dialog = new MagnetCalibDialog(activity) {
-
-                    @Override
-                    public void onButtonMagnetCalibClick(ButtonCalibId buttonCalibId) {
-                        buttonCalibIdd = buttonCalibId;
-
-                        new Thread(new MagnetCalibMenu()).start();
-                        dismiss();
-                    }
-                };
-                dialog.show();
-            }
-        });
     }
 }
