@@ -163,6 +163,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
                 switch (event.getType()) {
                     case FLIGHT_STARTED:
                         activity.notifyFlightStarted();
+                        setTimeStamp();
                         break;
 
                     case FLIGHT_ENDED:

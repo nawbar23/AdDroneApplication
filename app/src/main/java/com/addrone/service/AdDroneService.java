@@ -211,7 +211,19 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
 
         @Override
         public ControlData getControlData() {
-            return controlViewModel.getCurrentControlData();
+
+            if (controlViewModel.getCurrentControlData().getCommand().getValue() == ControlData.ControllerCommand.MANUAL.getValue()) {
+                if (System.currentTimeMillis() - controlViewModel.getLastUpdate() > 5000) {
+                    ControlData controlData = new ControlData();
+                    ControlData.ControllerCommand command = ControlData.ControllerCommand.ERROR_JOYSTICK;
+                    controlData.setCommand(command);
+                    return controlData;
+                }
+                else
+                    return controlViewModel.getCurrentControlData();
+            }
+            else
+                return controlViewModel.getCurrentControlData();
         }
     }
 }
