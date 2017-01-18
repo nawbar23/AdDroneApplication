@@ -1,13 +1,16 @@
 package com.addrone.viewmodel;
 
 import android.util.Log;
+import android.widget.ImageView;
 
+import com.addrone.R;
 import com.addrone.controller.ControlActivity;
 import com.addrone.controller.ControlPadFragment;
 import com.addrone.controller.ControlPadView;
 import com.addrone.controller.ControlThrottleView;
 import com.addrone.model.ActionDialog;
 import com.addrone.model.CalibrationInfoDialog;
+import com.addrone.model.MagnetCalibDialog;
 import com.addrone.model.UIDataPack;
 import com.addrone.settings.SettingsActivity;
 import com.multicopter.java.UavEvent;
@@ -38,8 +41,6 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
     private Lock uiDataLock = new ReentrantLock();
 
     private UavManager uavManager;
-
-    private ActionDialog.ButtonId buttonIdd;
 
     private long lastUpdate;
 
@@ -111,8 +112,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
         final ActionDialog dialog = new ActionDialog(activity) {
             @Override
             public void onButtonClick(ButtonId buttonId) {
-                buttonIdd = buttonId;
-                new Thread(new ActionMenu()).start();
+                new Thread(new ActionMenu(buttonId)).start();
                 dismiss();
             }
         };
@@ -165,17 +165,16 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
                         activity.notifyFlightStarted();
                         setTimeStamp();
                         break;
-
                     case FLIGHT_ENDED:
                         activity.notifyFlightEnded();
+                        break;
+                    case MAGNETOMETER_CALIBRATION_STARTED:
+                        startMagnetCalibDialog();
                         break;
                 }
             }
         });
 
-    }
-
-    public void start() {
     }
 
     private void showCalibration(final CalibrationSettings calibrationSettings) {
@@ -190,15 +189,36 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
         });
     }
 
+    private void startMagnetCalibDialog() {
+        final MagnetCalibDialog dialog = new MagnetCalibDialog(activity) {
+            @Override
+            public void onButtonMagnetCalibClick(ButtonCalibId buttonCalibId) {
+                new Thread(new MagnetCalibMenu(buttonCalibId)).start();
+                dismiss();
+            }
+        };
+        dialog.show();
+    }
+
     private class ActionMenu implements Runnable {
+
+        private ActionDialog.ButtonId buttonId;
+
+        ActionMenu(ActionDialog.ButtonId buttonId) {
+            this.buttonId = buttonId;
+        }
+
         @Override
         public void run() {
-            switch (buttonIdd) {
+            switch (buttonId) {
                 case FLY:
                     uavManager.startFlightLoop();
                     break;
                 case CALIB_ACCEL:
                     uavManager.startAccelerometerCalibration();
+                    break;
+                case CALIB_MAGNET:
+                    uavManager.startMagnetometerCalibration();
                     break;
                 case DISCONNECT:
                     uavManager.disconnectApplicationLoop();
@@ -209,6 +229,35 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
                     break;
                 case VIEW_CALIB:
                     showCalibration(uavManager.getCalibrationSettings());
+                    break;
+            }
+        }
+    }
+
+    private class MagnetCalibMenu implements Runnable {
+
+        private MagnetCalibDialog.ButtonCalibId buttonCalibId;
+
+        MagnetCalibMenu(MagnetCalibDialog.ButtonCalibId buttonCalibId) {
+            this.buttonCalibId = buttonCalibId;
+        }
+
+        @Override
+        public void run() {
+            switch (buttonCalibId) {
+                case DONE:
+                    try {
+                        uavManager.doneMagnetometerCalibration();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case CANCEL:
+                    try {
+                        uavManager.cancelMagnetometerCalibration();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     break;
             }
         }
