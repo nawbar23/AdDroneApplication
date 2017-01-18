@@ -9,7 +9,7 @@
             android:key="pref_ui_refresh_rate"
             android:title="@string/pref_ui_refresh_rate"
             android:summary="@string/pref_ui_refresh_rate_summ"
-            android:defaultValue="2"
+            android:defaultValue="@string/pref_key__freq_default"
             android:inputType="number"/>
 
     </PreferenceCategory>
