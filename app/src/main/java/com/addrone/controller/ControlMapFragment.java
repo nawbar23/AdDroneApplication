@@ -130,7 +130,7 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
 
     public void updatePosition(boolean gpsFix, LatLng latLng) {
         if (gpsFix) {
-            Log.d(DEBUG_TAG, "updatePosition: GPS fix available. updating position");
+            Log.v(DEBUG_TAG, "updatePosition: GPS fix available. updating position");
             if (droneMarker == null) {
                 droneMarker = googleMap.addMarker(new MarkerOptions()
                         .position(latLng)
@@ -143,7 +143,7 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             }
         } else {
-            Log.d(DEBUG_TAG, "updatePosition: GPS not available.");
+            Log.v(DEBUG_TAG, "updatePosition: GPS not available.");
         }
     }
 

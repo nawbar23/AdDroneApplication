@@ -7,15 +7,15 @@ import com.addrone.controller.ControlPadFragment;
 import com.addrone.controller.ControlPadView;
 import com.addrone.controller.ControlThrottleView;
 import com.addrone.model.ActionDialog;
+import com.addrone.model.CalibrationInfoDialog;
 import com.addrone.model.UIDataPack;
 import com.addrone.settings.SettingsActivity;
 import com.multicopter.java.UavEvent;
 import com.multicopter.java.UavManager;
 import com.multicopter.java.data.AutopilotData;
+import com.multicopter.java.data.CalibrationSettings;
 import com.multicopter.java.data.ControlData;
-import com.multicopter.java.data.ControlSettings;
 import com.multicopter.java.data.DebugData;
-import com.multicopter.java.data.RouteContainer;
 
 import java.sql.Timestamp;
 import java.util.concurrent.locks.Lock;
@@ -26,10 +26,9 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadChangedListener, ControlThrottleView.setOnControlThrottlePadChangedListener, UavManager.UavManagerListener {
 
+    private static final String TAG = "ControlViewModel";
     private ControlActivity activity;
     private long delay;
-    private static final String TAG="ControlViewModel";
-
     private ControlData controlData = new ControlData();
     private Lock controlDataLock = new ReentrantLock();
 
@@ -56,7 +55,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
         return lastUpdate;
     }
 
-    public void setTimeStamp(){
+    public void setTimeStamp() {
         this.lastUpdate = new Timestamp(System.currentTimeMillis()).getTime();
     }
 
@@ -85,7 +84,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
     @Override
     public void onControlPadChanged(float x, float y) {
-        Log.v("CONTROLS_UPDATE", "Received pad update: "  + x + " " + y);
+        Log.v("CONTROLS_UPDATE", "Received pad update: " + x + " " + y);
         controlDataLock.lock();
         controlData.setRoll(x);
         controlData.setPitch(y);
@@ -95,7 +94,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
 
     @Override
     public void onControlThrottlePadChangedListener(float x, float y) {
-        Log.v("CONTROLS_UPDATE", "Received throttle update: "  + x + " " + y);
+        Log.v("CONTROLS_UPDATE", "Received throttle update: " + x + " " + y);
         controlDataLock.lock();
         // TODO temporary trim yaw control for only big changes
         if (Math.abs(x) > 0.95) {
@@ -124,7 +123,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
         try {
             uavManager.endFlightLoop();
         } catch (Exception e) {
-            System.out.println("Error while stopping flight loop, message: " + e.getMessage());
+            Log.e(TAG, "Error while stopping flight loop, message: " + e.getMessage());
         }
     }
 
@@ -164,6 +163,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
                 switch (event.getType()) {
                     case FLIGHT_STARTED:
                         activity.notifyFlightStarted();
+                        setTimeStamp();
                         break;
 
                     case FLIGHT_ENDED:
@@ -178,6 +178,17 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
     public void start() {
     }
 
+    private void showCalibration(final CalibrationSettings calibrationSettings) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "showCalibrationMethod");
+                CalibrationInfoDialog dialog = new CalibrationInfoDialog(activity);
+                dialog.fillWithParams(calibrationSettings);
+                dialog.show();
+            }
+        });
+    }
 
     private class ActionMenu implements Runnable {
         @Override
@@ -193,8 +204,11 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
                     uavManager.disconnectApplicationLoop();
                     break;
                 case CHANGE_VIEW:
-                    float rotation = ((ControlPadFragment)activity.getCameraFragment()).getImageView().getRotation() + 180;
-                    ((ControlPadFragment)activity.getCameraFragment()).getImageView().setRotation(rotation);
+                    float rotation = ((ControlPadFragment) activity.getCameraFragment()).getImageView().getRotation() + 180;
+                    ((ControlPadFragment) activity.getCameraFragment()).getImageView().setRotation(rotation);
+                    break;
+                case VIEW_CALIB:
+                    showCalibration(uavManager.getCalibrationSettings());
                     break;
             }
         }

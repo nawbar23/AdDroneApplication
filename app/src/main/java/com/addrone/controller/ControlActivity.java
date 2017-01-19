@@ -36,6 +36,8 @@ import java.util.TimerTask;
  */
 public class ControlActivity extends AppCompatActivity {
 
+    private static final String DEBUG_TAG = ControlActivity.class.getSimpleName();
+
     private Fragment mapFragment;
     private Fragment cameraFragment;
     private ControlViewModel controlViewModel;
@@ -57,7 +59,12 @@ public class ControlActivity extends AppCompatActivity {
                         currentUIDataPack = controlViewModel.getCurrentUiDataPack();
                         hudView.updateUiDataPack(currentUIDataPack);
                         ControlMapFragment fragment = (ControlMapFragment) getSupportFragmentManager().findFragmentById(R.id.layout_container_1);
-                        fragment.updatePosition(currentUIDataPack.gpsFix, new LatLng(currentUIDataPack.lat, currentUIDataPack.lng));
+                        try {
+                            fragment.updatePosition(currentUIDataPack.gpsFix, new LatLng(currentUIDataPack.lat, currentUIDataPack.lng));
+                        } catch (Exception e) {
+                            Log.e(ControlActivity.class.getSimpleName(), "Can't updatePosition because of lack of data." + e.getMessage());
+                            e.printStackTrace();
+                        }
                     }
                 });
             }
@@ -74,7 +81,6 @@ public class ControlActivity extends AppCompatActivity {
     private RelativeLayout.LayoutParams layoutParamsHidden;
 
     private AdDroneService service = null;
-    private long tmp;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -197,7 +203,7 @@ public class ControlActivity extends AppCompatActivity {
         autopilotData.setLongitude(point.longitude);
         autopilotData.setRelativeAltitude(10.0f);
         autopilotData.setFlags(0);
-        Log.e(ControlActivity.class.getSimpleName(), "Created AutopilotData: " + autopilotData.toString());
+        Log.d(ControlActivity.class.getSimpleName(), "Created AutopilotData: " + autopilotData.toString());
         service.getUavManager().notifyAutopilotEvent(autopilotData);
     }
 
@@ -227,6 +233,8 @@ public class ControlActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         controlViewModel.pause();
+        Log.d(DEBUG_TAG, "onPause()");
+
     }
 
     @Override
@@ -243,13 +251,15 @@ public class ControlActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         hudViewUpdateTimer.purge();
+        Log.d(DEBUG_TAG, "onRestart()");
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         controlViewModel.stop();
-        tmp = System.currentTimeMillis();
+        Log.d(DEBUG_TAG, "onStop()");
         hudViewTimerUpdateTask.cancel();
 
         unregisterReceiver(mControlReceiver);
@@ -263,6 +273,8 @@ public class ControlActivity extends AppCompatActivity {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(AdDroneService.CONTROL_ACTIVITY);
         registerReceiver(mControlReceiver, intentFilter);
+
+        Log.d(DEBUG_TAG, "onStart()");
     }
 
     @Override
@@ -277,7 +289,6 @@ public class ControlActivity extends AppCompatActivity {
         getDelegate().onSaveInstanceState(savedInstanceState);
 
     }
-
 
     public class ControlReceiver extends BroadcastReceiver {
 
