@@ -1,5 +1,6 @@
 package com.addrone.controller;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,11 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
 
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE;
 import static com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_GREEN;
@@ -38,6 +44,18 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
     private Marker droneMarker;
     private Marker autopilotDestinationMarker;
 
+    private ArrayList<LatLng> points;
+    private ArrayList<LatLng> translucentPoints;
+    private ArrayList<LatLng> transparentPoints;
+    private ArrayList<Long> timestampArrayList;
+    Polyline line;
+    Polyline translucentLine;
+    Polyline transparentLine;
+    int color = Color.argb(255,118,188,118);
+    int translucentColor = Color.argb(190,118,188,118);
+    int transparentColor = Color.argb(128,118,188,118);
+    private boolean set = true;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -47,6 +65,11 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
 
         mapView = (MapView) root.findViewById(R.id.map_view);
         mapView.onCreate(savedInstanceState);
+        points = new ArrayList<LatLng>();
+        translucentPoints = new ArrayList<LatLng>();
+        transparentPoints = new ArrayList<LatLng>();
+        timestampArrayList = new ArrayList<>();
+
 
         mapView.onResume();
 
@@ -144,6 +167,40 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
             }
         } else {
             Log.v(DEBUG_TAG, "updatePosition: GPS not available.");
+        }
+        if(set == true) {
+            PolylineOptions options = new PolylineOptions().width(10).color(color).geodesic(true);
+            PolylineOptions deletedOptions = new PolylineOptions().width(13).color(translucentColor).geodesic(true);
+            PolylineOptions theLastOptions = new PolylineOptions().width(18).color(transparentColor).geodesic(true);
+            line = googleMap.addPolyline(options);
+            translucentLine = googleMap.addPolyline(deletedOptions);
+            transparentLine = googleMap.addPolyline(theLastOptions);
+            set = false;
+        }
+
+        points.add(latLng);
+        timestampArrayList.add(new Timestamp(System.currentTimeMillis()).getTime());
+        if (System.currentTimeMillis() - timestampArrayList.get(0) >= 3000*0.3){ //hardcode
+            points.remove(0);
+            translucentPoints.add(points.get(0));
+            line.setPoints(points);
+            if (System.currentTimeMillis() - timestampArrayList.get(0) >= 3000*0.6){ //hardcode
+                translucentPoints.remove(0);
+                transparentPoints.add(translucentPoints.get(0));
+                translucentLine.setPoints(translucentPoints);
+                if (System.currentTimeMillis() - timestampArrayList.get(0) >= 3000){ //hardcode
+                    transparentPoints.remove(0);
+                    transparentLine.setPoints(transparentPoints);
+                }
+                else {
+                    transparentLine.setPoints(transparentPoints);
+                }
+            }
+            else
+                translucentLine.setPoints(translucentPoints);
+        }
+        else{
+            line.setPoints(points);
         }
     }
 
