@@ -37,7 +37,7 @@ public class UIDataPack {
 
         this.pitch = debugData.getPitch();
         this.roll = debugData.getRoll();
-        this.yaw = debugData.getYaw();
+        this.yaw = debugData.getNormalYaw();
 
         this.altitude = debugData.getRelativeAltitude();
         this.velocity = debugData.getVLoc();
