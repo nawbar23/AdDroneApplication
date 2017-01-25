@@ -68,7 +68,9 @@
     <string name="hard">Magnet Hard:</string>
     <string name="altimeter">Altimeter:</string>
     <string name="temperature">Temperature:</string>
-    <string name="celcius">Celcius</string>
+    <string name="celsius">Celsius</string>
     <string name="board_type">Board type:</string>
     <string name="acceleration">Acceleration:</string>
+    <string name="update">Update</string>
+    <string name="manage_control_settings">Manage control settings</string>
 </resources>
