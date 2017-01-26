@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -24,6 +25,7 @@ import com.addrone.R;
 import com.addrone.connection.StartActivity;
 import com.addrone.model.UIDataPack;
 import com.addrone.service.AdDroneService;
+import com.addrone.settings.SettingsFragment;
 import com.addrone.viewmodel.ControlViewModel;
 import com.google.android.gms.maps.model.LatLng;
 import com.multicopter.java.data.AutopilotData;
@@ -45,6 +47,7 @@ public class ControlActivity extends AppCompatActivity {
     private FrameLayout frameLayout1;
     private FrameLayout frameLayout2;
     private ControlReceiver mControlReceiver;
+    private long period = 80;
 
     private HudView hudView;
     private UIDataPack currentUIDataPack;
@@ -103,6 +106,10 @@ public class ControlActivity extends AppCompatActivity {
         // set default settings
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
+        SharedPreferences sharedPrefFreq = getSharedPreferences(
+                SettingsFragment.PREFERENCES_KEY, Context.MODE_PRIVATE);
+        this.period = sharedPrefFreq.getLong(SettingsFragment.PREF_KEY_PERIOD, SettingsFragment.DEFAULT_PERIOD);
+
         // launch activity in fullscreen mode
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -149,7 +156,7 @@ public class ControlActivity extends AppCompatActivity {
         notifyFlightEnded();
 
         hudViewUpdateTimer = new Timer();
-        hudViewUpdateTimer.scheduleAtFixedRate(hudViewTimerUpdateTask, 1000, 80);
+        hudViewUpdateTimer.scheduleAtFixedRate(hudViewTimerUpdateTask, 1000, period);
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
