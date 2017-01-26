@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.addrone.R;
 import com.addrone.communication.TcpClientSocket;
 import com.addrone.model.ConnectionInfo;
+import com.addrone.settings.SettingsFragment;
 import com.addrone.viewmodel.ControlViewModel;
 import com.multicopter.java.UavEvent;
 import com.multicopter.java.UavManager;
@@ -45,18 +46,13 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
 
         Context context = getApplicationContext();
 
-        float defaultPing = Float.parseFloat(getResources().getString(R.string.pref_key__freq_default));
-        SharedPreferences sharedPrefPing = context.getSharedPreferences(
-                getString(R.string.pref_key_ping), Context.MODE_PRIVATE);
-        float ping = sharedPrefPing.getFloat(getString(R.string.pref_key_ping), defaultPing);
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                SettingsFragment.PREFERENCES_KEY, Context.MODE_PRIVATE);
+        double controlFreq = sharedPref.getFloat(SettingsFragment.PREF_KEY_CONTROL_FREQ, SettingsFragment.DEFAULT_CONTROL_FREQ);
 
+        double pingFreq = sharedPref.getFloat(SettingsFragment.PREF_KEY_PING_FREQ, SettingsFragment.DEFAULT_PING_FREQ);
 
-        float defaultFreq = Float.parseFloat(getResources().getString(R.string.pref_key__freq_default));
-        SharedPreferences sharedPrefFreq = context.getSharedPreferences(
-                getString(R.string.pref_key_freq), Context.MODE_PRIVATE);
-        float freq = sharedPrefFreq.getFloat(getString(R.string.pref_key_freq), defaultFreq);
-
-        this.uavManager = new UavManager(new TcpClientSocket());
+        this.uavManager = new UavManager(new TcpClientSocket(), controlFreq, pingFreq);
         this.uavManager.registerListener(this);
 
         this.state = State.DISABLED;
@@ -218,11 +214,9 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
                     ControlData.ControllerCommand command = ControlData.ControllerCommand.ERROR_JOYSTICK;
                     controlData.setCommand(command);
                     return controlData;
-                }
-                else
+                } else
                     return controlViewModel.getCurrentControlData();
-            }
-            else
+            } else
                 return controlViewModel.getCurrentControlData();
         }
     }

@@ -50,10 +50,6 @@
     <string name="end_fly">End fly</string>
     <string name="autopilot_destination">Autopilot destination</string>
     <string name="drone_position">Position of the drone</string>
-    <string name="pref_key_freq">Frequency value for uavManager</string>
-    <string name="pref_key_ping">Ping for uavManager</string>
-    <string name="pref_key__freq_default">20</string>
-    <string name="pref_key__ping_default">5</string>
     <string name="following_drone">Following the drone.</string>
     <string name="close">Close</string>
     <string name="fly">Fly</string>

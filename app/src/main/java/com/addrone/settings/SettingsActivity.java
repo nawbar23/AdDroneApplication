@@ -1,11 +1,14 @@
 package com.addrone.settings;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
+import com.addrone.service.AdDroneService;
 
 
 /**
@@ -44,6 +47,8 @@ public class SettingsActivity extends AppCompatActivity {
 
         settingsFragment = new SettingsFragment();
 
+        bindService(new Intent(this, AdDroneService.class), settingsFragment.serviceConnection, 0);
+
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, settingsFragment)
                 .commit();
@@ -59,5 +64,11 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(settingsFragment);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(settingsFragment.serviceConnection);
     }
 }
