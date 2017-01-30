@@ -38,6 +38,7 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
     private UavManager uavManager;
     private ControlForwarder controlForwarder;
     private Handler handler;
+    private long errorJoystickTime;
 
     @Override
     public void onCreate() {
@@ -52,12 +53,18 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
 
         double pingFreq = sharedPref.getFloat(SettingsFragment.PREF_KEY_PING_FREQ, SettingsFragment.DEFAULT_PING_FREQ);
 
+        errorJoystickTime=(long)(sharedPref.getFloat(SettingsFragment.PREF_ERROR_JOYSTICK_TIME,SettingsFragment.DEFAULT_ERROR_JOYSTICK_TIME)*1000);
+
         this.uavManager = new UavManager(new TcpClientSocket(), controlFreq, pingFreq);
         this.uavManager.registerListener(this);
 
         this.state = State.DISABLED;
 
         this.handler = new Handler();
+    }
+
+    public void setErrorJoystickTime(long errorJoystickTime) {
+        this.errorJoystickTime = errorJoystickTime;
     }
 
     @Override
@@ -209,7 +216,7 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
         public ControlData getControlData() {
 
             if (controlViewModel.getCurrentControlData().getCommand().getValue() == ControlData.ControllerCommand.MANUAL.getValue()) {
-                if (System.currentTimeMillis() - controlViewModel.getLastUpdate() > 5000) {
+                if (System.currentTimeMillis() - controlViewModel.getLastUpdate() > errorJoystickTime) {
                     ControlData controlData = new ControlData();
                     ControlData.ControllerCommand command = ControlData.ControllerCommand.ERROR_JOYSTICK;
                     controlData.setCommand(command);

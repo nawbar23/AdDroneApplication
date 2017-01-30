@@ -1,5 +1,7 @@
 package com.addrone.controller;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.addrone.R;
+import com.addrone.settings.SettingsFragment;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -55,6 +58,7 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
     int translucentColor = Color.argb(190,118,188,118);
     int transparentColor = Color.argb(128,118,188,118);
     private boolean set = true;
+    private long cometLengthTime;
 
     @Nullable
     @Override
@@ -70,6 +74,8 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
         transparentPoints = new ArrayList<LatLng>();
         timestampArrayList = new ArrayList<>();
 
+        SharedPreferences sharedPref =getActivity().getSharedPreferences(SettingsFragment.PREFERENCES_KEY, Context.MODE_PRIVATE);
+        cometLengthTime=(long)(sharedPref.getFloat(SettingsFragment.PREF_COMET_LENGTH_TIME,SettingsFragment.DEFAULT_COMMET_LENGTH)*1000);
 
         mapView.onResume();
 
@@ -180,15 +186,15 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
 
         points.add(latLng);
         timestampArrayList.add(new Timestamp(System.currentTimeMillis()).getTime());
-        if (System.currentTimeMillis() - timestampArrayList.get(0) >= 3000*0.3){ //hardcode
+        if (System.currentTimeMillis() - timestampArrayList.get(0) >= cometLengthTime*0.3){ //hardcode
             points.remove(0);
             translucentPoints.add(points.get(0));
             line.setPoints(points);
-            if (System.currentTimeMillis() - timestampArrayList.get(0) >= 3000*0.6){ //hardcode
+            if (System.currentTimeMillis() - timestampArrayList.get(0) >= cometLengthTime*0.6){ //hardcode
                 translucentPoints.remove(0);
                 transparentPoints.add(translucentPoints.get(0));
                 translucentLine.setPoints(translucentPoints);
-                if (System.currentTimeMillis() - timestampArrayList.get(0) >= 3000){ //hardcode
+                if (System.currentTimeMillis() - timestampArrayList.get(0) >= cometLengthTime){ //hardcode
                     transparentPoints.remove(0);
                     transparentLine.setPoints(transparentPoints);
                 }

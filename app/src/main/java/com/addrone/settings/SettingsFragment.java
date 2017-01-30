@@ -6,6 +6,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.StrictMode;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
@@ -23,9 +24,13 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     public final static String PREF_KEY_PERIOD = "Period value for ControlActivity";
     public final static String PREF_KEY_CONTROL_FREQ = "Sending control data frequency";
     public final static String PREF_KEY_PING_FREQ = "Update delay time frequency";
+    public final static String PREF_ERROR_JOYSTICK_TIME = "Time to send send error joystick";
+    public final static String PREF_COMET_LENGTH_TIME = "Length of comet in seconds";
     public final static long DEFAULT_PERIOD = 80;
     public final static float DEFAULT_CONTROL_FREQ = 20f;
     public final static float DEFAULT_PING_FREQ = 0.5f;
+    public final static float DEFAULT_ERROR_JOYSTICK_TIME = 5f;
+    public final static float DEFAULT_COMMET_LENGTH = 3f;
 
     private AdDroneService service = null;
 
@@ -73,6 +78,18 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
                 editor.apply();
 
                 service.getUavManager().getCommHandler().getPingTask().setFrequency(Double.valueOf(sharedPreferences.getString(key, "")));
+
+            } else if (key.equals(SettingsActivity.KEY_PREF_ERROR_JOY_TIME)) {
+                connectionPref.setSummary(sharedPreferences.getString(key, ""));
+                editor.putFloat(PREF_ERROR_JOYSTICK_TIME, Float.valueOf(sharedPreferences.getString(key, "")));
+                editor.apply();
+
+                service.setErrorJoystickTime((long) (Float.valueOf(sharedPreferences.getString(key, "")) * 1000));
+
+            } else if (key.equals(SettingsActivity.KEY_PREF_COMET_LENGTH)) {
+                connectionPref.setSummary(sharedPreferences.getString(key, ""));
+                editor.putFloat(PREF_COMET_LENGTH_TIME, Float.valueOf(sharedPreferences.getString(key, "")));
+                editor.apply();
             }
         }
     }
