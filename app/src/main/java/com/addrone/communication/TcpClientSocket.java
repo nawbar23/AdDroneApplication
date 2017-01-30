@@ -107,13 +107,16 @@ public class TcpClientSocket extends CommInterface {
             listener.onConnected();
 
             try {
+                byte buffer[] = new byte[1024];
                 while (state != State.DISCONNECTING) {
-                    byte buffer[] = new byte[1024];
-                    int dataSize = inputStream.read(buffer, 0, buffer.length);
-                    if (dataSize != -1) {
-                        byte[] tempArray = new byte[dataSize];
-                        System.arraycopy(buffer, 0, tempArray, 0, dataSize);
-                        listener.onDataReceived(tempArray);
+                    int len = inputStream.available();
+                    if (len > 1024) len = 1024;
+                    int dataSize = inputStream.read(buffer, 0, len);
+                    listener.onDataReceived(buffer, dataSize);
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
                 inputStream.close();

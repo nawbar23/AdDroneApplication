@@ -27,7 +27,10 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Created by Kamil on 8/23/2016.
  */
-public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadChangedListener, ControlThrottleView.setOnControlThrottlePadChangedListener, UavManager.UavManagerListener {
+public class ControlViewModel implements ViewModel,
+        ControlPadView.OnControlPadChangedListener,
+        ControlThrottleView.setOnControlThrottlePadChangedListener,
+        UavManager.UavManagerListener {
 
     private static final String TAG = "ControlViewModel";
     private ControlActivity activity;
@@ -225,8 +228,8 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
                     uavManager.disconnectApplicationLoop();
                     break;
                 case CHANGE_VIEW:
-                    float rotation = ((ControlPadFragment) activity.getCameraFragment()).getImageView().getRotation() + 180;
-                    ((ControlPadFragment) activity.getCameraFragment()).getImageView().setRotation(rotation);
+                    float rotation = ((ControlPadFragment) activity.getCameraFragment()).getImageView().getRotation();
+                    ((ControlPadFragment) activity.getCameraFragment()).getImageView().setRotation(rotation + 180);
                     break;
                 case VIEW_CALIB:
                     showCalibration(uavManager.getCalibrationSettings());
