@@ -198,7 +198,6 @@ public class ControlViewModel implements ViewModel,
             public void onButtonMagnetCalibClick(ButtonCalibId buttonCalibId) {
                 new Thread(new MagnetCalibMenu(buttonCalibId)).start();
                 dismiss();
-                setCanceledOnTouchOutside(false);
             }
         };
         dialog.show();

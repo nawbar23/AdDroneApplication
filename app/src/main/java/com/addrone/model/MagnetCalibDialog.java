@@ -39,7 +39,8 @@ public abstract class MagnetCalibDialog extends Dialog {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.magnetometer_dialog);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        setCancelable(true);
+        setCancelable(false);
+        setCanceledOnTouchOutside(false);
 
         findViewById(R.id.done_magnet_calib).setOnClickListener(new View.OnClickListener() {
             @Override
