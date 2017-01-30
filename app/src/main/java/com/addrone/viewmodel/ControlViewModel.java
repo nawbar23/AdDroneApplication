@@ -195,6 +195,7 @@ public class ControlViewModel implements ViewModel, ControlPadView.OnControlPadC
             public void onButtonMagnetCalibClick(ButtonCalibId buttonCalibId) {
                 new Thread(new MagnetCalibMenu(buttonCalibId)).start();
                 dismiss();
+                setCanceledOnTouchOutside(false);
             }
         };
         dialog.show();
