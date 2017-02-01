@@ -53,10 +53,11 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
             AdDroneService.LocalBinder binder = (AdDroneService.LocalBinder) binderService;
             service = binder.getService();
             try {
-//                showProgressDialog();
-//                service.attemptConnection(connectionsListAdapter.getChosenConnection(), progressDialog);
                 if (service.getState() == AdDroneService.State.CONNECTED) {
-                    startActivity(new Intent(StartActivity.this, ControlActivity.class));
+                    Intent intent = new Intent(StartActivity.this , ControlActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                 }
             } catch (Exception e) {
                 Log.e(DEBUG_TAG, e.getMessage() + " this should never happen here!");
