@@ -65,7 +65,7 @@ public class ControlActivity extends AppCompatActivity {
                         try {
                             fragment.updatePosition(currentUIDataPack.gpsFix, new LatLng(currentUIDataPack.lat, currentUIDataPack.lng));
                         } catch (Exception e) {
-                            Log.e(ControlActivity.class.getSimpleName(), "Can't updatePosition because of lack of data." + e.getMessage());
+//                            Log.e(ControlActivity.class.getSimpleName(), "Can't updatePosition because of lack of data." + e.getMessage());
                             e.printStackTrace();
                         }
                     }
@@ -105,6 +105,7 @@ public class ControlActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         // set default settings
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        Log.d(DEBUG_TAG,"onCreate");
 
         SharedPreferences sharedPrefFreq = getSharedPreferences(
                 SettingsFragment.PREFERENCES_KEY, Context.MODE_PRIVATE);
@@ -247,6 +248,7 @@ public class ControlActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d(DEBUG_TAG,"onDestroy()");
         controlViewModel.destroy();
         if (service != null) {
             service.unregisterListener(controlViewModel);

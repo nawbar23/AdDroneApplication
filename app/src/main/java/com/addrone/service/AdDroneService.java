@@ -191,7 +191,7 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
         }
     }
 
-    private enum State {
+    public enum State {
         DISABLED,
         CONNECTING,
         CONNECTED,
