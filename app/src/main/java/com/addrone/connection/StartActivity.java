@@ -1,5 +1,6 @@
 package com.addrone.connection;
 
+import android.app.ActivityManager;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -52,8 +53,11 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
             AdDroneService.LocalBinder binder = (AdDroneService.LocalBinder) binderService;
             service = binder.getService();
             try {
-                showProgressDialog();
-                service.attemptConnection(connectionsListAdapter.getChosenConnection(), progressDialog);
+//                showProgressDialog();
+//                service.attemptConnection(connectionsListAdapter.getChosenConnection(), progressDialog);
+                if (service.getState() == AdDroneService.State.CONNECTED) {
+                    startActivity(new Intent(StartActivity.this, ControlActivity.class));
+                }
             } catch (Exception e) {
                 Log.e(DEBUG_TAG, e.getMessage() + " this should never happen here!");
             }
@@ -77,8 +81,12 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         startViewModel = new StartViewModel(this);
 
         // start service
-        startService(new Intent(this, AdDroneService.class));
+        Log.d(DEBUG_TAG, "AdDroneService running: " + String.valueOf(isAdDroneServiceRunning(AdDroneService.class)));
+        if (!isAdDroneServiceRunning(AdDroneService.class)) {
+            startService(new Intent(this, AdDroneService.class));
+        }
 
+        bindService(new Intent(StartActivity.this, AdDroneService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         // set default settings
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
@@ -118,6 +126,16 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Connecting...");
         progressDialog.setCancelable(false);
+    }
+
+    private boolean isAdDroneServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
