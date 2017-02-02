@@ -176,11 +176,11 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
         }
         if(set == true) {
             PolylineOptions options = new PolylineOptions().width(10).color(color).geodesic(true);
-            PolylineOptions deletedOptions = new PolylineOptions().width(13).color(translucentColor).geodesic(true);
-            PolylineOptions theLastOptions = new PolylineOptions().width(18).color(transparentColor).geodesic(true);
+            PolylineOptions translucentOptions = new PolylineOptions().width(13).color(translucentColor).geodesic(true);
+            PolylineOptions transparentOptions = new PolylineOptions().width(18).color(transparentColor).geodesic(true);
             line = googleMap.addPolyline(options);
-            translucentLine = googleMap.addPolyline(deletedOptions);
-            transparentLine = googleMap.addPolyline(theLastOptions);
+            translucentLine = googleMap.addPolyline(translucentOptions);
+            transparentLine = googleMap.addPolyline(transparentOptions);
             set = false;
         }
 

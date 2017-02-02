@@ -1,9 +1,7 @@
 package com.addrone.viewmodel;
 
 import android.util.Log;
-import android.widget.ImageView;
 
-import com.addrone.R;
 import com.addrone.controller.ControlActivity;
 import com.addrone.controller.ControlPadFragment;
 import com.addrone.controller.ControlPadView;
@@ -11,6 +9,7 @@ import com.addrone.controller.ControlThrottleView;
 import com.addrone.model.ActionDialog;
 import com.addrone.model.CalibrationInfoDialog;
 import com.addrone.model.MagnetCalibDialog;
+import com.addrone.model.ManageControlSettingsDialog;
 import com.addrone.model.UIDataPack;
 import com.addrone.settings.SettingsActivity;
 import com.multicopter.java.UavEvent;
@@ -174,11 +173,26 @@ public class ControlViewModel implements ViewModel,
                     case MAGNETOMETER_CALIBRATION_STARTED:
                         startMagnetCalibDialog();
                         break;
+//                    case CONTROL_SETTINGS_DOWNLOAD_STARTED:
+//                        startDownloadControlSettingsDialog();
+//                        break;
                 }
             }
         });
 
     }
+
+    private void startDownloadControlSettingsDialog() {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "showControlSettingsDialog");
+                ManageControlSettingsDialog dialog = new ManageControlSettingsDialog(activity);
+                dialog.show();
+            }
+        });
+    }
+
 
     private void showCalibration(final CalibrationSettings calibrationSettings) {
         activity.runOnUiThread(new Runnable() {
@@ -232,6 +246,10 @@ public class ControlViewModel implements ViewModel,
                     break;
                 case VIEW_CALIB:
                     showCalibration(uavManager.getCalibrationSettings());
+                    break;
+                case MANAGE_CONTROL_SETTINGS:
+                    startDownloadControlSettingsDialog();
+//                    uavManager.downloadControlSettings();
                     break;
             }
         }
