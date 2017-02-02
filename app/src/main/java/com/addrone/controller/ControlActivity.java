@@ -65,7 +65,7 @@ public class ControlActivity extends AppCompatActivity {
                         try {
                             fragment.updatePosition(currentUIDataPack.gpsFix, new LatLng(currentUIDataPack.lat, currentUIDataPack.lng));
                         } catch (Exception e) {
-//                            Log.e(ControlActivity.class.getSimpleName(), "Can't updatePosition because of lack of data." + e.getMessage());
+                            Log.e(ControlActivity.class.getSimpleName(), "Can't updatePosition because of lack of data." + e.getMessage());
                             e.printStackTrace();
                         }
                     }
