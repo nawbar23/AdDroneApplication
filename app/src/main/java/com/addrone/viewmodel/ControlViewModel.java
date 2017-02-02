@@ -207,14 +207,16 @@ public class ControlViewModel implements ViewModel,
     }
 
     private void startMagnetCalibDialog() {
-        final MagnetCalibDialog dialog = new MagnetCalibDialog(activity) {
-            @Override
-            public void onButtonMagnetCalibClick(ButtonCalibId buttonCalibId) {
-                new Thread(new MagnetCalibMenu(buttonCalibId)).start();
-                dismiss();
-            }
-        };
-        dialog.show();
+        if (!activity.isFinishing()) {
+            final MagnetCalibDialog dialog = new MagnetCalibDialog(activity) {
+                @Override
+                public void onButtonMagnetCalibClick(ButtonCalibId buttonCalibId) {
+                    new Thread(new MagnetCalibMenu(buttonCalibId)).start();
+                    dismiss();
+                }
+            };
+            dialog.show();
+        }
     }
 
     private class ActionMenu implements Runnable {
