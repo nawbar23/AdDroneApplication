@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
@@ -14,13 +15,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.addrone.R;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -359,8 +364,7 @@ public class ManageControlSettingsDialog extends Dialog {
 
         if (name == null)
         {
-            Toast toast = Toast.makeText(getContext(), "First you should add new configuration!", Toast.LENGTH_LONG);
-            toast.show();
+            Toast.makeText(getContext(), "First you should add new configuration!", Toast.LENGTH_LONG).show();
             return;
         }
         AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
@@ -408,8 +412,7 @@ public class ManageControlSettingsDialog extends Dialog {
     public void clickButtonDelete(){
         if (name == null)
         {
-            Toast toast = Toast.makeText(getContext(), "First you should choose a configuration!", Toast.LENGTH_LONG);
-            toast.show();
+            Toast.makeText(getContext(), "First you should choose a configuration!", Toast.LENGTH_LONG).show();
             return;
         }
         AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
@@ -466,8 +469,7 @@ public class ManageControlSettingsDialog extends Dialog {
 
                 for (i = 0; i < directory.listFiles().length; i++) {
                     if (name.equals(arrayAdapter.getItem(i))) {
-                        Toast toast = Toast.makeText(getContext(), "Name is already used! Please enter a unique name.", Toast.LENGTH_LONG);
-                        toast.show();
+                        Toast.makeText(getContext(), "Name is already used! Please enter a unique name.", Toast.LENGTH_LONG).show();
                         return;
                     }
                 }
@@ -504,7 +506,10 @@ public class ManageControlSettingsDialog extends Dialog {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
         builderSingle.setTitle("Select Configuration: ");
 
-        File[] files = directory.listFiles();
+        File[] files = new File[0];
+        if (directory.listFiles() != null) {
+            files = directory.listFiles();
+        }
         for (int i = 0; i < files.length; i++)
         {
             arrayAdapter.add(files[i].getName());
@@ -580,7 +585,7 @@ public class ManageControlSettingsDialog extends Dialog {
             jsonObject.put("ErrorHandlingAction", error_handling_action.getText());
         }
         catch (Exception e){
-            System.out.println("Error while updating a JSON file!");
+            Log.e(this.getClass().toString(), "Error while updating a JSON file!");
         }
     }
 }

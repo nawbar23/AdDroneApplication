@@ -1,35 +1,20 @@
 package com.addrone.model;
 
+import android.util.Log;
+
 import com.multicopter.java.data.ControlSettings;
-import org.json.JSONArray;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.Environment;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
-
-/**
- * Created by eagaspy on 2017-01-24.
- */
-
-public class ControlSettingsRepo extends Service {
+public class ControlSettingsRepo {
 
     JSONObject jsonObject = new JSONObject();
-    ManageControlSettingsDialog manageControlSettingsDialog;
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
+    //temporary mock ControlSettings
+    private ControlSettings controlSettings = new ControlSettings();
 
     public JSONObject toJSON() {
-        ControlSettings controlSettings = new ControlSettings();
-
-
         try {
             jsonObject.put("UavType", controlSettings.getUavType());
             jsonObject.put("InitialSolverMode", controlSettings.getInitialSolverMode());
@@ -69,9 +54,8 @@ public class ControlSettingsRepo extends Service {
             jsonObject.put("ErrorHandlingAction", controlSettings.getErrorHandlingAction());
 
             return jsonObject;
-
         } catch (JSONException e) {
-            System.out.println("Error while putting JSON to array!");
+            Log.e(this.getClass().toString(), "Error while putting JSON to array!");
             e.printStackTrace();
             return null;
         }
