@@ -21,7 +21,7 @@ import com.multicopter.java.data.ControlData;
 import com.multicopter.java.data.ControlSettings;
 import com.multicopter.java.data.DebugData;
 
-
+import org.json.JSONException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -37,10 +37,11 @@ import butterknife.OnClick;
 
 public class ManageControlSettingsDialog extends Dialog {
 
-    String name;
-    ControlSettingsRepo controlSettingsRepo = new ControlSettingsRepo();
-    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(super.getContext(), android.R.layout.select_dialog_singlechoice);
-    org.json.JSONObject jsonObject = new org.json.JSONObject();
+    private static final int TEXT_VIEW_ARRAY_SIZE = 36;
+    private String name;
+    private final ControlSettingsRepo controlSettingsRepo = new ControlSettingsRepo();
+    private ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(super.getContext(), android.R.layout.select_dialog_singlechoice);
+    private org.json.JSONObject jsonObject = new org.json.JSONObject();
 
     @BindView(R.id.uav_type)
     public TextView uav_type;
@@ -156,7 +157,7 @@ public class ManageControlSettingsDialog extends Dialog {
     @BindView(R.id.btn_cc_delete)
     public Button delete;
 
-    File directory = new File(getContext().getFilesDir().getPath()+File.separator +"controlSettings");
+    private final File directory = new File(getContext().getFilesDir().getPath() + File.separator + "controlSettings");
 
     public ManageControlSettingsDialog(Context context) {
         super(context, android.R.style.Theme_Dialog);
@@ -168,52 +169,52 @@ public class ManageControlSettingsDialog extends Dialog {
         makeEditable();
     }
 
-    public void makeEditable(){
+    private void makeEditable() {
 
         TextView[] textViewArray;
-        textViewArray = new TextView[36];
-            textViewArray[0] = uav_type;
-            textViewArray[1] = initial_solver_mode;
-            textViewArray[2] = manual_throttle_mode;
-            textViewArray[3] = auto_landing_descend_rate;
-            textViewArray[4] = max_auto_landing_time;
-            textViewArray[5] = max_roll_pitch_control_value;
-            textViewArray[6] = max_yaw_control_value;
-            textViewArray[7] = pid_roll_rateX;
-            textViewArray[8] = pid_roll_rateY;
-            textViewArray[9] = pid_roll_rateZ;
-            textViewArray[10] = pid_pitch_rateX;
-            textViewArray[11] = pid_pitch_rateY;
-            textViewArray[12] = pid_pitch_rateZ;
-            textViewArray[13] = pid_yaw_rateX;
-            textViewArray[14] = pid_yaw_rateY;
-            textViewArray[15] = pid_yaw_rateZ;
-            textViewArray[16] = pid_roll_prop;
-            textViewArray[17] = pid_pitch_prop;
-            textViewArray[18] = pid_yaw_prop;
-            textViewArray[19] = alt_position_prop;
-            textViewArray[20] = alt_velocity_prop;
-            textViewArray[21] = pid_throttle_accelX;
-            textViewArray[22] = pid_throttle_accelY;
-            textViewArray[23] = pid_throttle_accelZ;
-            textViewArray[24] = throttle_alt_rate_prop;
-            textViewArray[25] = max_auto_angle;
-            textViewArray[26] = max_auto_velocity;
-            textViewArray[27] = auto_position_prop;
-            textViewArray[28] = auto_velocity_prop;
-            textViewArray[29] = pid_auto_accelX;
-            textViewArray[30] = pid_auto_accelY;
-            textViewArray[31] = pid_auto_accelZ;
-            textViewArray[32] = stick_position_rate_prop;
-            textViewArray[33] = stick_movement_mode;
-            textViewArray[34] = battery_type;
-            textViewArray[35] = error_handling_action;
+        textViewArray = new TextView[TEXT_VIEW_ARRAY_SIZE];
+        textViewArray[0] = uav_type;
+        textViewArray[1] = initial_solver_mode;
+        textViewArray[2] = manual_throttle_mode;
+        textViewArray[3] = auto_landing_descend_rate;
+        textViewArray[4] = max_auto_landing_time;
+        textViewArray[5] = max_roll_pitch_control_value;
+        textViewArray[6] = max_yaw_control_value;
+        textViewArray[7] = pid_roll_rateX;
+        textViewArray[8] = pid_roll_rateY;
+        textViewArray[9] = pid_roll_rateZ;
+        textViewArray[10] = pid_pitch_rateX;
+        textViewArray[11] = pid_pitch_rateY;
+        textViewArray[12] = pid_pitch_rateZ;
+        textViewArray[13] = pid_yaw_rateX;
+        textViewArray[14] = pid_yaw_rateY;
+        textViewArray[15] = pid_yaw_rateZ;
+        textViewArray[16] = pid_roll_prop;
+        textViewArray[17] = pid_pitch_prop;
+        textViewArray[18] = pid_yaw_prop;
+        textViewArray[19] = alt_position_prop;
+        textViewArray[20] = alt_velocity_prop;
+        textViewArray[21] = pid_throttle_accelX;
+        textViewArray[22] = pid_throttle_accelY;
+        textViewArray[23] = pid_throttle_accelZ;
+        textViewArray[24] = throttle_alt_rate_prop;
+        textViewArray[25] = max_auto_angle;
+        textViewArray[26] = max_auto_velocity;
+        textViewArray[27] = auto_position_prop;
+        textViewArray[28] = auto_velocity_prop;
+        textViewArray[29] = pid_auto_accelX;
+        textViewArray[30] = pid_auto_accelY;
+        textViewArray[31] = pid_auto_accelZ;
+        textViewArray[32] = stick_position_rate_prop;
+        textViewArray[33] = stick_movement_mode;
+        textViewArray[34] = battery_type;
+        textViewArray[35] = error_handling_action;
 
-        for (int i = 0; i<= 35; i++) {
+        for (int i = 0; i < TEXT_VIEW_ARRAY_SIZE; i++) {
             if (textViewArray[i] == uav_type) {
                 continue;
             }
-            if (textViewArray[i] == initial_solver_mode){
+            if (textViewArray[i] == initial_solver_mode) {
                 continue;
             }
             if (textViewArray[i] == manual_throttle_mode) {
@@ -227,8 +228,7 @@ public class ManageControlSettingsDialog extends Dialog {
             }
             if (textViewArray[i] == error_handling_action) {
                 continue;
-            }
-            else {
+            } else {
                 textViewArray[i].setClickable(true);
                 textViewArray[i].setFocusableInTouchMode(true);
                 textViewArray[i].setInputType(InputType.TYPE_CLASS_TEXT);
@@ -253,10 +253,10 @@ public class ManageControlSettingsDialog extends Dialog {
         JSONParser parser = new JSONParser();
         try {
             Object obj = parser.parse(new FileReader(directory.getPath() + File.separator + name));
-            JSONObject jsonObject = (JSONObject)obj;
+            JSONObject jsonObject = (JSONObject) obj;
 
             String uavType = String.valueOf(ControlSettings.UavType.getUavType(Integer.parseInt(String.valueOf(jsonObject.get("UavType")))));
-                uav_type.setText(uavType);
+            uav_type.setText(uavType);
 
             String initialSolverMode = String.valueOf(ControlData.SolverMode.getSolverMode((byte) Integer.parseInt(String.valueOf(jsonObject.get("InitialSolverMode")))));
             initial_solver_mode.setText(initialSolverMode);
@@ -381,13 +381,12 @@ public class ManageControlSettingsDialog extends Dialog {
     @OnClick(R.id.btn_cc_upload)
     public void clickButtonUpload() {
         //TODO: pin method to send message to drone
-        }
+    }
 
     @OnClick(R.id.btn_cc_update)
     public void clickButtonUpdate() {
 
-        if (name == null)
-        {
+        if (name == null) {
             Toast.makeText(getContext(), "First you should add new configuration!", Toast.LENGTH_LONG).show();
             return;
         }
@@ -397,30 +396,33 @@ public class ManageControlSettingsDialog extends Dialog {
         builderInner.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                updateJSON();
-                File fileB = new File(directory.getPath(),name);
-                FileWriter file = null;
-                try {
-                    fileB.createNewFile();
-                    file = new FileWriter(fileB);
-                    file.write(jsonObject.toString());
-                    file.flush();
-                    file.close();
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
+                if (updateJSON()) {
+                    try {
+                        File file = new File(directory.getPath(), name);
+                        if (!file.createNewFile()) {
+                            return;
+                        }
+                        FileWriter fileWriter = new FileWriter(file);
+                        fileWriter.write(jsonObject.toString());
+                        fileWriter.flush();
+                        fileWriter.close();
 
-                AlertDialog.Builder builderInner2 = new AlertDialog.Builder(getContext());
-                builderInner2.setMessage(name);
-                builderInner2.setTitle("You updated a file: ");
-                builderInner2.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+                        AlertDialog.Builder builderInner2 = new AlertDialog.Builder(getContext());
+                        builderInner2.setMessage(name);
+                        builderInner2.setTitle("You updated a file: ");
+                        builderInner2.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        builderInner2.show();
+                    } catch (IOException e) {
+                        Log.e(this.getClass().toString(), "Error while updating file:" + e.getMessage());
+                        e.printStackTrace();
+                        Toast.makeText(getContext(), "Fail updating file!", Toast.LENGTH_LONG).show();
                     }
-                });
-                builderInner2.show();
+                }
             }
         });
         builderInner.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -433,39 +435,41 @@ public class ManageControlSettingsDialog extends Dialog {
     }
 
     @OnClick(R.id.btn_cc_delete)
-    public void clickButtonDelete(){
-        if (name == null)
-        {
+    public void clickButtonDelete() {
+        if (name == null) {
             Toast.makeText(getContext(), "First you should choose a configuration!", Toast.LENGTH_LONG).show();
             return;
         }
-        AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
-        builderInner.setMessage(name);
-        builderInner.setTitle("Are you sure you want to delete a file: ");
-        builderInner.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    File fileB = new File(directory.getPath(),name);
-                    fileB.delete();
-                    AlertDialog.Builder builderInner2 = new AlertDialog.Builder(getContext());
-                    builderInner2.setMessage(name);
-                    builderInner2.setTitle("You deleted a file: ");
-                    builderInner2.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        AlertDialog.Builder deleteDialogBuilder = new AlertDialog.Builder(getContext());
+        deleteDialogBuilder.setMessage(name);
+        deleteDialogBuilder.setTitle("Are you sure you want to delete a file: ");
+        deleteDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                File file = new File(directory.getPath(), name);
+                if (file.delete()) {
+                    AlertDialog.Builder innerDialogBuilder = new AlertDialog.Builder(getContext());
+                    innerDialogBuilder.setMessage(name);
+                    innerDialogBuilder.setTitle("You deleted a file: ");
+                    innerDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                         }
                     });
-                    builderInner2.show();
+                    innerDialogBuilder.show();
+                } else {
+                    Toast.makeText(getContext(), "Can't delete file!", Toast.LENGTH_LONG).show();
                 }
-            });
-        builderInner.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-        builderInner.show();
+            }
+        });
+        deleteDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        deleteDialogBuilder.show();
 
         //TODO add a method which will show data uploaded during click on manage control settings,
     }
@@ -473,70 +477,89 @@ public class ManageControlSettingsDialog extends Dialog {
     @OnClick(R.id.btn_cc_new)
     public void clickButtonNew() {
         //TODO: pin method to create new configuration
-        final android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getContext());
-        builder.setMessage("Enter a unique name for the repository.");
+        final android.support.v7.app.AlertDialog.Builder nameInputDialogBuilder = new android.support.v7.app.AlertDialog.Builder(getContext());
+        nameInputDialogBuilder.setMessage("Enter a unique name for the repository.");
         final EditText input = new EditText(getContext());
-        builder.setView(input);
-        builder.setCancelable(true);
+        nameInputDialogBuilder.setView(input);
+        nameInputDialogBuilder.setCancelable(true);
         name = input.getText().toString();
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        nameInputDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                controlSettingsRepo.toJSON();
-                directory.mkdirs();
-                File[] files = directory.listFiles();
-                for (i = 0; i < files.length; i++)
-                {
-                    arrayAdapter.add(files[i].getName());
-                }
-                name = input.getText().toString();
+                try {
+                    controlSettingsRepo.toJSON();
+                    name = input.getText().toString();
 
-                for (i = 0; i < directory.listFiles().length; i++) {
-                    if (name.equals(arrayAdapter.getItem(i))) {
+                    if (isNameAlreadyUsed()) {
                         Toast.makeText(getContext(), "Name is already used! Please enter a unique name.", Toast.LENGTH_LONG).show();
                         return;
                     }
-                }
-                    File fileB = new File(directory.getPath(),name);
-                    FileWriter file = null;
                     try {
-                        fileB.createNewFile();
-                        file = new FileWriter(fileB);
-                        file.write(controlSettingsRepo.jsonObject.toString());
-                        file.flush();
-                        file.close();
-                        Toast toast = Toast.makeText(getContext(),"File saved as " + name + " in " + directory.getPath(),Toast.LENGTH_LONG);
-                        toast.show();
-                    }
-                    catch (IOException e) {
+                        File file = new File(directory.getPath(), name);
+                        if (!file.createNewFile()) {
+                            return;
+                        }
+                        FileWriter fileWriter = new FileWriter(file);
+                        fileWriter.write(controlSettingsRepo.jsonObject.toString());
+                        fileWriter.flush();
+                        fileWriter.close();
+                        Toast.makeText(getContext(), "File saved as " + name + " in " + directory.getPath(), Toast.LENGTH_LONG).show();
+                    } catch (IOException e) {
+                        Log.e(this.getClass().toString(), "Fail while saving file:" + e.getMessage());
                         e.printStackTrace();
+                        Toast.makeText(getContext(), "Fail while saving file.", Toast.LENGTH_LONG).show();
                     }
+                } catch (JSONException e) {
+                    Toast.makeText(getContext(), "Error while creating JSON File", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
                 }
+            }
         });
 
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+        nameInputDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
             }
         });
 
-        android.support.v7.app.AlertDialog alert = builder.create();
+        android.support.v7.app.AlertDialog alert = nameInputDialogBuilder.create();
         alert.show();
     }
 
+    private boolean isNameAlreadyUsed() {
+        addFilesToArrayAdapter();
+        for (int i = 0; i < directory.listFiles().length; i++) {
+            if (name.equals(arrayAdapter.getItem(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void addFilesToArrayAdapter() {
+        File[] files = new File[0];
+        if (directory.listFiles() != null) {
+            files = directory.listFiles();
+        }
+        arrayAdapter.clear();
+        for (File file : files) {
+            arrayAdapter.add(file.getName());
+        }
+    }
+
     @OnClick(R.id.uav_type)
-    public void uavTypeChoice(){
+    public void uavTypeChoice() {
         arrayAdapter.clear();
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
         builderSingle.setTitle("Select Configuration: ");
 
-            arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(1000)));
-            arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(2000)));
-            arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(2500)));
-            arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(3000)));
-            arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(3500)));
-            arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(4000)));
-            arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(4500)));
+        arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(1000)));
+        arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(2000)));
+        arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(2500)));
+        arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(3000)));
+        arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(3500)));
+        arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(4000)));
+        arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(4500)));
 
 
         builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -568,14 +591,14 @@ public class ManageControlSettingsDialog extends Dialog {
     }
 
     @OnClick(R.id.initial_solver_mode)
-    public void initialSolverModeChoice(){
+    public void initialSolverModeChoice() {
         arrayAdapter.clear();
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
         builderSingle.setTitle("Select Configuration: ");
 
-        arrayAdapter.add(String.valueOf(ControlData.SolverMode.getSolverMode((byte)0)));
-        arrayAdapter.add(String.valueOf(ControlData.SolverMode.getSolverMode((byte)1)));
-        arrayAdapter.add(String.valueOf(ControlData.SolverMode.getSolverMode((byte)3)));
+        arrayAdapter.add(String.valueOf(ControlData.SolverMode.getSolverMode((byte) 0)));
+        arrayAdapter.add(String.valueOf(ControlData.SolverMode.getSolverMode((byte) 1)));
+        arrayAdapter.add(String.valueOf(ControlData.SolverMode.getSolverMode((byte) 3)));
 
         builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -606,7 +629,7 @@ public class ManageControlSettingsDialog extends Dialog {
     }
 
     @OnClick(R.id.manual_throttle_mode)
-    public void manualThrottleModeChoice(){
+    public void manualThrottleModeChoice() {
         arrayAdapter.clear();
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
         builderSingle.setTitle("Select Configuration: ");
@@ -645,7 +668,7 @@ public class ManageControlSettingsDialog extends Dialog {
     }
 
     @OnClick(R.id.stick_movement_mode)
-    public void stickMovementModeChoice(){
+    public void stickMovementModeChoice() {
         arrayAdapter.clear();
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
         builderSingle.setTitle("Select Configuration: ");
@@ -683,7 +706,7 @@ public class ManageControlSettingsDialog extends Dialog {
     }
 
     @OnClick(R.id.battery_type)
-    public void batteryTypeChoice(){
+    public void batteryTypeChoice() {
         arrayAdapter.clear();
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
         builderSingle.setTitle("Select Configuration: ");
@@ -724,14 +747,14 @@ public class ManageControlSettingsDialog extends Dialog {
     }
 
     @OnClick(R.id.error_handling_action)
-    public void errorHandlingActionChoice(){
+    public void errorHandlingActionChoice() {
         arrayAdapter.clear();
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
         builderSingle.setTitle("Select Configuration: ");
 
-        arrayAdapter.add(String.valueOf(ControlData.ControllerCommand.getControllerCommand((short)1100)));
-        arrayAdapter.add(String.valueOf(ControlData.ControllerCommand.getControllerCommand((short)1200)));
-        arrayAdapter.add(String.valueOf(ControlData.ControllerCommand.getControllerCommand((short)1500)));
+        arrayAdapter.add(String.valueOf(ControlData.ControllerCommand.getControllerCommand((short) 1100)));
+        arrayAdapter.add(String.valueOf(ControlData.ControllerCommand.getControllerCommand((short) 1200)));
+        arrayAdapter.add(String.valueOf(ControlData.ControllerCommand.getControllerCommand((short) 1500)));
 
         builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -761,19 +784,11 @@ public class ManageControlSettingsDialog extends Dialog {
         builderSingle.show();
     }
 
-    public void createConfigurationPicker() {
-        arrayAdapter.clear();
+    private void createConfigurationPicker() {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
         builderSingle.setTitle("Select Configuration: ");
 
-        File[] files = new File[0];
-        if (directory.listFiles() != null) {
-            files = directory.listFiles();
-        }
-        for (int i = 0; i < files.length; i++)
-        {
-            arrayAdapter.add(files[i].getName());
-        }
+        addFilesToArrayAdapter();
 
         builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -805,15 +820,15 @@ public class ManageControlSettingsDialog extends Dialog {
         builderSingle.show();
     }
 
-    public void updateJSON(){
-        try{
+    private boolean updateJSON() {
+        try {
             jsonObject.put("UavType", uav_type.getText());
             jsonObject.put("InitialSolverMode", initial_solver_mode.getText());
             jsonObject.put("ManualThrottleMode", manual_throttle_mode.getText());
             jsonObject.put("AutoLandingDescendRate", auto_landing_descend_rate.getText());
             jsonObject.put("MaxAutoLandingTime", max_auto_landing_time.getText());
             jsonObject.put("MaxRollPitchControlValue", max_roll_pitch_control_value.getText());
-            jsonObject.put("MaxYawControlValue",max_yaw_control_value.getText());
+            jsonObject.put("MaxYawControlValue", max_yaw_control_value.getText());
             jsonObject.put("PidRollRateX", pid_roll_rateX.getText());
             jsonObject.put("PidRollRateY", pid_roll_rateY.getText());
             jsonObject.put("PidRollRateZ", pid_roll_rateZ.getText());
@@ -843,9 +858,11 @@ public class ManageControlSettingsDialog extends Dialog {
             jsonObject.put("StickMovementMode", stick_movement_mode.getText());
             jsonObject.put("BatteryType", battery_type.getText());
             jsonObject.put("ErrorHandlingAction", error_handling_action.getText());
-        }
-        catch (Exception e){
-            Log.e(this.getClass().toString(), "Error while updating a JSON file!");
+
+            return true;
+        } catch (JSONException e) {
+            Log.e(this.getClass().toString(), "Error while updating a JSON file:" + e.getMessage());
+            return false;
         }
     }
 }

@@ -15,7 +15,7 @@ public class RouteContainerRepo {
     private RouteContainer routeContainer = new RouteContainer();
     private RouteContainer.Waypoint waypoint;
 
-    public JSONObject toJSON() {
+    public JSONObject toJSON() throws JSONException {
         try {
             jsonObject.put("WaypointTime", routeContainer.getWaypointTime());
             jsonObject.put("BaseTime", routeContainer.getBaseTime());
@@ -30,9 +30,8 @@ public class RouteContainerRepo {
 
             return jsonObject;
         } catch (JSONException e) {
-            Log.e(RouteContainerRepo.class.toString(), "Error while creating JSON!");
-            e.printStackTrace();
-            return null;
+            Log.e(this.getClass().toString(), "Error while creating JSON:" + e.getMessage());
+            throw e;
         }
     }
 

@@ -14,7 +14,7 @@ public class ControlSettingsRepo {
     //temporary mock ControlSettings
     private ControlSettings controlSettings = new ControlSettings();
 
-    public JSONObject toJSON() {
+    public JSONObject toJSON() throws JSONException {
         try {
             jsonObject.put("UavType", controlSettings.getUavType());
             jsonObject.put("InitialSolverMode", controlSettings.getInitialSolverMode());
@@ -55,9 +55,8 @@ public class ControlSettingsRepo {
 
             return jsonObject;
         } catch (JSONException e) {
-            Log.e(this.getClass().toString(), "Error while putting JSON to array!");
-            e.printStackTrace();
-            return null;
+            Log.e(this.getClass().toString(), "Error while creating JSON:" + e.getMessage());
+            throw e;
         }
     }
 }
