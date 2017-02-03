@@ -15,6 +15,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.addrone.R;
+import com.multicopter.java.data.ControlData;
+import com.multicopter.java.data.ControlSettings;
+import com.multicopter.java.data.DebugData;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import java.io.File;
@@ -201,11 +205,31 @@ public class ManageControlSettingsDialog extends Dialog {
             textViewArray[35] = error_handling_action;
 
         for (int i = 0; i<= 35; i++) {
-            textViewArray[i].setClickable(true);
-            textViewArray[i].setFocusableInTouchMode(true);
-            textViewArray[i].setInputType(InputType.TYPE_CLASS_TEXT);
-            textViewArray[i].requestFocus();
-            textViewArray[i].setImeOptions(EditorInfo.IME_ACTION_DONE);
+            if (textViewArray[i] == uav_type) {
+                continue;
+            }
+            if (textViewArray[i] == initial_solver_mode){
+                continue;
+            }
+            if (textViewArray[i] == manual_throttle_mode) {
+                continue;
+            }
+            if (textViewArray[i] == stick_movement_mode) {
+                continue;
+            }
+            if (textViewArray[i] == battery_type) {
+                continue;
+            }
+            if (textViewArray[i] == error_handling_action) {
+                continue;
+            }
+            else {
+                textViewArray[i].setClickable(true);
+                textViewArray[i].setFocusableInTouchMode(true);
+                textViewArray[i].setInputType(InputType.TYPE_CLASS_TEXT);
+                textViewArray[i].requestFocus();
+                textViewArray[i].setImeOptions(EditorInfo.IME_ACTION_DONE);
+            }
         }
     }
 
@@ -226,13 +250,13 @@ public class ManageControlSettingsDialog extends Dialog {
             Object obj = parser.parse(new FileReader(directory.getPath() + File.separator + name));
             JSONObject jsonObject = (JSONObject)obj;
 
-            String uavType = String.valueOf(jsonObject.get("UavType"));
-            uav_type.setText(uavType);
+            String uavType = String.valueOf(ControlSettings.UavType.getUavType(Integer.parseInt(String.valueOf(jsonObject.get("UavType")))));
+                uav_type.setText(uavType);
 
-            String initialSolverMode = String.valueOf(jsonObject.get("InitialSolverMode"));
+            String initialSolverMode = String.valueOf(ControlData.SolverMode.getSolverMode((byte) Integer.parseInt(String.valueOf(jsonObject.get("InitialSolverMode")))));
             initial_solver_mode.setText(initialSolverMode);
 
-            String manualThrottleMode = String.valueOf(jsonObject.get("ManualThrottleMode"));
+            String manualThrottleMode = String.valueOf(ControlSettings.ThrottleMode.getThrottleMode(Integer.parseInt(String.valueOf(jsonObject.get("ManualThrottleMode")))));
             manual_throttle_mode.setText(manualThrottleMode);
 
             String autoLandingDescendRate = String.valueOf(jsonObject.get("AutoLandingDescendRate"));
@@ -325,13 +349,13 @@ public class ManageControlSettingsDialog extends Dialog {
             String stickPositionRateProp = String.valueOf(jsonObject.get("StickPositionRateProp"));
             stick_position_rate_prop.setText(stickPositionRateProp);
 
-            String stickMovementMode = String.valueOf(jsonObject.get("StickMovementMode"));
+            String stickMovementMode = String.valueOf(ControlSettings.StickMovementMode.getStickMovementMode(Integer.parseInt(String.valueOf(jsonObject.get("StickMovementMode")))));
             stick_movement_mode.setText(stickMovementMode);
 
-            String batteryType = String.valueOf(jsonObject.get("BatteryType"));
+            String batteryType = String.valueOf(ControlSettings.BatteryType.getBatteryType(Integer.parseInt(String.valueOf(jsonObject.get("BatteryType")))));
             battery_type.setText(batteryType);
 
-            String errorHandlingAction = String.valueOf(jsonObject.get("ErrorHandlingAction"));
+            String errorHandlingAction = String.valueOf(DebugData.ControllerState.getControllerState((short) Integer.parseInt(String.valueOf(jsonObject.get("ErrorHandlingAction")))));
             error_handling_action.setText(errorHandlingAction);
 
         } catch (Exception e) {
@@ -498,6 +522,242 @@ public class ManageControlSettingsDialog extends Dialog {
         alert.show();
     }
 
+    @OnClick(R.id.uav_type)
+    public void uavTypeChoice(){
+        arrayAdapter.clear();
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
+        builderSingle.setTitle("Select Configuration: ");
+
+            arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(1000)));
+            arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(2000)));
+            arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(2500)));
+            arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(3000)));
+            arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(3500)));
+            arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(4000)));
+            arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(4500)));
+
+
+        builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String uavType = arrayAdapter.getItem(which);
+
+                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
+                builderInner.setMessage(uavType);
+                builderInner.setTitle("Your Selected Item is");
+                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builderInner.show();
+
+                uav_type.setText(uavType);
+            }
+        });
+        builderSingle.show();
+    }
+
+    @OnClick(R.id.initial_solver_mode)
+    public void initialSolverModeChoice(){
+        arrayAdapter.clear();
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
+        builderSingle.setTitle("Select Configuration: ");
+
+        arrayAdapter.add(String.valueOf(ControlData.SolverMode.getSolverMode((byte)0)));
+        arrayAdapter.add(String.valueOf(ControlData.SolverMode.getSolverMode((byte)1)));
+        arrayAdapter.add(String.valueOf(ControlData.SolverMode.getSolverMode((byte)3)));
+
+        builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String initialSolverMode = arrayAdapter.getItem(which);
+
+                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
+                builderInner.setMessage(initialSolverMode);
+                builderInner.setTitle("Your Selected Item is");
+                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builderInner.show();
+
+                initial_solver_mode.setText(initialSolverMode);
+            }
+        });
+        builderSingle.show();
+    }
+
+    @OnClick(R.id.manual_throttle_mode)
+    public void manualThrottleModeChoice(){
+        arrayAdapter.clear();
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
+        builderSingle.setTitle("Select Configuration: ");
+
+        arrayAdapter.add(String.valueOf(ControlSettings.ThrottleMode.getThrottleMode(10)));
+        arrayAdapter.add(String.valueOf(ControlSettings.ThrottleMode.getThrottleMode(20)));
+        arrayAdapter.add(String.valueOf(ControlSettings.ThrottleMode.getThrottleMode(30)));
+        arrayAdapter.add(String.valueOf(ControlSettings.ThrottleMode.getThrottleMode(40)));
+
+        builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String manualThrottleMode = arrayAdapter.getItem(which);
+
+                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
+                builderInner.setMessage(manualThrottleMode);
+                builderInner.setTitle("Your Selected Item is");
+                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builderInner.show();
+
+                manual_throttle_mode.setText(manualThrottleMode);
+            }
+        });
+        builderSingle.show();
+    }
+
+    @OnClick(R.id.stick_movement_mode)
+    public void stickMovementModeChoice(){
+        arrayAdapter.clear();
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
+        builderSingle.setTitle("Select Configuration: ");
+
+        arrayAdapter.add(String.valueOf(ControlSettings.StickMovementMode.getStickMovementMode(0)));
+        arrayAdapter.add(String.valueOf(ControlSettings.StickMovementMode.getStickMovementMode(1)));
+        arrayAdapter.add(String.valueOf(ControlSettings.StickMovementMode.getStickMovementMode(2)));
+
+        builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String stickMovementMode = arrayAdapter.getItem(which);
+
+                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
+                builderInner.setMessage(stickMovementMode);
+                builderInner.setTitle("Your Selected Item is");
+                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builderInner.show();
+
+                stick_movement_mode.setText(stickMovementMode);
+            }
+        });
+        builderSingle.show();
+    }
+
+    @OnClick(R.id.battery_type)
+    public void batteryTypeChoice(){
+        arrayAdapter.clear();
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
+        builderSingle.setTitle("Select Configuration: ");
+
+        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.getBatteryType(0)));
+        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.getBatteryType(2)));
+        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.getBatteryType(3)));
+        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.getBatteryType(4)));
+        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.getBatteryType(5)));
+        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.getBatteryType(6)));
+
+        builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String batteryType = arrayAdapter.getItem(which);
+
+                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
+                builderInner.setMessage(batteryType);
+                builderInner.setTitle("Your Selected Item is");
+                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builderInner.show();
+
+                battery_type.setText(batteryType);
+            }
+        });
+        builderSingle.show();
+    }
+
+    @OnClick(R.id.error_handling_action)
+    public void errorHandlingActionChoice(){
+        arrayAdapter.clear();
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
+        builderSingle.setTitle("Select Configuration: ");
+
+        arrayAdapter.add(String.valueOf(ControlData.ControllerCommand.getControllerCommand((short)1100)));
+        arrayAdapter.add(String.valueOf(ControlData.ControllerCommand.getControllerCommand((short)1200)));
+        arrayAdapter.add(String.valueOf(ControlData.ControllerCommand.getControllerCommand((short)1500)));
+
+        builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String errorHandlingAction = arrayAdapter.getItem(which);
+
+                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
+                builderInner.setMessage(errorHandlingAction);
+                builderInner.setTitle("Your Selected Item is");
+                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builderInner.show();
+
+                error_handling_action.setText(errorHandlingAction);
+            }
+        });
+        builderSingle.show();
+    }
 
     public void createConfigurationPicker() {
         arrayAdapter.clear();
