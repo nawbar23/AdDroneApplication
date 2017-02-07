@@ -17,6 +17,7 @@ import com.multicopter.java.UavManager;
 import com.multicopter.java.data.AutopilotData;
 import com.multicopter.java.data.CalibrationSettings;
 import com.multicopter.java.data.ControlData;
+import com.multicopter.java.data.ControlSettings;
 import com.multicopter.java.data.DebugData;
 
 import java.sql.Timestamp;
@@ -144,7 +145,7 @@ public class ControlViewModel implements ViewModel,
     }
 
     @Override
-    public void handleUavEvent(final UavEvent event, UavManager uavManager) {
+    public void handleUavEvent(final UavEvent event, final UavManager uavManager) {
         uiDataLock.lock();
         switch (event.getType()) {
             case DEBUG_UPDATED:
@@ -173,21 +174,21 @@ public class ControlViewModel implements ViewModel,
                     case MAGNETOMETER_CALIBRATION_STARTED:
                         startMagnetCalibDialog();
                         break;
-//                    case CONTROL_SETTINGS_DOWNLOAD_STARTED:
-//                        startDownloadControlSettingsDialog();
-//                        break;
+                    case CONTROL_UPDATED:
+                        startDownloadControlSettingsDialog(uavManager.getControlSettings());
+                        break;
                 }
             }
         });
 
     }
 
-    private void startDownloadControlSettingsDialog() {
+    private void startDownloadControlSettingsDialog(final ControlSettings controlSettings) {
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Log.d(TAG, "showControlSettingsDialog");
-                ManageControlSettingsDialog dialog = new ManageControlSettingsDialog(activity);
+                ManageControlSettingsDialog dialog = new ManageControlSettingsDialog(activity, controlSettings);
                 dialog.show();
             }
         });
@@ -250,8 +251,8 @@ public class ControlViewModel implements ViewModel,
                     showCalibration(uavManager.getCalibrationSettings());
                     break;
                 case MANAGE_CONTROL_SETTINGS:
-                    startDownloadControlSettingsDialog();
-//                    uavManager.downloadControlSettings();
+//                    startDownloadControlSettingsDialog();
+                    uavManager.downloadControlSettings();
                     break;
             }
         }

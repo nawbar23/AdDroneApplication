@@ -162,7 +162,7 @@ public class ManageControlSettingsDialog extends Dialog {
 
     private final File directory = new File(getContext().getFilesDir().getPath() + File.separator + "controlSettings");
 
-    public ManageControlSettingsDialog(Context context) {
+    public ManageControlSettingsDialog(Context context, ControlSettings controlSettings) {
         super(context, android.R.style.Theme_Dialog);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.control_settings_dialog);
