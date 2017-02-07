@@ -45,7 +45,8 @@ public class ManageControlSettingsDialog extends Dialog {
     private ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(super.getContext(), android.R.layout.select_dialog_singlechoice);
     private org.json.JSONObject jsonObject = new org.json.JSONObject();
 
-    InputFilterMinMax filter = new InputFilterMinMax("0",String.valueOf(Double.POSITIVE_INFINITY)) {};
+    InputFilterMinMax filter = new InputFilterMinMax("0", String.valueOf(Double.POSITIVE_INFINITY)) {
+    };
 
     @BindView(R.id.uav_type)
     public TextView uav_type;
@@ -165,6 +166,7 @@ public class ManageControlSettingsDialog extends Dialog {
 
     public ManageControlSettingsDialog(Context context, ControlSettings controlSettings) {
         super(context, android.R.style.Theme_Dialog);
+        controlSettingsRepo.setControlSettings(controlSettings);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.control_settings_dialog);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -174,11 +176,11 @@ public class ManageControlSettingsDialog extends Dialog {
         checkIfInRange();
     }
 
-    private void checkIfInRange(){
+    private void checkIfInRange() {
         auto_landing_descend_rate.setFilters(new InputFilter[]{filter});
         max_auto_landing_time.setFilters(new InputFilter[]{filter});
-        max_roll_pitch_control_value.setFilters(new InputFilter[]{new InputFilterMinMax("0","0.8727")});
-        max_yaw_control_value.setFilters(new InputFilter[]{new InputFilterMinMax("0","3.4907")});
+        max_roll_pitch_control_value.setFilters(new InputFilter[]{new InputFilterMinMax("0", "0.8727")});
+        max_yaw_control_value.setFilters(new InputFilter[]{new InputFilterMinMax("0", "3.4907")});
         pid_roll_rateX.setFilters(new InputFilter[]{filter});
         pid_roll_rateY.setFilters(new InputFilter[]{filter});
         pid_roll_rateZ.setFilters(new InputFilter[]{filter});
@@ -191,8 +193,8 @@ public class ManageControlSettingsDialog extends Dialog {
         pid_roll_prop.setFilters(new InputFilter[]{filter});
         pid_pitch_prop.setFilters(new InputFilter[]{filter});
         pid_yaw_prop.setFilters(new InputFilter[]{filter});
-        max_auto_angle.setFilters(new InputFilter[]{new InputFilterMinMax("0","0.5236")});
-        max_auto_velocity.setFilters(new InputFilter[]{new InputFilterMinMax("0","10")});
+        max_auto_angle.setFilters(new InputFilter[]{new InputFilterMinMax("0", "0.5236")});
+        max_auto_velocity.setFilters(new InputFilter[]{new InputFilterMinMax("0", "10")});
         alt_position_prop.setFilters(new InputFilter[]{filter});
         alt_velocity_prop.setFilters(new InputFilter[]{filter});
         auto_position_prop.setFilters(new InputFilter[]{filter});
@@ -203,7 +205,7 @@ public class ManageControlSettingsDialog extends Dialog {
         pid_auto_accelX.setFilters(new InputFilter[]{filter});
         pid_auto_accelY.setFilters(new InputFilter[]{filter});
         pid_auto_accelZ.setFilters(new InputFilter[]{filter});
-        stick_position_rate_prop.setFilters(new InputFilter[]{new InputFilterMinMax("0","10")});
+        stick_position_rate_prop.setFilters(new InputFilter[]{new InputFilterMinMax("0", "10")});
     }
 
 
@@ -440,7 +442,7 @@ public class ManageControlSettingsDialog extends Dialog {
             Toast.makeText(getContext(), "First you should add new configuration!", Toast.LENGTH_LONG).show();
             return;
         }
-        if (name.equals("current configuration")){
+        if (name.equals("current configuration")) {
             Toast.makeText(getContext(), "Can't update current configuration!", Toast.LENGTH_LONG).show();
             return;
         }
@@ -492,7 +494,7 @@ public class ManageControlSettingsDialog extends Dialog {
             Toast.makeText(getContext(), "First you should choose a configuration!", Toast.LENGTH_LONG).show();
             return;
         }
-        if (name.equals("current configuration")){
+        if (name.equals("current configuration")) {
             Toast.makeText(getContext(), "Can't delete current configuration!", Toast.LENGTH_LONG).show();
             return;
         }
@@ -544,29 +546,29 @@ public class ManageControlSettingsDialog extends Dialog {
             public void onClick(DialogInterface dialogInterface, int i) {
 //                try {
 //                    controlSettingsRepo.toJSON();
-                    updateJSON();
-                    //TODO after adding download option change "controlSettingsRepo.toJSON()' to 'updateJSON'
-                    name = input.getText().toString();
+                updateJSON();
+                //TODO after adding download option change "controlSettingsRepo.toJSON()' to 'updateJSON'
+                name = input.getText().toString();
 
-                    if (isNameAlreadyUsed()) {
-                        Toast.makeText(getContext(), "Name is already used! Please enter a unique name.", Toast.LENGTH_LONG).show();
+                if (isNameAlreadyUsed()) {
+                    Toast.makeText(getContext(), "Name is already used! Please enter a unique name.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                try {
+                    File file = new File(directory.getPath(), name);
+                    if (!file.createNewFile()) {
                         return;
                     }
-                    try {
-                        File file = new File(directory.getPath(), name);
-                        if (!file.createNewFile()) {
-                            return;
-                        }
-                        FileWriter fileWriter = new FileWriter(file);
-                        fileWriter.write(jsonObject.toString());
-                        fileWriter.flush();
-                        fileWriter.close();
-                        Toast.makeText(getContext(), "File saved as " + name + " in " + directory.getPath(), Toast.LENGTH_LONG).show();
-                    } catch (IOException e) {
-                        Log.e(this.getClass().toString(), "Fail while saving file:" + e.getMessage());
-                        e.printStackTrace();
-                        Toast.makeText(getContext(), "Fail while saving file.", Toast.LENGTH_LONG).show();
-                    }
+                    FileWriter fileWriter = new FileWriter(file);
+                    fileWriter.write(jsonObject.toString());
+                    fileWriter.flush();
+                    fileWriter.close();
+                    Toast.makeText(getContext(), "File saved as " + name + " in " + directory.getPath(), Toast.LENGTH_LONG).show();
+                } catch (IOException e) {
+                    Log.e(this.getClass().toString(), "Fail while saving file:" + e.getMessage());
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "Fail while saving file.", Toast.LENGTH_LONG).show();
+                }
 //                }
 //                catch (JSONException e) {
 //                    Toast.makeText(getContext(), "Error while creating JSON File", Toast.LENGTH_LONG).show();
@@ -602,7 +604,7 @@ public class ManageControlSettingsDialog extends Dialog {
         return false;
     }
 
-    private File currentConfigurationChoice(){
+    private File currentConfigurationChoice() {
         try {
             controlSettingsRepo.toJSON();
             name = "current configuration";
@@ -635,10 +637,9 @@ public class ManageControlSettingsDialog extends Dialog {
         arrayAdapter.clear();
         arrayAdapter.add(currentConfigurationChoice().getName());
         for (File file : files) {
-            if (file.getName().equals("current configuration")){
+            if (file.getName().equals("current configuration")) {
                 continue;
-            }
-            else {
+            } else {
                 arrayAdapter.add(file.getName());
             }
         }
@@ -917,7 +918,7 @@ public class ManageControlSettingsDialog extends Dialog {
 
     private boolean updateJSON() {
         try {
-            jsonObject.put("UavType",ControlSettings.UavType.valueOf(uav_type.getText().toString()).getValue());
+            jsonObject.put("UavType", ControlSettings.UavType.valueOf(uav_type.getText().toString()).getValue());
             jsonObject.put("InitialSolverMode", ControlData.SolverMode.valueOf(initial_solver_mode.getText().toString()).getValue());
             jsonObject.put("ManualThrottleMode", ControlSettings.ThrottleMode.valueOf(manual_throttle_mode.getText().toString()).getValue());
             jsonObject.put("AutoLandingDescendRate", auto_landing_descend_rate.getText());
@@ -971,7 +972,7 @@ public class ManageControlSettingsDialog extends Dialog {
             this.max = Float.parseFloat(max);
         }
 
-        public InputFilterMinMax(String min){
+        public InputFilterMinMax(String min) {
             this.min = Integer.parseInt(min);
         }
 
