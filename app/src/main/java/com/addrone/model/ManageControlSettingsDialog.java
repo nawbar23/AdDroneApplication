@@ -6,8 +6,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.text.InputFilter;
 import android.text.InputType;
+import android.text.Spanned;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
@@ -19,7 +22,6 @@ import android.widget.Toast;
 import com.addrone.R;
 import com.multicopter.java.data.ControlData;
 import com.multicopter.java.data.ControlSettings;
-import com.multicopter.java.data.DebugData;
 
 import org.json.JSONException;
 import org.json.simple.JSONObject;
@@ -42,6 +44,7 @@ public class ManageControlSettingsDialog extends Dialog {
     private final ControlSettingsRepo controlSettingsRepo = new ControlSettingsRepo();
     private ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(super.getContext(), android.R.layout.select_dialog_singlechoice);
     private org.json.JSONObject jsonObject = new org.json.JSONObject();
+    InputFilterMinMax filter = new InputFilterMinMax("0",String.valueOf(Double.POSITIVE_INFINITY)) {};
 
     @BindView(R.id.uav_type)
     public TextView uav_type;
@@ -167,7 +170,41 @@ public class ManageControlSettingsDialog extends Dialog {
         setCancelable(true);
         ButterKnife.bind(this);
         makeEditable();
+        checkIfInRange();
     }
+
+    private void checkIfInRange(){
+        auto_landing_descend_rate.setFilters(new InputFilter[]{filter});
+        max_auto_landing_time.setFilters(new InputFilter[]{filter});
+        max_roll_pitch_control_value.setFilters(new InputFilter[]{new InputFilterMinMax("0","0.8727")});
+        max_yaw_control_value.setFilters(new InputFilter[]{new InputFilterMinMax("0","3.4907")});
+        pid_roll_rateX.setFilters(new InputFilter[]{filter});
+        pid_roll_rateY.setFilters(new InputFilter[]{filter});
+        pid_roll_rateZ.setFilters(new InputFilter[]{filter});
+        pid_pitch_rateX.setFilters(new InputFilter[]{filter});
+        pid_pitch_rateY.setFilters(new InputFilter[]{filter});
+        pid_pitch_rateZ.setFilters(new InputFilter[]{filter});
+        pid_yaw_rateX.setFilters(new InputFilter[]{filter});
+        pid_yaw_rateY.setFilters(new InputFilter[]{filter});
+        pid_yaw_rateZ.setFilters(new InputFilter[]{filter});
+        pid_roll_prop.setFilters(new InputFilter[]{filter});
+        pid_pitch_prop.setFilters(new InputFilter[]{filter});
+        pid_yaw_prop.setFilters(new InputFilter[]{filter});
+        max_auto_angle.setFilters(new InputFilter[]{new InputFilterMinMax("0","0.5236")});
+        max_auto_velocity.setFilters(new InputFilter[]{new InputFilterMinMax("0","10")});
+        alt_position_prop.setFilters(new InputFilter[]{filter});
+        alt_velocity_prop.setFilters(new InputFilter[]{filter});
+        auto_position_prop.setFilters(new InputFilter[]{filter});
+        auto_velocity_prop.setFilters(new InputFilter[]{filter});
+        pid_throttle_accelX.setFilters(new InputFilter[]{filter});
+        pid_throttle_accelY.setFilters(new InputFilter[]{filter});
+        pid_throttle_accelZ.setFilters(new InputFilter[]{filter});
+        pid_auto_accelX.setFilters(new InputFilter[]{filter});
+        pid_auto_accelY.setFilters(new InputFilter[]{filter});
+        pid_auto_accelZ.setFilters(new InputFilter[]{filter});
+        stick_position_rate_prop.setFilters(new InputFilter[]{new InputFilterMinMax("0","10")});
+    }
+
 
     private void makeEditable() {
 
@@ -235,6 +272,18 @@ public class ManageControlSettingsDialog extends Dialog {
                 textViewArray[i].requestFocus();
                 textViewArray[i].setImeOptions(EditorInfo.IME_ACTION_DONE);
             }
+
+            textViewArray[i].setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                    if (textView.getText().toString().trim().length() == 0) {
+                        Toast.makeText(getContext(), "Please enter a value!", Toast.LENGTH_LONG).show();
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
         }
     }
 
@@ -360,7 +409,7 @@ public class ManageControlSettingsDialog extends Dialog {
             String batteryType = String.valueOf(ControlSettings.BatteryType.getBatteryType(Integer.parseInt(String.valueOf(jsonObject.get("BatteryType")))));
             battery_type.setText(batteryType);
 
-            String errorHandlingAction = String.valueOf(DebugData.ControllerState.getControllerState((short) Integer.parseInt(String.valueOf(jsonObject.get("ErrorHandlingAction")))));
+            String errorHandlingAction = String.valueOf(ControlData.ControllerCommand.getControllerCommand((short) Integer.parseInt(String.valueOf(jsonObject.get("ErrorHandlingAction")))));
             error_handling_action.setText(errorHandlingAction);
 
         } catch (Exception e) {
@@ -399,9 +448,7 @@ public class ManageControlSettingsDialog extends Dialog {
                 if (updateJSON()) {
                     try {
                         File file = new File(directory.getPath(), name);
-                        if (!file.createNewFile()) {
-                            return;
-                        }
+                        file.createNewFile();
                         FileWriter fileWriter = new FileWriter(file);
                         fileWriter.write(jsonObject.toString());
                         fileWriter.flush();
@@ -636,8 +683,6 @@ public class ManageControlSettingsDialog extends Dialog {
 
         arrayAdapter.add(String.valueOf(ControlSettings.ThrottleMode.getThrottleMode(10)));
         arrayAdapter.add(String.valueOf(ControlSettings.ThrottleMode.getThrottleMode(20)));
-        arrayAdapter.add(String.valueOf(ControlSettings.ThrottleMode.getThrottleMode(30)));
-        arrayAdapter.add(String.valueOf(ControlSettings.ThrottleMode.getThrottleMode(40)));
 
         builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -822,9 +867,9 @@ public class ManageControlSettingsDialog extends Dialog {
 
     private boolean updateJSON() {
         try {
-            jsonObject.put("UavType", uav_type.getText());
-            jsonObject.put("InitialSolverMode", initial_solver_mode.getText());
-            jsonObject.put("ManualThrottleMode", manual_throttle_mode.getText());
+            jsonObject.put("UavType",ControlSettings.UavType.valueOf(uav_type.getText().toString()).getValue());
+            jsonObject.put("InitialSolverMode", ControlData.SolverMode.valueOf(initial_solver_mode.getText().toString()).getValue());
+            jsonObject.put("ManualThrottleMode", ControlSettings.ThrottleMode.valueOf(manual_throttle_mode.getText().toString()).getValue());
             jsonObject.put("AutoLandingDescendRate", auto_landing_descend_rate.getText());
             jsonObject.put("MaxAutoLandingTime", max_auto_landing_time.getText());
             jsonObject.put("MaxRollPitchControlValue", max_roll_pitch_control_value.getText());
@@ -855,9 +900,9 @@ public class ManageControlSettingsDialog extends Dialog {
             jsonObject.put("PidAutoAccelY", pid_auto_accelY.getText());
             jsonObject.put("PidAutoAccelZ", pid_auto_accelZ.getText());
             jsonObject.put("StickPositionRateProp", stick_position_rate_prop.getText());
-            jsonObject.put("StickMovementMode", stick_movement_mode.getText());
-            jsonObject.put("BatteryType", battery_type.getText());
-            jsonObject.put("ErrorHandlingAction", error_handling_action.getText());
+            jsonObject.put("StickMovementMode", ControlSettings.StickMovementMode.valueOf(stick_movement_mode.getText().toString()).getValue());
+            jsonObject.put("BatteryType", ControlSettings.BatteryType.valueOf(battery_type.getText().toString()).getValue());
+            jsonObject.put("ErrorHandlingAction", ControlData.ControllerCommand.valueOf(error_handling_action.getText().toString()).getValue());
 
             return true;
         } catch (JSONException e) {
@@ -865,4 +910,39 @@ public class ManageControlSettingsDialog extends Dialog {
             return false;
         }
     }
+
+    class InputFilterMinMax implements InputFilter {
+
+        private float min, max;
+
+
+        public InputFilterMinMax(String min, String max) {
+            this.min = Float.parseFloat(min);
+            this.max = Float.parseFloat(max);
+        }
+
+        public InputFilterMinMax(String min){
+            this.min = Integer.parseInt(min);
+        }
+
+        public InputFilterMinMax(int min) {
+            this.min = min;
+        }
+
+        @Override
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+            try {
+                float input = Float.parseFloat(dest.toString() + source.toString());
+                if (isInRange(min, max, input))
+                    return null;
+            } catch (NumberFormatException nfe) {
+            }
+            return "";
+        }
+
+        private boolean isInRange(float a, float b, float c) {
+            return b > a ? c >= a && c <= b : c >= b && c <= a;
+        }
+    }
 }
+
