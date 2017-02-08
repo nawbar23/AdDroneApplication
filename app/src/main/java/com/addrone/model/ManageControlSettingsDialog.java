@@ -174,6 +174,9 @@ public class ManageControlSettingsDialog extends Dialog {
         ButterKnife.bind(this);
         makeEditable();
         checkIfInRange();
+        currentConfigurationChoice();
+        getChosenConfiguration("current configuration");
+        currentConfiguration.setText("current configuration");
     }
 
     private void checkIfInRange() {
@@ -513,6 +516,9 @@ public class ManageControlSettingsDialog extends Dialog {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
+                            currentConfigurationChoice();
+                            getChosenConfiguration("current configuration");
+                            currentConfiguration.setText("current configuration");
                         }
                     });
                     innerDialogBuilder.show();
@@ -528,8 +534,6 @@ public class ManageControlSettingsDialog extends Dialog {
             }
         });
         deleteDialogBuilder.show();
-
-        //TODO add a method which will show data uploaded during click on manage control settings,
     }
 
     @OnClick(R.id.btn_cc_new)
@@ -544,8 +548,6 @@ public class ManageControlSettingsDialog extends Dialog {
         nameInputDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-//                try {
-//                    controlSettingsRepo.toJSON();
                 updateJSON();
                 //TODO after adding download option change "controlSettingsRepo.toJSON()' to 'updateJSON'
                 name = input.getText().toString();
@@ -564,16 +566,14 @@ public class ManageControlSettingsDialog extends Dialog {
                     fileWriter.flush();
                     fileWriter.close();
                     Toast.makeText(getContext(), "File saved as " + name + " in " + directory.getPath(), Toast.LENGTH_LONG).show();
+                    getChosenConfiguration(name);
+                    currentConfiguration.setText(name);
+
                 } catch (IOException e) {
                     Log.e(this.getClass().toString(), "Fail while saving file:" + e.getMessage());
                     e.printStackTrace();
                     Toast.makeText(getContext(), "Fail while saving file.", Toast.LENGTH_LONG).show();
                 }
-//                }
-//                catch (JSONException e) {
-//                    Toast.makeText(getContext(), "Error while creating JSON File", Toast.LENGTH_LONG).show();
-//                    e.printStackTrace();
-//                }
             }
         });
 
@@ -970,14 +970,6 @@ public class ManageControlSettingsDialog extends Dialog {
         public InputFilterMinMax(String min, String max) {
             this.min = Float.parseFloat(min);
             this.max = Float.parseFloat(max);
-        }
-
-        public InputFilterMinMax(String min) {
-            this.min = Integer.parseInt(min);
-        }
-
-        public InputFilterMinMax(int min) {
-            this.min = min;
         }
 
         @Override
