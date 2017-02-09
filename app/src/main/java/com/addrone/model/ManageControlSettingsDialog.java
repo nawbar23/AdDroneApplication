@@ -23,11 +23,14 @@ import com.addrone.R;
 import com.multicopter.java.data.ControlData;
 import com.multicopter.java.data.ControlSettings;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -177,6 +180,7 @@ public class ManageControlSettingsDialog extends Dialog {
         currentConfigurationChoice();
         getChosenConfiguration("current configuration");
         currentConfiguration.setText("current configuration");
+        checkIfTheSame();
     }
 
     private void checkIfInRange() {
@@ -449,6 +453,11 @@ public class ManageControlSettingsDialog extends Dialog {
             Toast.makeText(getContext(), "Can't update current configuration!", Toast.LENGTH_LONG).show();
             return;
         }
+        if (currentConfiguration.getText().toString().contains("\n(current)")) {
+            Toast.makeText(getContext(), "Can't update current configuration!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
         builderInner.setMessage(name);
         builderInner.setTitle("Are you sure you want to update a file: ");
@@ -497,10 +506,17 @@ public class ManageControlSettingsDialog extends Dialog {
             Toast.makeText(getContext(), "First you should choose a configuration!", Toast.LENGTH_LONG).show();
             return;
         }
+
+        if (currentConfiguration.getText().toString().contains("\n(current)")) {
+            Toast.makeText(getContext(), "Can't delete current configuration!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         if (name.equals("current configuration")) {
             Toast.makeText(getContext(), "Can't delete current configuration!", Toast.LENGTH_LONG).show();
             return;
         }
+
         AlertDialog.Builder deleteDialogBuilder = new AlertDialog.Builder(getContext());
         deleteDialogBuilder.setMessage(name);
         deleteDialogBuilder.setTitle("Are you sure you want to delete a file: ");
@@ -916,12 +932,43 @@ public class ManageControlSettingsDialog extends Dialog {
         builderSingle.show();
     }
 
+    private boolean comparingJSONs() {
+        boolean result = false;
+        JSONParser parser = new JSONParser();
+        String currentName = "";
+
+        try {
+            JSONObject jsonObjectCurrentConfiguration = (JSONObject) parser.parse(new FileReader(directory.getPath() + File.separator + "current configuration"));
+            addFilesToArrayAdapter();
+            for (int i = 0; i < arrayAdapter.getCount(); i++) {
+                name = arrayAdapter.getItem(i).toString();
+                if (name.equals("current configuration")) {
+                    currentName = name;
+                    continue;
+                }
+                JSONObject object = (JSONObject) parser.parse(new FileReader(directory.getPath() + File.separator + arrayAdapter.getItem(i).toString()));
+                if (object.equals(jsonObjectCurrentConfiguration)) {
+                    result = true;
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private void checkIfTheSame(){
+        if (comparingJSONs()){
+            currentConfiguration.setText(name + "\n(current)");
+        }
+    }
+
     private boolean updateJSON() {
         try {
             jsonObject.put("UavType", ControlSettings.UavType.valueOf(uav_type.getText().toString()).getValue());
             jsonObject.put("InitialSolverMode", ControlData.SolverMode.valueOf(initial_solver_mode.getText().toString()).getValue());
             jsonObject.put("ManualThrottleMode", ControlSettings.ThrottleMode.valueOf(manual_throttle_mode.getText().toString()).getValue());
-            jsonObject.put("AutoLandingDescendRate", auto_landing_descend_rate.getText());
             jsonObject.put("MaxAutoLandingTime", max_auto_landing_time.getText());
             jsonObject.put("MaxRollPitchControlValue", max_roll_pitch_control_value.getText());
             jsonObject.put("MaxYawControlValue", max_yaw_control_value.getText());
