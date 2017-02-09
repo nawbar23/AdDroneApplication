@@ -184,14 +184,11 @@ public class ControlViewModel implements ViewModel,
     }
 
     private void startDownloadControlSettingsDialog(final ControlSettings controlSettings) {
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "showControlSettingsDialog");
-                ManageControlSettingsDialog dialog = new ManageControlSettingsDialog(activity, controlSettings, uavManager);
-                dialog.show();
-            }
-        });
+        if (!activity.isFinishing()) {
+            Log.d(TAG, "showControlSettingsDialog");
+            ManageControlSettingsDialog dialog = new ManageControlSettingsDialog(activity, controlSettings, uavManager);
+            dialog.show();
+        }
     }
 
 
