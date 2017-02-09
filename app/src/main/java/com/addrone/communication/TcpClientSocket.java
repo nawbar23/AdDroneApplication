@@ -50,6 +50,7 @@ public class TcpClientSocket extends CommInterface {
             outputStream.write(packet, 0, packet.length);
         } catch (IOException e) {
             Log.e(DEBUG_TAG, "Error while sending: " + e.getMessage());
+            e.printStackTrace();
             disconnect();
         }
     }

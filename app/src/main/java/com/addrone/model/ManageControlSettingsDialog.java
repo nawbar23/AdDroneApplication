@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.addrone.R;
+import com.multicopter.java.UavManager;
 import com.multicopter.java.data.ControlData;
 import com.multicopter.java.data.ControlSettings;
 
@@ -44,6 +45,8 @@ public class ManageControlSettingsDialog extends Dialog {
     private final ControlSettingsRepo controlSettingsRepo = new ControlSettingsRepo();
     private ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(super.getContext(), android.R.layout.select_dialog_singlechoice);
     private org.json.JSONObject jsonObject = new org.json.JSONObject();
+    UavManager uavManager;
+    ControlSettings testControlSettings;
 
     InputFilterMinMax filter = new InputFilterMinMax("0", String.valueOf(Double.POSITIVE_INFINITY)) {
     };
@@ -164,12 +167,14 @@ public class ManageControlSettingsDialog extends Dialog {
 
     private final File directory = new File(getContext().getFilesDir().getPath() + File.separator + "controlSettings");
 
-    public ManageControlSettingsDialog(Context context, ControlSettings controlSettings) {
+    public ManageControlSettingsDialog(Context context, ControlSettings controlSettings, UavManager uavManager) {
         super(context, android.R.style.Theme_Dialog);
         controlSettingsRepo.setControlSettings(controlSettings);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.control_settings_dialog);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        this.uavManager=uavManager;
+        this.testControlSettings=controlSettings;
         setCancelable(true);
         ButterKnife.bind(this);
         makeEditable();
@@ -433,6 +438,14 @@ public class ManageControlSettingsDialog extends Dialog {
     @OnClick(R.id.btn_cc_upload)
     public void clickButtonUpload() {
         //TODO: pin method to send message to drone
+        testControlSettings.setMaxAutoAngle(0.4f);
+        testControlSettings.setCrc();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                uavManager.uploadControlSettings(testControlSettings);
+            }
+        }).start();
     }
 
     @OnClick(R.id.btn_cc_update)

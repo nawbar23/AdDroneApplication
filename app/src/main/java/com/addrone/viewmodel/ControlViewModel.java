@@ -188,7 +188,7 @@ public class ControlViewModel implements ViewModel,
             @Override
             public void run() {
                 Log.d(TAG, "showControlSettingsDialog");
-                ManageControlSettingsDialog dialog = new ManageControlSettingsDialog(activity, controlSettings);
+                ManageControlSettingsDialog dialog = new ManageControlSettingsDialog(activity, controlSettings, uavManager);
                 dialog.show();
             }
         });
@@ -251,7 +251,6 @@ public class ControlViewModel implements ViewModel,
                     showCalibration(uavManager.getCalibrationSettings());
                     break;
                 case MANAGE_CONTROL_SETTINGS:
-//                    startDownloadControlSettingsDialog();
                     uavManager.downloadControlSettings();
                     break;
             }
