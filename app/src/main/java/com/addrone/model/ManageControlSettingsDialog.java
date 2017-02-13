@@ -958,7 +958,6 @@ public class ManageControlSettingsDialog extends Dialog {
         boolean result=false;
         addFilesToArrayAdapter();
         byte[] currentConfigByte = toArrayByte(new File(directory.getPath() + File.separator + "current configuration"));
-        System.out.println("arrayAdapter.getCount() "+arrayAdapter.getCount());
 
         for (int i = 0; i < arrayAdapter.getCount(); i++) {
             name = arrayAdapter.getItem(i).toString();
