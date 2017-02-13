@@ -176,7 +176,7 @@ public class ManageControlSettingsDialog extends Dialog {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.control_settings_dialog);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        this.uavManager=uavManager;
+        this.uavManager = uavManager;
         this.controlSettingsUpload = controlSettings;
         setCancelable(true);
         ButterKnife.bind(this);
@@ -553,6 +553,7 @@ public class ManageControlSettingsDialog extends Dialog {
         final AlertDialog.Builder nameInputDialogBuilder = new AlertDialog.Builder(getContext(), R.style.DarkAlertDialog);
         nameInputDialogBuilder.setMessage("Enter a unique name for the repository.");
         final EditText input = new EditText(getContext());
+        input.setSingleLine();
         nameInputDialogBuilder.setView(input);
         nameInputDialogBuilder.setCancelable(true);
         name = input.getText().toString();
@@ -849,9 +850,10 @@ public class ManageControlSettingsDialog extends Dialog {
             currentConfiguration.setText(name + "\n(current)");
         }
     }
+
     private boolean comparingJSONs() {
 
-        boolean result=false;
+        boolean result = false;
         addFilesToArrayAdapter();
         byte[] currentConfigByte = toArrayByte(new File(directory.getPath() + File.separator + getContext().getString(R.string.current_configuration)));
 
@@ -860,12 +862,11 @@ public class ManageControlSettingsDialog extends Dialog {
             if (!name.equals(getContext().getString(R.string.current_configuration))) {
                 byte[] memoryConfig = toArrayByte(new File(directory.getPath() + File.separator + name));
                 if (Arrays.equals(currentConfigByte, memoryConfig)) {
-                    result=true;
+                    result = true;
                     break;
                 }
             }
         }
-        System.out.println("comparingJSONs "+result);
         return result;
     }
 
@@ -882,6 +883,7 @@ public class ManageControlSettingsDialog extends Dialog {
         }
         return bytes;
     }
+
     private boolean updateJSON() {
         try {
             jsonObject.put("UavType", ControlSettings.UavType.valueOf(uav_type.getText().toString()).getValue());
