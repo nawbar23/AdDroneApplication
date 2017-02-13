@@ -31,7 +31,6 @@ import org.json.simple.parser.JSONParser;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -463,7 +462,7 @@ public class ManageControlSettingsDialog extends Dialog {
             Toast.makeText(getContext(), "First you should add new configuration!", Toast.LENGTH_LONG).show();
             return;
         }
-        if (name.equals(R.string.current_configuration)) {
+        if (name.equals(getContext().getString(R.string.current_configuration))) {
             Toast.makeText(getContext(), "Can't update current configuration!", Toast.LENGTH_LONG).show();
             return;
         }
@@ -487,16 +486,7 @@ public class ManageControlSettingsDialog extends Dialog {
                         fileWriter.flush();
                         fileWriter.close();
 
-                        AlertDialog.Builder builderInner2 = new AlertDialog.Builder(getContext(), R.style.DarkAlertDialog);
-                        builderInner2.setMessage(name);
-                        builderInner2.setTitle("You updated a file: ");
-                        builderInner2.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                        builderInner2.show();
+                        Toast.makeText(getContext(), "You updated a file: " + name, Toast.LENGTH_SHORT).show();
                     } catch (IOException e) {
                         Log.e(this.getClass().toString(), "Error while updating file:" + e.getMessage());
                         e.printStackTrace();
@@ -526,7 +516,7 @@ public class ManageControlSettingsDialog extends Dialog {
             return;
         }
 
-        if (name.equals(R.string.current_configuration)) {
+        if (name.equals(getContext().getString(R.string.current_configuration))) {
             Toast.makeText(getContext(), "Can't delete current configuration!", Toast.LENGTH_LONG).show();
             return;
         }
@@ -539,19 +529,10 @@ public class ManageControlSettingsDialog extends Dialog {
             public void onClick(DialogInterface dialog, int which) {
                 File file = new File(directory.getPath(), name);
                 if (file.delete()) {
-                    AlertDialog.Builder innerDialogBuilder = new AlertDialog.Builder(getContext(), R.style.DarkAlertDialog);
-                    innerDialogBuilder.setMessage(name);
-                    innerDialogBuilder.setTitle("You deleted a file: ");
-                    innerDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            currentConfigurationChoice();
-                            getChosenConfiguration(getContext().getString(R.string.current_configuration));
-                            currentConfiguration.setText(R.string.current_configuration);
-                        }
-                    });
-                    innerDialogBuilder.show();
+                    currentConfigurationChoice();
+                    getChosenConfiguration(getContext().getString(R.string.current_configuration));
+                    currentConfiguration.setText(R.string.current_configuration);
+                    Toast.makeText(getContext(), "You deleted a file: " + name, Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), "Can't delete file!", Toast.LENGTH_LONG).show();
                 }
@@ -667,7 +648,7 @@ public class ManageControlSettingsDialog extends Dialog {
         arrayAdapter.clear();
         arrayAdapter.add(currentConfigurationChoice().getName());
         for (File file : files) {
-            if (file.getName().equals(R.string.current_configuration)) {
+            if (file.getName().equals(getContext().getString(R.string.current_configuration))) {
                 continue;
             } else {
                 arrayAdapter.add(file.getName());
@@ -700,18 +681,6 @@ public class ManageControlSettingsDialog extends Dialog {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String uavType = arrayAdapter.getItem(which);
-
-                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
-                builderInner.setMessage(uavType);
-                builderInner.setTitle("Your Selected Item is");
-                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builderInner.show();
-
                 uav_type.setText(uavType);
             }
         });
@@ -738,18 +707,6 @@ public class ManageControlSettingsDialog extends Dialog {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String initialSolverMode = arrayAdapter.getItem(which);
-
-                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
-                builderInner.setMessage(initialSolverMode);
-                builderInner.setTitle("Your Selected Item is");
-                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builderInner.show();
-
                 initial_solver_mode.setText(initialSolverMode);
             }
         });
@@ -775,18 +732,6 @@ public class ManageControlSettingsDialog extends Dialog {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String manualThrottleMode = arrayAdapter.getItem(which);
-
-                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
-                builderInner.setMessage(manualThrottleMode);
-                builderInner.setTitle("Your Selected Item is");
-                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builderInner.show();
-
                 manual_throttle_mode.setText(manualThrottleMode);
             }
         });
@@ -813,18 +758,6 @@ public class ManageControlSettingsDialog extends Dialog {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String stickMovementMode = arrayAdapter.getItem(which);
-
-                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
-                builderInner.setMessage(stickMovementMode);
-                builderInner.setTitle("Your Selected Item is");
-                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builderInner.show();
-
                 stick_movement_mode.setText(stickMovementMode);
             }
         });
@@ -854,18 +787,6 @@ public class ManageControlSettingsDialog extends Dialog {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String batteryType = arrayAdapter.getItem(which);
-
-                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
-                builderInner.setMessage(batteryType);
-                builderInner.setTitle("Your Selected Item is");
-                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builderInner.show();
-
                 battery_type.setText(batteryType);
             }
         });
@@ -892,18 +813,6 @@ public class ManageControlSettingsDialog extends Dialog {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String errorHandlingAction = arrayAdapter.getItem(which);
-
-                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext(), R.style.DarkAlertDialog);
-                builderInner.setMessage(errorHandlingAction);
-                builderInner.setTitle("Your Selected Item is");
-                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builderInner.show();
-
                 error_handling_action.setText(errorHandlingAction);
             }
         });
@@ -927,20 +836,9 @@ public class ManageControlSettingsDialog extends Dialog {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 name = arrayAdapter.getItem(which);
-
-                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext(), R.style.DarkAlertDialog);
-                builderInner.setMessage(name);
-                builderInner.setTitle("Your Selected Item is");
-                builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                builderInner.show();
-
                 getChosenConfiguration(name);
                 currentConfiguration.setText(name);
+                Toast.makeText(getContext(), "You selected a file: " + name, Toast.LENGTH_SHORT).show();
             }
         });
         builderSingle.show();
@@ -959,7 +857,7 @@ public class ManageControlSettingsDialog extends Dialog {
 
         for (int i = 0; i < arrayAdapter.getCount(); i++) {
             name = arrayAdapter.getItem(i).toString();
-            if (!name.equals(R.string.current_configuration)) {
+            if (!name.equals(getContext().getString(R.string.current_configuration))) {
                 byte[] memoryConfig = toArrayByte(new File(directory.getPath() + File.separator + name));
                 if (Arrays.equals(currentConfigByte, memoryConfig)) {
                     result=true;
@@ -979,8 +877,6 @@ public class ManageControlSettingsDialog extends Dialog {
             BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
             buf.read(bytes, 0, bytes.length);
             buf.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
