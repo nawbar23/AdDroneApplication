@@ -180,7 +180,7 @@ public class ManageControlSettingsDialog extends Dialog {
         setContentView(R.layout.control_settings_dialog);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         this.uavManager=uavManager;
-//        this.controlSettingsUpload=controlSettings;
+        this.controlSettingsUpload=controlSettings;
         setCancelable(true);
         ButterKnife.bind(this);
         makeEditable();
@@ -574,6 +574,7 @@ public class ManageControlSettingsDialog extends Dialog {
         final android.support.v7.app.AlertDialog.Builder nameInputDialogBuilder = new android.support.v7.app.AlertDialog.Builder(getContext());
         nameInputDialogBuilder.setMessage("Enter a unique name for the repository.");
         final EditText input = new EditText(getContext());
+        input.setSingleLine();
         nameInputDialogBuilder.setView(input);
         nameInputDialogBuilder.setCancelable(true);
         name = input.getText().toString();
@@ -969,7 +970,6 @@ public class ManageControlSettingsDialog extends Dialog {
                 }
             }
         }
-        System.out.println("comparingJSONs "+result);
         return result;
     }
 
@@ -988,6 +988,7 @@ public class ManageControlSettingsDialog extends Dialog {
         }
         return bytes;
     }
+
     private boolean updateJSON() {
         try {
             jsonObject.put("UavType", ControlSettings.UavType.valueOf(uav_type.getText().toString()).getValue());
