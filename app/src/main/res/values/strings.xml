@@ -110,6 +110,7 @@
     <string name="pid_auto_accelZ">Pid Auto Accel Z</string>
     <string name="stick_position_rate_prop">Stick Position Rate Prop</string>
     <string name="stick_movement_mode">Stick Movement Mode</string>
-    <string name="battery_type">Battey Type</string>
+    <string name="battery_type">Battery Type</string>
     <string name="error_handling_action">Error Handling Action</string>
+    <string name="current_configuration">current configuration</string>
 </resources>

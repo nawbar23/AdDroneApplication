@@ -1,11 +1,11 @@
 package com.addrone.model;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.support.v7.app.AlertDialog;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
@@ -24,11 +24,9 @@ import com.multicopter.java.UavManager;
 import com.multicopter.java.data.ControlData;
 import com.multicopter.java.data.ControlSettings;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -179,15 +177,15 @@ public class ManageControlSettingsDialog extends Dialog {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.control_settings_dialog);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        this.uavManager=uavManager;
-        this.controlSettingsUpload=controlSettings;
+        this.uavManager = uavManager;
+        this.controlSettingsUpload = controlSettings;
         setCancelable(true);
         ButterKnife.bind(this);
         makeEditable();
         checkIfInRange();
         currentConfigurationChoice();
-        getChosenConfiguration("current configuration");
-        currentConfiguration.setText("current configuration");
+        getChosenConfiguration(context.getString(R.string.current_configuration));
+        currentConfiguration.setText(R.string.current_configuration);
         checkIfTheSame();
     }
 
@@ -465,7 +463,7 @@ public class ManageControlSettingsDialog extends Dialog {
             Toast.makeText(getContext(), "First you should add new configuration!", Toast.LENGTH_LONG).show();
             return;
         }
-        if (name.equals("current configuration")) {
+        if (name.equals(R.string.current_configuration)) {
             Toast.makeText(getContext(), "Can't update current configuration!", Toast.LENGTH_LONG).show();
             return;
         }
@@ -474,7 +472,7 @@ public class ManageControlSettingsDialog extends Dialog {
             return;
         }
 
-        AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext(), R.style.DarkAlertDialog);
         builderInner.setMessage(name);
         builderInner.setTitle("Are you sure you want to update a file: ");
         builderInner.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -489,7 +487,7 @@ public class ManageControlSettingsDialog extends Dialog {
                         fileWriter.flush();
                         fileWriter.close();
 
-                        AlertDialog.Builder builderInner2 = new AlertDialog.Builder(getContext());
+                        AlertDialog.Builder builderInner2 = new AlertDialog.Builder(getContext(), R.style.DarkAlertDialog);
                         builderInner2.setMessage(name);
                         builderInner2.setTitle("You updated a file: ");
                         builderInner2.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -528,12 +526,12 @@ public class ManageControlSettingsDialog extends Dialog {
             return;
         }
 
-        if (name.equals("current configuration")) {
+        if (name.equals(R.string.current_configuration)) {
             Toast.makeText(getContext(), "Can't delete current configuration!", Toast.LENGTH_LONG).show();
             return;
         }
 
-        AlertDialog.Builder deleteDialogBuilder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder deleteDialogBuilder = new AlertDialog.Builder(getContext(), R.style.DarkAlertDialog);
         deleteDialogBuilder.setMessage(name);
         deleteDialogBuilder.setTitle("Are you sure you want to delete a file: ");
         deleteDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -541,7 +539,7 @@ public class ManageControlSettingsDialog extends Dialog {
             public void onClick(DialogInterface dialog, int which) {
                 File file = new File(directory.getPath(), name);
                 if (file.delete()) {
-                    AlertDialog.Builder innerDialogBuilder = new AlertDialog.Builder(getContext());
+                    AlertDialog.Builder innerDialogBuilder = new AlertDialog.Builder(getContext(), R.style.DarkAlertDialog);
                     innerDialogBuilder.setMessage(name);
                     innerDialogBuilder.setTitle("You deleted a file: ");
                     innerDialogBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -549,8 +547,8 @@ public class ManageControlSettingsDialog extends Dialog {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                             currentConfigurationChoice();
-                            getChosenConfiguration("current configuration");
-                            currentConfiguration.setText("current configuration");
+                            getChosenConfiguration(getContext().getString(R.string.current_configuration));
+                            currentConfiguration.setText(R.string.current_configuration);
                         }
                     });
                     innerDialogBuilder.show();
@@ -571,7 +569,7 @@ public class ManageControlSettingsDialog extends Dialog {
     @OnClick(R.id.btn_cc_new)
     public void clickButtonNew() {
         //TODO: pin method to create new configuration
-        final android.support.v7.app.AlertDialog.Builder nameInputDialogBuilder = new android.support.v7.app.AlertDialog.Builder(getContext());
+        final AlertDialog.Builder nameInputDialogBuilder = new AlertDialog.Builder(getContext(), R.style.DarkAlertDialog);
         nameInputDialogBuilder.setMessage("Enter a unique name for the repository.");
         final EditText input = new EditText(getContext());
         input.setSingleLine();
@@ -616,7 +614,7 @@ public class ManageControlSettingsDialog extends Dialog {
             }
         });
 
-        android.support.v7.app.AlertDialog alert = nameInputDialogBuilder.create();
+        AlertDialog alert = nameInputDialogBuilder.create();
         alert.show();
     }
 
@@ -640,7 +638,7 @@ public class ManageControlSettingsDialog extends Dialog {
     private File currentConfigurationChoice() {
         try {
             controlSettingsRepo.toJSON();
-            name = "current configuration";
+            name = getContext().getString(R.string.current_configuration);
             try {
                 File fileCurrentConfiguration = new File(directory.getPath(), name);
                 fileCurrentConfiguration.createNewFile();
@@ -670,7 +668,7 @@ public class ManageControlSettingsDialog extends Dialog {
         arrayAdapter.clear();
         arrayAdapter.add(currentConfigurationChoice().getName());
         for (File file : files) {
-            if (file.getName().equals("current configuration")) {
+            if (file.getName().equals(R.string.current_configuration)) {
                 continue;
             } else {
                 arrayAdapter.add(file.getName());
@@ -878,7 +876,7 @@ public class ManageControlSettingsDialog extends Dialog {
     @OnClick(R.id.error_handling_action)
     public void errorHandlingActionChoice() {
         arrayAdapter.clear();
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext(), R.style.DarkAlertDialog);
         builderSingle.setTitle("Select Configuration: ");
 
         arrayAdapter.add(String.valueOf(ControlData.ControllerCommand.getControllerCommand((short) 1100)));
@@ -896,7 +894,7 @@ public class ManageControlSettingsDialog extends Dialog {
             public void onClick(DialogInterface dialog, int which) {
                 String errorHandlingAction = arrayAdapter.getItem(which);
 
-                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
+                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext(), R.style.DarkAlertDialog);
                 builderInner.setMessage(errorHandlingAction);
                 builderInner.setTitle("Your Selected Item is");
                 builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -914,7 +912,7 @@ public class ManageControlSettingsDialog extends Dialog {
     }
 
     private void createConfigurationPicker() {
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext(), R.style.DarkAlertDialog);
         builderSingle.setTitle("Select Configuration: ");
 
         addFilesToArrayAdapter();
@@ -931,7 +929,7 @@ public class ManageControlSettingsDialog extends Dialog {
             public void onClick(DialogInterface dialog, int which) {
                 name = arrayAdapter.getItem(which);
 
-                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext());
+                AlertDialog.Builder builderInner = new AlertDialog.Builder(getContext(), R.style.DarkAlertDialog);
                 builderInner.setMessage(name);
                 builderInner.setTitle("Your Selected Item is");
                 builderInner.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -954,18 +952,19 @@ public class ManageControlSettingsDialog extends Dialog {
             currentConfiguration.setText(name + "\n(current)");
         }
     }
+
     private boolean comparingJSONs() {
 
-        boolean result=false;
+        boolean result = false;
         addFilesToArrayAdapter();
-        byte[] currentConfigByte = toArrayByte(new File(directory.getPath() + File.separator + "current configuration"));
+        byte[] currentConfigByte = toArrayByte(new File(directory.getPath() + File.separator + getContext().getString(R.string.current_configuration)));
 
         for (int i = 0; i < arrayAdapter.getCount(); i++) {
             name = arrayAdapter.getItem(i).toString();
-            if (!name.equals("current configuration")) {
+            if (!name.equals(R.string.current_configuration)) {
                 byte[] memoryConfig = toArrayByte(new File(directory.getPath() + File.separator + name));
                 if (Arrays.equals(currentConfigByte, memoryConfig)) {
-                    result=true;
+                    result = true;
                     break;
                 }
             }
