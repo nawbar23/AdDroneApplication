@@ -205,6 +205,7 @@ public class ControlViewModel implements ViewModel,
         }
     }
 
+
     private class ActionMenu implements Runnable {
 
         private ActionDialog.ButtonId buttonId;
