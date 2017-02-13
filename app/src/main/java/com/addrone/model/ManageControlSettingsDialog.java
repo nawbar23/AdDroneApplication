@@ -445,7 +445,32 @@ public class ManageControlSettingsDialog extends Dialog {
     @OnClick(R.id.btn_cc_upload)
     public void clickButtonUpload() {
         //TODO: pin method to send message to drone
-        controlSettingsUpload.setMaxAutoAngle(0.4f);
+        controlSettingsUpload.setUavType(ControlSettings.UavType.valueOf(uav_type.getText().toString()).getValue());
+        controlSettingsUpload.setInitialSolverMode(ControlData.SolverMode.valueOf(initial_solver_mode.getText().toString()).getValue());
+        controlSettingsUpload.setManualThrottleMode(ControlSettings.ThrottleMode.valueOf(manual_throttle_mode.getText().toString()).getValue());
+        controlSettingsUpload.setAutoLandingDescendRate(Float.parseFloat(String.valueOf(auto_landing_descend_rate.getText())));
+        controlSettingsUpload.setMaxAutoLandingTime(Float.parseFloat(String.valueOf(max_auto_landing_time.getText())));
+        controlSettingsUpload.setMaxRollPitchControlValue(Float.parseFloat(String.valueOf(max_roll_pitch_control_value.getText())));
+        controlSettingsUpload.setMaxYawControlValue(Float.parseFloat(String.valueOf(max_yaw_control_value.getText())));
+        controlSettingsUpload.setPidRollRate(new float[]{Float.parseFloat(String.valueOf(pid_roll_rateX.getText())), Float.parseFloat(String.valueOf(pid_roll_rateY.getText())), Float.parseFloat(String.valueOf(pid_roll_rateZ.getText()))});
+        controlSettingsUpload.setPidPitchRate(new float[]{Float.parseFloat(String.valueOf(pid_pitch_rateX.getText())), Float.parseFloat(String.valueOf(pid_pitch_rateY.getText())), Float.parseFloat(String.valueOf(pid_pitch_rateZ.getText()))});
+        controlSettingsUpload.setPidYawRate(new float[]{Float.parseFloat(String.valueOf(pid_yaw_rateX.getText())), Float.parseFloat(String.valueOf(pid_yaw_rateY.getText())), Float.parseFloat(String.valueOf(pid_yaw_rateZ.getText()))});
+        controlSettingsUpload.setRollProp(Float.parseFloat(String.valueOf(pid_roll_prop.getText())));
+        controlSettingsUpload.setPitchProp(Float.parseFloat(String.valueOf(pid_pitch_prop.getText())));
+        controlSettingsUpload.setYawProp(Float.parseFloat(String.valueOf(pid_yaw_prop.getText())));
+        controlSettingsUpload.setAltPositionProp(Float.parseFloat(String.valueOf(alt_position_prop.getText())));
+        controlSettingsUpload.setAltVelocityProp(Float.parseFloat(String.valueOf(alt_velocity_prop.getText())));
+        controlSettingsUpload.setPidThrottleAccel(new float[]{Float.parseFloat(String.valueOf(pid_throttle_accelX.getText())), Float.parseFloat(String.valueOf(pid_throttle_accelY.getText())), Float.parseFloat(String.valueOf(pid_throttle_accelZ.getText()))});
+        controlSettingsUpload.setThrottleAltRateProp(Float.parseFloat(String.valueOf(throttle_alt_rate_prop.getText())));
+        controlSettingsUpload.setMaxAutoAngle(Float.parseFloat(String.valueOf(max_auto_angle.getText())));
+        controlSettingsUpload.setMaxAutoVelocity(Float.parseFloat(String.valueOf(max_auto_velocity.getText())));
+        controlSettingsUpload.setAutoPositionProp(Float.parseFloat(String.valueOf(auto_position_prop.getText())));
+        controlSettingsUpload.setAutoVelocityProp(Float.parseFloat(String.valueOf(auto_velocity_prop.getText())));
+        controlSettingsUpload.setPidAutoAccel(new float[]{Float.parseFloat(String.valueOf(pid_auto_accelX.getText())), Float.parseFloat(String.valueOf(pid_auto_accelY.getText())), Float.parseFloat(String.valueOf(pid_auto_accelZ.getText()))});
+        controlSettingsUpload.setStickPositionRateProp(Float.parseFloat(String.valueOf(stick_position_rate_prop.getText())));
+        controlSettingsUpload.setStickMovementMode(ControlSettings.StickMovementMode.valueOf(stick_movement_mode.getText().toString()).getValue());
+        controlSettingsUpload.setBatteryType(ControlSettings.BatteryType.valueOf(battery_type.getText().toString()).getValue());
+        controlSettingsUpload.setErrorHandlingAction(ControlData.ControllerCommand.valueOf(error_handling_action.getText().toString()).getValue());
         controlSettingsUpload.setCrc();
         new Thread(new Runnable() {
             @Override
