@@ -30,11 +30,14 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -945,40 +948,47 @@ public class ManageControlSettingsDialog extends Dialog {
         builderSingle.show();
     }
 
-    private boolean comparingJSONs() {
-        boolean result = false;
-        JSONParser parser = new JSONParser();
-        String currentName = "";
-
-        try {
-            JSONObject jsonObjectCurrentConfiguration = (JSONObject) parser.parse(new FileReader(directory.getPath() + File.separator + "current configuration"));
-            addFilesToArrayAdapter();
-            for (int i = 0; i < arrayAdapter.getCount(); i++) {
-                name = arrayAdapter.getItem(i).toString();
-                if (name.equals("current configuration")) {
-                    currentName = name;
-                    System.out.println("Current configuration : " + jsonObjectCurrentConfiguration);
-                    continue;
-                }
-                JSONObject object = (JSONObject) parser.parse(new FileReader(directory.getPath() + File.separator + arrayAdapter.getItem(i).toString()));
-                System.out.println("saved configuration : " + object);
-                if (object.equals(jsonObjectCurrentConfiguration)) {
-                    result = true;
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    private void checkIfTheSame(){
-        if (comparingJSONs()){
+    private void checkIfTheSame() {
+        if (comparingJSONs()) {
             currentConfiguration.setText(name + "\n(current)");
         }
     }
+    private boolean comparingJSONs() {
 
+        boolean result=false;
+        addFilesToArrayAdapter();
+        byte[] currentConfigByte = toArrayByte(new File(directory.getPath() + File.separator + "current configuration"));
+        System.out.println("arrayAdapter.getCount() "+arrayAdapter.getCount());
+
+        for (int i = 0; i < arrayAdapter.getCount(); i++) {
+            name = arrayAdapter.getItem(i).toString();
+            if (!name.equals("current configuration")) {
+                byte[] memoryConfig = toArrayByte(new File(directory.getPath() + File.separator + name));
+                if (Arrays.equals(currentConfigByte, memoryConfig)) {
+                    result=true;
+                    break;
+                }
+            }
+        }
+        System.out.println("comparingJSONs "+result);
+        return result;
+    }
+
+
+    private byte[] toArrayByte(File file) {
+        int size = (int) file.length();
+        byte[] bytes = new byte[size];
+        try {
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+            buf.read(bytes, 0, bytes.length);
+            buf.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bytes;
+    }
     private boolean updateJSON() {
         try {
             jsonObject.put("UavType", ControlSettings.UavType.valueOf(uav_type.getText().toString()).getValue());
