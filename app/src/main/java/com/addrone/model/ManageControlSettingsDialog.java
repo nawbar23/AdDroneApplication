@@ -49,7 +49,7 @@ public class ManageControlSettingsDialog extends Dialog {
     private ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(super.getContext(), android.R.layout.select_dialog_singlechoice);
     private org.json.JSONObject jsonObject = new org.json.JSONObject();
     UavManager uavManager;
-    ControlSettings testControlSettings;
+    ControlSettings controlSettingsUpload;
 
     InputFilterMinMax filter = new InputFilterMinMax("0", String.valueOf(Double.POSITIVE_INFINITY)) {
     };
@@ -177,7 +177,7 @@ public class ManageControlSettingsDialog extends Dialog {
         setContentView(R.layout.control_settings_dialog);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         this.uavManager=uavManager;
-        this.testControlSettings=controlSettings;
+//        this.controlSettingsUpload=controlSettings;
         setCancelable(true);
         ButterKnife.bind(this);
         makeEditable();
@@ -445,12 +445,12 @@ public class ManageControlSettingsDialog extends Dialog {
     @OnClick(R.id.btn_cc_upload)
     public void clickButtonUpload() {
         //TODO: pin method to send message to drone
-        testControlSettings.setMaxAutoAngle(0.4f);
-        testControlSettings.setCrc();
+        controlSettingsUpload.setMaxAutoAngle(0.4f);
+        controlSettingsUpload.setCrc();
         new Thread(new Runnable() {
             @Override
             public void run() {
-                uavManager.uploadControlSettings(testControlSettings);
+                uavManager.uploadControlSettings(controlSettingsUpload);
             }
         }).start();
     }
@@ -957,9 +957,11 @@ public class ManageControlSettingsDialog extends Dialog {
                 name = arrayAdapter.getItem(i).toString();
                 if (name.equals("current configuration")) {
                     currentName = name;
+                    System.out.println("Current configuration : " + jsonObjectCurrentConfiguration);
                     continue;
                 }
                 JSONObject object = (JSONObject) parser.parse(new FileReader(directory.getPath() + File.separator + arrayAdapter.getItem(i).toString()));
+                System.out.println("saved configuration : " + object);
                 if (object.equals(jsonObjectCurrentConfiguration)) {
                     result = true;
                     break;
@@ -982,6 +984,7 @@ public class ManageControlSettingsDialog extends Dialog {
             jsonObject.put("UavType", ControlSettings.UavType.valueOf(uav_type.getText().toString()).getValue());
             jsonObject.put("InitialSolverMode", ControlData.SolverMode.valueOf(initial_solver_mode.getText().toString()).getValue());
             jsonObject.put("ManualThrottleMode", ControlSettings.ThrottleMode.valueOf(manual_throttle_mode.getText().toString()).getValue());
+            jsonObject.put("AutoLandingDescendRate", auto_landing_descend_rate.getText());
             jsonObject.put("MaxAutoLandingTime", max_auto_landing_time.getText());
             jsonObject.put("MaxRollPitchControlValue", max_roll_pitch_control_value.getText());
             jsonObject.put("MaxYawControlValue", max_yaw_control_value.getText());
