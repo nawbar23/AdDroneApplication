@@ -31,6 +31,10 @@
     <string name="settings">Settings</string>
     <string name="pref_ui_refresh_rate">UI refresh rate</string>
     <string name="pref_ui_refresh_rate_summ">Set the frequency at which map is updated</string>
+    <string name="pref_comet_length">Comet length</string>
+    <string name="pref_comet_length_summ">Length of comet tail(sec)</string>
+    <string name="pref_error_joy_time">Time to send error joystic</string>
+    <string name="pref_error_joy_time_summ">Time to send error joystic (sec)</string>
     <string name="map">Map</string>
     <string name="camera">Camera</string>
     <string name="add_one_to_connect">Add at least one connection to be able to connect</string>
@@ -50,10 +54,6 @@
     <string name="end_fly">End fly</string>
     <string name="autopilot_destination">Autopilot destination</string>
     <string name="drone_position">Position of the drone</string>
-    <string name="pref_key_freq">Frequency value for uavManager</string>
-    <string name="pref_key_ping">Ping for uavManager</string>
-    <string name="pref_key__freq_default">20</string>
-    <string name="pref_key__ping_default">5</string>
     <string name="following_drone">Following the drone.</string>
     <string name="close">Close</string>
     <string name="fly">Fly</string>

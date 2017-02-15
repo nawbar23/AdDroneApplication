@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.addrone.R;
 import com.addrone.communication.TcpClientSocket;
 import com.addrone.model.ConnectionInfo;
+import com.addrone.settings.SettingsFragment;
 import com.addrone.viewmodel.ControlViewModel;
 import com.multicopter.java.UavEvent;
 import com.multicopter.java.UavManager;
@@ -37,6 +38,7 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
     private UavManager uavManager;
     private ControlForwarder controlForwarder;
     private Handler handler;
+    private long errorJoystickTime;
 
     @Override
     public void onCreate() {
@@ -45,23 +47,24 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
 
         Context context = getApplicationContext();
 
-        float defaultPing = Float.parseFloat(getResources().getString(R.string.pref_key__freq_default));
-        SharedPreferences sharedPrefPing = context.getSharedPreferences(
-                getString(R.string.pref_key_ping), Context.MODE_PRIVATE);
-        float ping = sharedPrefPing.getFloat(getString(R.string.pref_key_ping), defaultPing);
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                SettingsFragment.PREFERENCES_KEY, Context.MODE_PRIVATE);
+        double controlFreq = sharedPref.getFloat(SettingsFragment.PREF_KEY_CONTROL_FREQ, SettingsFragment.DEFAULT_CONTROL_FREQ);
 
+        double pingFreq = sharedPref.getFloat(SettingsFragment.PREF_KEY_PING_FREQ, SettingsFragment.DEFAULT_PING_FREQ);
 
-        float defaultFreq = Float.parseFloat(getResources().getString(R.string.pref_key__freq_default));
-        SharedPreferences sharedPrefFreq = context.getSharedPreferences(
-                getString(R.string.pref_key_freq), Context.MODE_PRIVATE);
-        float freq = sharedPrefFreq.getFloat(getString(R.string.pref_key_freq), defaultFreq);
+        errorJoystickTime=(long)(sharedPref.getFloat(SettingsFragment.PREF_ERROR_JOYSTICK_TIME,SettingsFragment.DEFAULT_ERROR_JOYSTICK_TIME)*1000);
 
-        this.uavManager = new UavManager(new TcpClientSocket());
+        this.uavManager = new UavManager(new TcpClientSocket(), controlFreq, pingFreq);
         this.uavManager.registerListener(this);
 
         this.state = State.DISABLED;
 
         this.handler = new Handler();
+    }
+
+    public void setErrorJoystickTime(long errorJoystickTime) {
+        this.errorJoystickTime = errorJoystickTime;
     }
 
     @Override
@@ -188,7 +191,7 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
         }
     }
 
-    private enum State {
+    public enum State {
         DISABLED,
         CONNECTING,
         CONNECTED,
@@ -213,16 +216,14 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
         public ControlData getControlData() {
 
             if (controlViewModel.getCurrentControlData().getCommand().getValue() == ControlData.ControllerCommand.MANUAL.getValue()) {
-                if (System.currentTimeMillis() - controlViewModel.getLastUpdate() > 5000) {
+                if (System.currentTimeMillis() - controlViewModel.getLastUpdate() > errorJoystickTime) {
                     ControlData controlData = new ControlData();
                     ControlData.ControllerCommand command = ControlData.ControllerCommand.ERROR_JOYSTICK;
                     controlData.setCommand(command);
                     return controlData;
-                }
-                else
+                } else
                     return controlViewModel.getCurrentControlData();
-            }
-            else
+            } else
                 return controlViewModel.getCurrentControlData();
         }
     }
