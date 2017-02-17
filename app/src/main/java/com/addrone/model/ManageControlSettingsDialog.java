@@ -25,7 +25,7 @@ import com.multicopter.java.data.ControlData;
 import com.multicopter.java.data.ControlSettings;
 
 import org.json.JSONException;
-import org.json.simple.JSONObject;
+import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.BufferedInputStream;
@@ -48,10 +48,10 @@ public class ManageControlSettingsDialog extends Dialog {
     private final ControlSettingsRepo controlSettingsRepo = new ControlSettingsRepo();
     private ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(super.getContext(), android.R.layout.select_dialog_singlechoice);
     private org.json.JSONObject jsonObject = new org.json.JSONObject();
-    UavManager uavManager;
-    ControlSettings controlSettingsUpload;
+    private UavManager uavManager;
+    private ControlSettings controlSettingsObject;
 
-    InputFilterMinMax filter = new InputFilterMinMax("0", String.valueOf(Double.POSITIVE_INFINITY)) {
+    private InputFilterMinMax filter = new InputFilterMinMax("0", String.valueOf(Double.POSITIVE_INFINITY)) {
     };
 
     @BindView(R.id.uav_type)
@@ -162,7 +162,7 @@ public class ManageControlSettingsDialog extends Dialog {
     @BindView(R.id.error_handling_action)
     public TextView error_handling_action;
 
-    @BindView(R.id.btn_cc_current)
+    @BindView(R.id.btn_cc_configurations_list)
     public Button currentConfiguration;
 
     @BindView(R.id.btn_cc_delete)
@@ -170,25 +170,37 @@ public class ManageControlSettingsDialog extends Dialog {
 
     private final File directory = new File(getContext().getFilesDir().getPath() + File.separator + "controlSettings");
 
-    public ManageControlSettingsDialog(Context context, ControlSettings controlSettings, UavManager uavManager) {
+    public ManageControlSettingsDialog(Context context, ControlSettings controlSettingsFromBoard, UavManager uavManager) {
         super(context, android.R.style.Theme_Dialog);
-        controlSettingsRepo.setControlSettings(controlSettings);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.control_settings_dialog);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        this.uavManager = uavManager;
-        this.controlSettingsUpload = controlSettings;
         setCancelable(true);
         ButterKnife.bind(this);
-        makeEditable();
-        checkIfInRange();
-        currentConfigurationChoice();
+
+        this.uavManager = uavManager;
+        this.controlSettingsObject = controlSettingsFromBoard;
+        controlSettingsRepo.setControlSettings(controlSettingsObject);
+
+        prepareSettingsViews();
+
+        saveConfigurationToJSONFile();
+        //saveJSONInStorage(context.getString(R.string.current_configuration));
+
         getChosenConfiguration(context.getString(R.string.current_configuration));
         currentConfiguration.setText(R.string.current_configuration);
         checkIfTheSame();
     }
 
-    private void checkIfInRange() {
+    private void prepareSettingsViews() {
+        TextView[] textViewArray = putSettingsTextViewsToArray();
+        makeParticularFieldsEditable(textViewArray);
+        setFiltersOnSettingsInput();
+    }
+
+    private void setFiltersOnSettingsInput() {
+        //TODO: somehow inform user about possible range
+        //TODO: like makeEditable function
         auto_landing_descend_rate.setFilters(new InputFilter[]{filter});
         max_auto_landing_time.setFilters(new InputFilter[]{filter});
         max_roll_pitch_control_value.setFilters(new InputFilter[]{new InputFilterMinMax("0", "0.8727")});
@@ -221,10 +233,8 @@ public class ManageControlSettingsDialog extends Dialog {
     }
 
 
-    private void makeEditable() {
-
-        TextView[] textViewArray;
-        textViewArray = new TextView[TEXT_VIEW_ARRAY_SIZE];
+    private TextView[] putSettingsTextViewsToArray() {
+        TextView[] textViewArray = new TextView[TEXT_VIEW_ARRAY_SIZE];
         textViewArray[0] = uav_type;
         textViewArray[1] = initial_solver_mode;
         textViewArray[2] = manual_throttle_mode;
@@ -262,7 +272,12 @@ public class ManageControlSettingsDialog extends Dialog {
         textViewArray[34] = battery_type;
         textViewArray[35] = error_handling_action;
 
+        return textViewArray;
+    }
+
+    private void makeParticularFieldsEditable(TextView[] textViewArray) {
         for (int i = 0; i < TEXT_VIEW_ARRAY_SIZE; i++) {
+            //TODO: REF switch
             if (textViewArray[i] == uav_type) {
                 continue;
             }
@@ -302,17 +317,12 @@ public class ManageControlSettingsDialog extends Dialog {
         }
     }
 
-    private void getChosenConfiguration(String conf) {
-        //TODO: here get chosen configutarion base on string 'conf'
-        loadChosenConfiguration();
+    private void getChosenConfiguration(String configurationName) {
+        fillDialogWithControlSettingsData();
     }
 
-    private void loadChosenConfiguration() {
-        //TODO: load and prepare peculiar data
-        fillWithData();
-    }
 
-    private void fillWithData() {
+    private void fillDialogWithControlSettingsData() {
 
         JSONParser parser = new JSONParser();
         try {
@@ -432,7 +442,7 @@ public class ManageControlSettingsDialog extends Dialog {
         }
     }
 
-    @OnClick(R.id.btn_cc_current)
+    @OnClick(R.id.btn_cc_configurations_list)
     public void showAvailableConfigurations() {
         createConfigurationPicker();
     }
@@ -444,40 +454,43 @@ public class ManageControlSettingsDialog extends Dialog {
 
     @OnClick(R.id.btn_cc_upload)
     public void clickButtonUpload() {
-        //TODO: pin method to send message to drone
-        controlSettingsUpload.setUavType(ControlSettings.UavType.valueOf(uav_type.getText().toString()).getValue());
-        controlSettingsUpload.setInitialSolverMode(ControlData.SolverMode.valueOf(initial_solver_mode.getText().toString()).getValue());
-        controlSettingsUpload.setManualThrottleMode(ControlSettings.ThrottleMode.valueOf(manual_throttle_mode.getText().toString()).getValue());
-        controlSettingsUpload.setAutoLandingDescendRate(Float.parseFloat(String.valueOf(auto_landing_descend_rate.getText())));
-        controlSettingsUpload.setMaxAutoLandingTime(Float.parseFloat(String.valueOf(max_auto_landing_time.getText())));
-        controlSettingsUpload.setMaxRollPitchControlValue(Float.parseFloat(String.valueOf(max_roll_pitch_control_value.getText())));
-        controlSettingsUpload.setMaxYawControlValue(Float.parseFloat(String.valueOf(max_yaw_control_value.getText())));
-        controlSettingsUpload.setPidRollRate(new float[]{Float.parseFloat(String.valueOf(pid_roll_rateX.getText())), Float.parseFloat(String.valueOf(pid_roll_rateY.getText())), Float.parseFloat(String.valueOf(pid_roll_rateZ.getText()))});
-        controlSettingsUpload.setPidPitchRate(new float[]{Float.parseFloat(String.valueOf(pid_pitch_rateX.getText())), Float.parseFloat(String.valueOf(pid_pitch_rateY.getText())), Float.parseFloat(String.valueOf(pid_pitch_rateZ.getText()))});
-        controlSettingsUpload.setPidYawRate(new float[]{Float.parseFloat(String.valueOf(pid_yaw_rateX.getText())), Float.parseFloat(String.valueOf(pid_yaw_rateY.getText())), Float.parseFloat(String.valueOf(pid_yaw_rateZ.getText()))});
-        controlSettingsUpload.setRollProp(Float.parseFloat(String.valueOf(pid_roll_prop.getText())));
-        controlSettingsUpload.setPitchProp(Float.parseFloat(String.valueOf(pid_pitch_prop.getText())));
-        controlSettingsUpload.setYawProp(Float.parseFloat(String.valueOf(pid_yaw_prop.getText())));
-        controlSettingsUpload.setAltPositionProp(Float.parseFloat(String.valueOf(alt_position_prop.getText())));
-        controlSettingsUpload.setAltVelocityProp(Float.parseFloat(String.valueOf(alt_velocity_prop.getText())));
-        controlSettingsUpload.setPidThrottleAccel(new float[]{Float.parseFloat(String.valueOf(pid_throttle_accelX.getText())), Float.parseFloat(String.valueOf(pid_throttle_accelY.getText())), Float.parseFloat(String.valueOf(pid_throttle_accelZ.getText()))});
-        controlSettingsUpload.setThrottleAltRateProp(Float.parseFloat(String.valueOf(throttle_alt_rate_prop.getText())));
-        controlSettingsUpload.setMaxAutoAngle(Float.parseFloat(String.valueOf(max_auto_angle.getText())));
-        controlSettingsUpload.setMaxAutoVelocity(Float.parseFloat(String.valueOf(max_auto_velocity.getText())));
-        controlSettingsUpload.setAutoPositionProp(Float.parseFloat(String.valueOf(auto_position_prop.getText())));
-        controlSettingsUpload.setAutoVelocityProp(Float.parseFloat(String.valueOf(auto_velocity_prop.getText())));
-        controlSettingsUpload.setPidAutoAccel(new float[]{Float.parseFloat(String.valueOf(pid_auto_accelX.getText())), Float.parseFloat(String.valueOf(pid_auto_accelY.getText())), Float.parseFloat(String.valueOf(pid_auto_accelZ.getText()))});
-        controlSettingsUpload.setStickPositionRateProp(Float.parseFloat(String.valueOf(stick_position_rate_prop.getText())));
-        controlSettingsUpload.setStickMovementMode(ControlSettings.StickMovementMode.valueOf(stick_movement_mode.getText().toString()).getValue());
-        controlSettingsUpload.setBatteryType(ControlSettings.BatteryType.valueOf(battery_type.getText().toString()).getValue());
-        controlSettingsUpload.setErrorHandlingAction(ControlData.ControllerCommand.valueOf(error_handling_action.getText().toString()).getValue());
-        controlSettingsUpload.setCrc();
+        updateControlSettingsObject();
         new Thread(new Runnable() {
             @Override
             public void run() {
-                uavManager.uploadControlSettings(controlSettingsUpload);
+                uavManager.uploadControlSettings(controlSettingsObject);
             }
         }).start();
+    }
+
+    private void updateControlSettingsObject() {
+        controlSettingsObject.setUavType(ControlSettings.UavType.valueOf(uav_type.getText().toString()).getValue());
+        controlSettingsObject.setInitialSolverMode(ControlData.SolverMode.valueOf(initial_solver_mode.getText().toString()).getValue());
+        controlSettingsObject.setManualThrottleMode(ControlSettings.ThrottleMode.valueOf(manual_throttle_mode.getText().toString()).getValue());
+        controlSettingsObject.setAutoLandingDescendRate(Float.parseFloat(String.valueOf(auto_landing_descend_rate.getText())));
+        controlSettingsObject.setMaxAutoLandingTime(Float.parseFloat(String.valueOf(max_auto_landing_time.getText())));
+        controlSettingsObject.setMaxRollPitchControlValue(Float.parseFloat(String.valueOf(max_roll_pitch_control_value.getText())));
+        controlSettingsObject.setMaxYawControlValue(Float.parseFloat(String.valueOf(max_yaw_control_value.getText())));
+        controlSettingsObject.setPidRollRate(new float[]{Float.parseFloat(String.valueOf(pid_roll_rateX.getText())), Float.parseFloat(String.valueOf(pid_roll_rateY.getText())), Float.parseFloat(String.valueOf(pid_roll_rateZ.getText()))});
+        controlSettingsObject.setPidPitchRate(new float[]{Float.parseFloat(String.valueOf(pid_pitch_rateX.getText())), Float.parseFloat(String.valueOf(pid_pitch_rateY.getText())), Float.parseFloat(String.valueOf(pid_pitch_rateZ.getText()))});
+        controlSettingsObject.setPidYawRate(new float[]{Float.parseFloat(String.valueOf(pid_yaw_rateX.getText())), Float.parseFloat(String.valueOf(pid_yaw_rateY.getText())), Float.parseFloat(String.valueOf(pid_yaw_rateZ.getText()))});
+        controlSettingsObject.setRollProp(Float.parseFloat(String.valueOf(pid_roll_prop.getText())));
+        controlSettingsObject.setPitchProp(Float.parseFloat(String.valueOf(pid_pitch_prop.getText())));
+        controlSettingsObject.setYawProp(Float.parseFloat(String.valueOf(pid_yaw_prop.getText())));
+        controlSettingsObject.setAltPositionProp(Float.parseFloat(String.valueOf(alt_position_prop.getText())));
+        controlSettingsObject.setAltVelocityProp(Float.parseFloat(String.valueOf(alt_velocity_prop.getText())));
+        controlSettingsObject.setPidThrottleAccel(new float[]{Float.parseFloat(String.valueOf(pid_throttle_accelX.getText())), Float.parseFloat(String.valueOf(pid_throttle_accelY.getText())), Float.parseFloat(String.valueOf(pid_throttle_accelZ.getText()))});
+        controlSettingsObject.setThrottleAltRateProp(Float.parseFloat(String.valueOf(throttle_alt_rate_prop.getText())));
+        controlSettingsObject.setMaxAutoAngle(Float.parseFloat(String.valueOf(max_auto_angle.getText())));
+        controlSettingsObject.setMaxAutoVelocity(Float.parseFloat(String.valueOf(max_auto_velocity.getText())));
+        controlSettingsObject.setAutoPositionProp(Float.parseFloat(String.valueOf(auto_position_prop.getText())));
+        controlSettingsObject.setAutoVelocityProp(Float.parseFloat(String.valueOf(auto_velocity_prop.getText())));
+        controlSettingsObject.setPidAutoAccel(new float[]{Float.parseFloat(String.valueOf(pid_auto_accelX.getText())), Float.parseFloat(String.valueOf(pid_auto_accelY.getText())), Float.parseFloat(String.valueOf(pid_auto_accelZ.getText()))});
+        controlSettingsObject.setStickPositionRateProp(Float.parseFloat(String.valueOf(stick_position_rate_prop.getText())));
+        controlSettingsObject.setStickMovementMode(ControlSettings.StickMovementMode.valueOf(stick_movement_mode.getText().toString()).getValue());
+        controlSettingsObject.setBatteryType(ControlSettings.BatteryType.valueOf(battery_type.getText().toString()).getValue());
+        controlSettingsObject.setErrorHandlingAction(ControlData.ControllerCommand.valueOf(error_handling_action.getText().toString()).getValue());
+        controlSettingsObject.setCrc();
     }
 
     @OnClick(R.id.btn_cc_update)
@@ -555,7 +568,8 @@ public class ManageControlSettingsDialog extends Dialog {
             public void onClick(DialogInterface dialog, int which) {
                 File file = new File(directory.getPath(), name);
                 if (file.delete()) {
-                    currentConfigurationChoice();
+                    saveConfigurationToJSONFile();
+                    //saveJSONInStorage(name);
                     getChosenConfiguration(getContext().getString(R.string.current_configuration));
                     currentConfiguration.setText(R.string.current_configuration);
                     Toast.makeText(getContext(), "You deleted a file: " + name, Toast.LENGTH_SHORT).show();
@@ -587,13 +601,14 @@ public class ManageControlSettingsDialog extends Dialog {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 updateJSON();
-                //TODO after adding download option change "controlSettingsRepo.toJSON()' to 'updateJSON'
+                //TODO after adding download option change "controlSettingsRepo.controlSettingsToJSON()' to 'updateJSON'
                 name = input.getText().toString();
 
                 if (isNameAlreadyUsed()) {
                     Toast.makeText(getContext(), "Name is already used! Please enter a unique name.", Toast.LENGTH_LONG).show();
                     return;
                 }
+
                 try {
                     File file = new File(directory.getPath(), name);
                     if (!file.createNewFile()) {
@@ -642,30 +657,64 @@ public class ManageControlSettingsDialog extends Dialog {
         return false;
     }
 
-    private File currentConfigurationChoice() {
+
+    private void saveJSONInStorage(String fileName) {
         try {
-            directory.mkdir();
-            controlSettingsRepo.toJSON();
-            name = getContext().getString(R.string.current_configuration);
+            JSONObject jsonToSave = controlSettingsRepo.controlSettingsToJSON();
+
             try {
-                File fileCurrentConfiguration = new File(directory.getPath(), name);
-                if (fileCurrentConfiguration.createNewFile()) {
-                    FileWriter fileWriter = new FileWriter(fileCurrentConfiguration);
-                    fileWriter.write(controlSettingsRepo.jsonObject.toString());
+                File fil = new File(directory.getPath(), fileName);
+                if (fil.createNewFile()) {
+                    FileWriter fileWriter = new FileWriter(fil);
+                    fileWriter.write(jsonToSave.toString());
                     fileWriter.flush();
                     fileWriter.close();
+                    Log.d(this.getClass().toString(), "File saved:" + directory.getPath() + " name: " + fileName);
+                    Toast.makeText(getContext(), "File saved.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "File not saved!", Toast.LENGTH_LONG).show();
                 }
-                return fileCurrentConfiguration;
+
             } catch (IOException e) {
-                Log.e(this.getClass().toString(), "Fail while saving file:" + e.getMessage() + " path: " + directory.getPath() + " name: " + name);
+                Log.e(this.getClass().toString(), "Fail while saving file:" + e.getMessage() + " path: " + directory.getPath() + " name: " + fileName);
                 e.printStackTrace();
                 Toast.makeText(getContext(), "Fail while saving file.", Toast.LENGTH_LONG).show();
-                return null;
             }
         } catch (JSONException e) {
             Toast.makeText(getContext(), "Error while creating JSON File", Toast.LENGTH_LONG).show();
             e.printStackTrace();
-            return null;
+            Log.e(this.getClass().toString(), "Error while creating JSON File");
+        }
+    }
+
+    private void saveConfigurationToJSONFile() {
+        try {
+
+            String configurationName = "1234"; //getContext().getString(R.string.current_configuration);
+            name = configurationName;
+            try {
+                File fileCurrentConfiguration = new File(directory.getPath(), configurationName);
+                if (fileCurrentConfiguration.createNewFile()) {
+                    FileWriter fileWriter = new FileWriter(fileCurrentConfiguration);
+                    fileWriter.write(controlSettingsRepo.controlSettingsToJSON().toString());
+                    fileWriter.flush();
+                    fileWriter.close();
+                    Log.d(this.getClass().toString(), "File saved:" + directory.getPath() + " name: " + configurationName);
+                    Toast.makeText(getContext(), "File saved.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "ELOOOO noc creeated conf file!", Toast.LENGTH_LONG).show();
+                }
+
+            } catch (IOException e) {
+                Log.e(this.getClass().toString(), "Fail while saving file:" + e.getMessage() + " path: " + directory.getPath() + " name: " + configurationName);
+                e.printStackTrace();
+                Toast.makeText(getContext(), "Fail while saving file.", Toast.LENGTH_LONG).show();
+
+            }
+        } catch (JSONException e) {
+            Toast.makeText(getContext(), "Error while creating JSON File", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+
         }
     }
 
@@ -676,11 +725,11 @@ public class ManageControlSettingsDialog extends Dialog {
         }
         arrayAdapter.clear();
         try {
-            arrayAdapter.add(currentConfigurationChoice().getName());
+            //arrayAdapter.add(saveConfigurationToJSONFile().getName());
             for (File file : files) {
-                if (!file.getName().equals(getContext().getString(R.string.current_configuration))) {
+//                if (!file.getName().equals(getContext().getString(R.string.current_configuration))) {
                     arrayAdapter.add(file.getName());
-                }
+//                }
             }
         } catch (Exception e) {
             e.printStackTrace();
