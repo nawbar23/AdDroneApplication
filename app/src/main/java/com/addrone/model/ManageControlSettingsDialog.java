@@ -505,11 +505,12 @@ public class ManageControlSettingsDialog extends Dialog {
                 if (updateJSON()) {
                     try {
                         File file = new File(directory.getPath(), name);
-                        file.createNewFile();
-                        FileWriter fileWriter = new FileWriter(file);
-                        fileWriter.write(jsonObject.toString());
-                        fileWriter.flush();
-                        fileWriter.close();
+                        if (file.createNewFile()) {
+                            FileWriter fileWriter = new FileWriter(file);
+                            fileWriter.write(jsonObject.toString());
+                            fileWriter.flush();
+                            fileWriter.close();
+                        }
 
                         Toast.makeText(getContext(), "You updated a file: " + name, Toast.LENGTH_SHORT).show();
                     } catch (IOException e) {
@@ -643,18 +644,20 @@ public class ManageControlSettingsDialog extends Dialog {
 
     private File currentConfigurationChoice() {
         try {
+            directory.mkdir();
             controlSettingsRepo.toJSON();
             name = getContext().getString(R.string.current_configuration);
             try {
                 File fileCurrentConfiguration = new File(directory.getPath(), name);
-                fileCurrentConfiguration.createNewFile();
-                FileWriter fileWriter = new FileWriter(fileCurrentConfiguration);
-                fileWriter.write(controlSettingsRepo.jsonObject.toString());
-                fileWriter.flush();
-                fileWriter.close();
+                if (fileCurrentConfiguration.createNewFile()) {
+                    FileWriter fileWriter = new FileWriter(fileCurrentConfiguration);
+                    fileWriter.write(controlSettingsRepo.jsonObject.toString());
+                    fileWriter.flush();
+                    fileWriter.close();
+                }
                 return fileCurrentConfiguration;
             } catch (IOException e) {
-                Log.e(this.getClass().toString(), "Fail while saving file:" + e.getMessage());
+                Log.e(this.getClass().toString(), "Fail while saving file:" + e.getMessage() + " path: " + directory.getPath() + " name: " + name);
                 e.printStackTrace();
                 Toast.makeText(getContext(), "Fail while saving file.", Toast.LENGTH_LONG).show();
                 return null;
@@ -672,13 +675,17 @@ public class ManageControlSettingsDialog extends Dialog {
             files = directory.listFiles();
         }
         arrayAdapter.clear();
-        arrayAdapter.add(currentConfigurationChoice().getName());
-        for (File file : files) {
-            if (file.getName().equals(getContext().getString(R.string.current_configuration))) {
-                continue;
-            } else {
-                arrayAdapter.add(file.getName());
+        try {
+            arrayAdapter.add(currentConfigurationChoice().getName());
+            for (File file : files) {
+                if (!file.getName().equals(getContext().getString(R.string.current_configuration))) {
+                    arrayAdapter.add(file.getName());
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "No start configuration.", Toast.LENGTH_SHORT).show();
+
         }
     }
 
@@ -872,7 +879,8 @@ public class ManageControlSettingsDialog extends Dialog {
 
     private void checkIfTheSame() {
         if (comparingJSONs()) {
-            currentConfiguration.setText(name + "\n(current)");
+            String text = name + "\n(current)";
+            currentConfiguration.setText(text);
         }
     }
 
@@ -883,7 +891,7 @@ public class ManageControlSettingsDialog extends Dialog {
         byte[] currentConfigByte = toArrayByte(new File(directory.getPath() + File.separator + getContext().getString(R.string.current_configuration)));
 
         for (int i = 0; i < arrayAdapter.getCount(); i++) {
-            name = arrayAdapter.getItem(i).toString();
+            name = arrayAdapter.getItem(i);
             if (!name.equals(getContext().getString(R.string.current_configuration))) {
                 byte[] memoryConfig = toArrayByte(new File(directory.getPath() + File.separator + name));
                 if (Arrays.equals(currentConfigByte, memoryConfig)) {
@@ -972,6 +980,7 @@ public class ManageControlSettingsDialog extends Dialog {
                 if (isInRange(min, max, input))
                     return null;
             } catch (NumberFormatException nfe) {
+                nfe.printStackTrace();
             }
             return "";
         }
