@@ -47,7 +47,6 @@ public class ManageControlSettingsDialog extends Dialog {
     private String name;
     private final ControlSettingsRepo controlSettingsRepo = new ControlSettingsRepo();
     private ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(super.getContext(), android.R.layout.select_dialog_singlechoice);
-    private org.json.JSONObject jsonObject = new org.json.JSONObject();
     private UavManager uavManager;
     private ControlSettings controlSettingsObject;
 
@@ -460,6 +459,8 @@ public class ManageControlSettingsDialog extends Dialog {
                 uavManager.uploadControlSettings(controlSettingsObject);
             }
         }).start();
+
+        this.dismiss();
     }
 
     private void updateControlSettingsObject() {
@@ -494,16 +495,8 @@ public class ManageControlSettingsDialog extends Dialog {
 
     @OnClick(R.id.btn_cc_update)
     public void clickButtonUpdate() {
-
-        if (name == null) {
-            Toast.makeText(getContext(), "First you should add new configuration!", Toast.LENGTH_LONG).show();
-            return;
-        }
+        String name = currentConfiguration.getText().toString();
         if (name.equals(getContext().getString(R.string.board_configuration))) {
-            Toast.makeText(getContext(), "Can't update current configuration!", Toast.LENGTH_LONG).show();
-            return;
-        }
-        if (currentConfiguration.getText().toString().contains("\n(current)")) {
             Toast.makeText(getContext(), "Can't update current configuration!", Toast.LENGTH_LONG).show();
             return;
         }
@@ -514,25 +507,11 @@ public class ManageControlSettingsDialog extends Dialog {
         builderInner.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (updateJSON()) {
-                    try {
-                        deleteConfiguration(name);
-                        File file = new File(DIR.getPath(), name);
-                        if (file.createNewFile()) {
-                            FileWriter fileWriter = new FileWriter(file);
-                            fileWriter.write(jsonObject.toString());
-                            fileWriter.flush();
-                            fileWriter.close();
-                            Toast.makeText(getContext(), "You updated a file: " + name, Toast.LENGTH_SHORT).show();
-                        }
-                        Toast.makeText(getContext(), "You have NOT updated a file: " + name, Toast.LENGTH_SHORT).show();
+                String name = currentConfiguration.getText().toString();
 
-                    } catch (IOException e) {
-                        Log.e(this.getClass().toString(), "Error while updating file:" + e.getMessage());
-                        e.printStackTrace();
-                        Toast.makeText(getContext(), "Fail updating file!", Toast.LENGTH_LONG).show();
-                    }
-                }
+                updateControlSettingsObject();
+                deleteConfiguration(name);
+                saveCurrentConfigAsJSON(name);
             }
         });
         builderInner.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -542,12 +521,13 @@ public class ManageControlSettingsDialog extends Dialog {
             }
         });
         builderInner.show();
+
+        this.dismiss();
     }
 
     @OnClick(R.id.btn_cc_delete)
     public void clickButtonDelete() {
         String name = currentConfiguration.getText().toString();
-
         if (name.equals(getContext().getString(R.string.board_configuration))) {
             Toast.makeText(getContext(), "Can't delete board configuration!", Toast.LENGTH_LONG).show();
             return;
@@ -584,20 +564,15 @@ public class ManageControlSettingsDialog extends Dialog {
 
     @OnClick(R.id.btn_cc_new)
     public void clickButtonNew() {
-        //TODO: pin method to create new configuration
         final AlertDialog.Builder nameInputDialogBuilder = new AlertDialog.Builder(getContext(), R.style.DarkAlertDialog);
         nameInputDialogBuilder.setMessage("Enter a unique name for the repository.");
         final EditText input = new EditText(getContext());
         input.setSingleLine();
         nameInputDialogBuilder.setView(input);
         nameInputDialogBuilder.setCancelable(true);
-        //String name = input.getText().toString();
         nameInputDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
-                //updateJSON();
-
                 String newName = input.getText().toString();
                 if (isNameAlreadyUsed(newName)) {
                     Toast.makeText(getContext(), "Name is already used! Please enter a unique name.", Toast.LENGTH_LONG).show();
@@ -607,25 +582,6 @@ public class ManageControlSettingsDialog extends Dialog {
                 updateControlSettingsObject();
                 saveCurrentConfigAsJSON(newName);
                 loadChosenConfiguration(newName);
-
-//                try {
-//                    File file = new File(DIR.getPath(), name);
-//                    if (!file.createNewFile()) {
-//                        return;
-//                    }
-//                    FileWriter fileWriter = new FileWriter(file);
-//                    fileWriter.write(jsonObject.toString());
-//                    fileWriter.flush();
-//                    fileWriter.close();
-//                    Toast.makeText(getContext(), "File saved as " + name + " in " + DIR.getPath(), Toast.LENGTH_LONG).show();
-//                    loadChosenConfiguration(name);
-//                    currentConfiguration.setText(name);
-//
-//                } catch (IOException e) {
-//                    Log.e(this.getClass().toString(), "Fail while saving file:" + e.getMessage());
-//                    e.printStackTrace();
-//                    Toast.makeText(getContext(), "Fail while saving file.", Toast.LENGTH_LONG).show();
-//                }
             }
         });
 
@@ -687,38 +643,6 @@ public class ManageControlSettingsDialog extends Dialog {
             Log.e(this.getClass().toString(), "Error while creating JSON File");
         }
     }
-
-//    private void saveConfigurationToJSONFile() {
-//        try {
-//
-//            String configurationName = "board_configuration"; //getContext().getString(R.string.current_configuration);
-//            name = configurationName;
-//            try {
-//                deleteConfiguration(configurationName);
-//                File fileCurrentConfiguration = new File(DIR.getPath(), configurationName);
-//                if (fileCurrentConfiguration.createNewFile()) {
-//                    FileWriter fileWriter = new FileWriter(fileCurrentConfiguration);
-//                    fileWriter.write(controlSettingsRepo.controlSettingsToJSON().toString());
-//                    fileWriter.flush();
-//                    fileWriter.close();
-//                    Log.d(this.getClass().toString(), "File saved:" + DIR.getPath() + " name: " + configurationName);
-//                    Toast.makeText(getContext(), "File saved.", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    Toast.makeText(getContext(), "File not created: .createNewFile() failed!", Toast.LENGTH_LONG).show();
-//                }
-//
-//            } catch (IOException e) {
-//                Log.e(this.getClass().toString(), "Fail while saving file:" + e.getMessage() + " path: " + DIR.getPath() + " name: " + configurationName);
-//                e.printStackTrace();
-//                Toast.makeText(getContext(), "Fail while saving file.", Toast.LENGTH_LONG).show();
-//
-//            }
-//        } catch (JSONException e) {
-//            Toast.makeText(getContext(), "Error while creating JSON File", Toast.LENGTH_LONG).show();
-//            e.printStackTrace();
-//
-//        }
-//    }
 
     private void addFilesToArrayAdapter() {
         File[] files = new File[0];
@@ -965,52 +889,6 @@ public class ManageControlSettingsDialog extends Dialog {
             e.printStackTrace();
         }
         return bytes;
-    }
-
-    private boolean updateJSON() {
-        try {
-            jsonObject.put("UavType", ControlSettings.UavType.valueOf(uav_type.getText().toString()).getValue());
-            jsonObject.put("InitialSolverMode", ControlData.SolverMode.valueOf(initial_solver_mode.getText().toString()).getValue());
-            jsonObject.put("ManualThrottleMode", ControlSettings.ThrottleMode.valueOf(manual_throttle_mode.getText().toString()).getValue());
-            jsonObject.put("AutoLandingDescendRate", auto_landing_descend_rate.getText());
-            jsonObject.put("MaxAutoLandingTime", max_auto_landing_time.getText());
-            jsonObject.put("MaxRollPitchControlValue", max_roll_pitch_control_value.getText());
-            jsonObject.put("MaxYawControlValue", max_yaw_control_value.getText());
-            jsonObject.put("PidRollRateX", pid_roll_rateX.getText());
-            jsonObject.put("PidRollRateY", pid_roll_rateY.getText());
-            jsonObject.put("PidRollRateZ", pid_roll_rateZ.getText());
-            jsonObject.put("PidPitchRateX", pid_pitch_rateX.getText());
-            jsonObject.put("PidPitchRateY", pid_pitch_rateY.getText());
-            jsonObject.put("PidPitchRateZ", pid_pitch_rateZ.getText());
-            jsonObject.put("PidYawRateX", pid_yaw_rateX.getText());
-            jsonObject.put("PidYawRateY", pid_yaw_rateY.getText());
-            jsonObject.put("PidYawRateZ", pid_yaw_rateZ.getText());
-            jsonObject.put("RollProp", pid_roll_prop.getText());
-            jsonObject.put("PitchProp", pid_pitch_prop.getText());
-            jsonObject.put("YawProp", pid_yaw_prop.getText());
-            jsonObject.put("AltPositionProp", alt_position_prop.getText());
-            jsonObject.put("AltVelocityProp", alt_velocity_prop.getText());
-            jsonObject.put("PidThrottleAccelX", pid_throttle_accelX.getText());
-            jsonObject.put("PidThrottleAccelY", pid_throttle_accelY.getText());
-            jsonObject.put("PidThrottleAccelZ", pid_throttle_accelZ.getText());
-            jsonObject.put("ThrottleAltRateProp", throttle_alt_rate_prop.getText());
-            jsonObject.put("MaxAutoAngle", max_auto_angle.getText());
-            jsonObject.put("MaxAutoVelocity", max_auto_velocity.getText());
-            jsonObject.put("AutoPositionProp", auto_position_prop.getText());
-            jsonObject.put("AutoVelocityProp", auto_velocity_prop.getText());
-            jsonObject.put("PidAutoAccelX", pid_auto_accelX.getText());
-            jsonObject.put("PidAutoAccelY", pid_auto_accelY.getText());
-            jsonObject.put("PidAutoAccelZ", pid_auto_accelZ.getText());
-            jsonObject.put("StickPositionRateProp", stick_position_rate_prop.getText());
-            jsonObject.put("StickMovementMode", ControlSettings.StickMovementMode.valueOf(stick_movement_mode.getText().toString()).getValue());
-            jsonObject.put("BatteryType", ControlSettings.BatteryType.valueOf(battery_type.getText().toString()).getValue());
-            jsonObject.put("ErrorHandlingAction", ControlData.ControllerCommand.valueOf(error_handling_action.getText().toString()).getValue());
-
-            return true;
-        } catch (JSONException e) {
-            Log.e(this.getClass().toString(), "Error while updating a JSON file:" + e.getMessage());
-            return false;
-        }
     }
 
     class InputFilterMinMax implements InputFilter {
