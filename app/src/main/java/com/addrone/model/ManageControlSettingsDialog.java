@@ -183,11 +183,10 @@ public class ManageControlSettingsDialog extends Dialog {
         controlSettingsRepo.setControlSettings(controlSettingsObject);
 
         prepareSettingsViews();
-        getChosenConfiguration(context.getString(R.string.board_configuration));
 
-        saveJSONInStorage(context.getString(R.string.board_configuration));
+        saveCurrentConfigAsJSON(context.getString(R.string.board_configuration));
+        loadChosenConfiguration(context.getString(R.string.board_configuration));
 
-        currentConfiguration.setText(context.getString(R.string.board_configuration));
         checkIfTheSame();
     }
 
@@ -316,7 +315,7 @@ public class ManageControlSettingsDialog extends Dialog {
         }
     }
 
-    private void getChosenConfiguration(String configurationName) {
+    private void loadChosenConfiguration(String configurationName) {
         fillDialogWithControlSettingsData(configurationName);
     }
 
@@ -436,6 +435,7 @@ public class ManageControlSettingsDialog extends Dialog {
             String errorHandlingAction = String.valueOf(ControlData.ControllerCommand.getControllerCommand((short) Integer.parseInt(String.valueOf(jsonObject.get("ErrorHandlingAction")))));
             error_handling_action.setText(errorHandlingAction);
 
+            currentConfiguration.setText(name);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -546,34 +546,25 @@ public class ManageControlSettingsDialog extends Dialog {
 
     @OnClick(R.id.btn_cc_delete)
     public void clickButtonDelete() {
-        if (name == null) {
-            Toast.makeText(getContext(), "First you should choose a configuration!", Toast.LENGTH_LONG).show();
+        String name = currentConfiguration.getText().toString();
+
+        if (name.equals(getContext().getString(R.string.board_configuration))) {
+            Toast.makeText(getContext(), "Can't delete board configuration!", Toast.LENGTH_LONG).show();
             return;
         }
 
-//        if (currentConfiguration.getText().toString().contains("\n(current)")) {
-//            Toast.makeText(getContext(), "Can't delete current configuration!", Toast.LENGTH_LONG).show();
-//            return;
-//        }
-//
-//        if (name.equals(getContext().getString(R.string.board_configuration))) {
-//            Toast.makeText(getContext(), "Can't delete current configuration!", Toast.LENGTH_LONG).show();
-//            return;
-//        }
-
         AlertDialog.Builder deleteDialogBuilder = new AlertDialog.Builder(getContext(), R.style.DarkAlertDialog);
         deleteDialogBuilder.setMessage(name);
-        deleteDialogBuilder.setTitle("Are you sure you want to delete a file: ");
+        deleteDialogBuilder.setTitle("Are you sure you want to delete configuration: ");
         deleteDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int clickedItem) {
+                String name = currentConfiguration.getText().toString();
                 if (deleteConfiguration(name)) {
-                    saveJSONInStorage(name);
-                    getChosenConfiguration(getContext().getString(R.string.board_configuration));
-                    currentConfiguration.setText(R.string.board_configuration);
+                    loadChosenConfiguration(getContext().getString(R.string.board_configuration));
                     Toast.makeText(getContext(), "You deleted a file: " + name, Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getContext(), "Can't delete file!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Can't delete file!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -600,37 +591,41 @@ public class ManageControlSettingsDialog extends Dialog {
         input.setSingleLine();
         nameInputDialogBuilder.setView(input);
         nameInputDialogBuilder.setCancelable(true);
-        name = input.getText().toString();
+        //String name = input.getText().toString();
         nameInputDialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                updateJSON();
-                //TODO after adding download option change "controlSettingsRepo.controlSettingsToJSON()' to 'updateJSON'
-                name = input.getText().toString();
 
-                if (isNameAlreadyUsed()) {
+                //updateJSON();
+
+                String newName = input.getText().toString();
+                if (isNameAlreadyUsed(newName)) {
                     Toast.makeText(getContext(), "Name is already used! Please enter a unique name.", Toast.LENGTH_LONG).show();
                     return;
                 }
 
-                try {
-                    File file = new File(DIR.getPath(), name);
-                    if (!file.createNewFile()) {
-                        return;
-                    }
-                    FileWriter fileWriter = new FileWriter(file);
-                    fileWriter.write(jsonObject.toString());
-                    fileWriter.flush();
-                    fileWriter.close();
-                    Toast.makeText(getContext(), "File saved as " + name + " in " + DIR.getPath(), Toast.LENGTH_LONG).show();
-                    getChosenConfiguration(name);
-                    currentConfiguration.setText(name);
+                updateControlSettingsObject();
+                saveCurrentConfigAsJSON(newName);
+                loadChosenConfiguration(newName);
 
-                } catch (IOException e) {
-                    Log.e(this.getClass().toString(), "Fail while saving file:" + e.getMessage());
-                    e.printStackTrace();
-                    Toast.makeText(getContext(), "Fail while saving file.", Toast.LENGTH_LONG).show();
-                }
+//                try {
+//                    File file = new File(DIR.getPath(), name);
+//                    if (!file.createNewFile()) {
+//                        return;
+//                    }
+//                    FileWriter fileWriter = new FileWriter(file);
+//                    fileWriter.write(jsonObject.toString());
+//                    fileWriter.flush();
+//                    fileWriter.close();
+//                    Toast.makeText(getContext(), "File saved as " + name + " in " + DIR.getPath(), Toast.LENGTH_LONG).show();
+//                    loadChosenConfiguration(name);
+//                    currentConfiguration.setText(name);
+//
+//                } catch (IOException e) {
+//                    Log.e(this.getClass().toString(), "Fail while saving file:" + e.getMessage());
+//                    e.printStackTrace();
+//                    Toast.makeText(getContext(), "Fail while saving file.", Toast.LENGTH_LONG).show();
+//                }
             }
         });
 
@@ -644,7 +639,7 @@ public class ManageControlSettingsDialog extends Dialog {
         alert.show();
     }
 
-    private boolean isNameAlreadyUsed() {
+    private boolean isNameAlreadyUsed(String name) {
         File[] files = new File[0];
         if (DIR.listFiles() != null) {
             files = DIR.listFiles();
@@ -662,10 +657,9 @@ public class ManageControlSettingsDialog extends Dialog {
     }
 
 
-    private void saveJSONInStorage(String fileName) {
+    private void saveCurrentConfigAsJSON(String fileName) {
         try {
             JSONObject jsonToSave = controlSettingsRepo.controlSettingsToJSON();
-
             try {
                 deleteConfiguration(fileName);
                 File fil = new File(DIR.getPath(), fileName);
@@ -674,14 +668,16 @@ public class ManageControlSettingsDialog extends Dialog {
                     fileWriter.write(jsonToSave.toString());
                     fileWriter.flush();
                     fileWriter.close();
-                    Log.d(this.getClass().toString(), "File saved:" + DIR.getPath() + " name: " + fileName);
+                    Log.d(this.getClass().toString(), "File saved:" + DIR.getPath()
+                            + " name: " + fileName);
                     Toast.makeText(getContext(), "File saved.", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), "File not saved!", Toast.LENGTH_LONG).show();
                 }
 
             } catch (IOException e) {
-                Log.e(this.getClass().toString(), "Fail while saving file:" + e.getMessage() + " path: " + DIR.getPath() + " name: " + fileName);
+                Log.e(this.getClass().toString(), "Fail while saving file:" + e.getMessage()
+                        + " path: " + DIR.getPath() + " name: " + fileName);
                 e.printStackTrace();
                 Toast.makeText(getContext(), "Fail while saving file.", Toast.LENGTH_LONG).show();
             }
@@ -692,37 +688,37 @@ public class ManageControlSettingsDialog extends Dialog {
         }
     }
 
-    private void saveConfigurationToJSONFile() {
-        try {
-
-            String configurationName = "board_configuration"; //getContext().getString(R.string.current_configuration);
-            name = configurationName;
-            try {
-                deleteConfiguration(configurationName);
-                File fileCurrentConfiguration = new File(DIR.getPath(), configurationName);
-                if (fileCurrentConfiguration.createNewFile()) {
-                    FileWriter fileWriter = new FileWriter(fileCurrentConfiguration);
-                    fileWriter.write(controlSettingsRepo.controlSettingsToJSON().toString());
-                    fileWriter.flush();
-                    fileWriter.close();
-                    Log.d(this.getClass().toString(), "File saved:" + DIR.getPath() + " name: " + configurationName);
-                    Toast.makeText(getContext(), "File saved.", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getContext(), "File not created: .createNewFile() failed!", Toast.LENGTH_LONG).show();
-                }
-
-            } catch (IOException e) {
-                Log.e(this.getClass().toString(), "Fail while saving file:" + e.getMessage() + " path: " + DIR.getPath() + " name: " + configurationName);
-                e.printStackTrace();
-                Toast.makeText(getContext(), "Fail while saving file.", Toast.LENGTH_LONG).show();
-
-            }
-        } catch (JSONException e) {
-            Toast.makeText(getContext(), "Error while creating JSON File", Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-
-        }
-    }
+//    private void saveConfigurationToJSONFile() {
+//        try {
+//
+//            String configurationName = "board_configuration"; //getContext().getString(R.string.current_configuration);
+//            name = configurationName;
+//            try {
+//                deleteConfiguration(configurationName);
+//                File fileCurrentConfiguration = new File(DIR.getPath(), configurationName);
+//                if (fileCurrentConfiguration.createNewFile()) {
+//                    FileWriter fileWriter = new FileWriter(fileCurrentConfiguration);
+//                    fileWriter.write(controlSettingsRepo.controlSettingsToJSON().toString());
+//                    fileWriter.flush();
+//                    fileWriter.close();
+//                    Log.d(this.getClass().toString(), "File saved:" + DIR.getPath() + " name: " + configurationName);
+//                    Toast.makeText(getContext(), "File saved.", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(getContext(), "File not created: .createNewFile() failed!", Toast.LENGTH_LONG).show();
+//                }
+//
+//            } catch (IOException e) {
+//                Log.e(this.getClass().toString(), "Fail while saving file:" + e.getMessage() + " path: " + DIR.getPath() + " name: " + configurationName);
+//                e.printStackTrace();
+//                Toast.makeText(getContext(), "Fail while saving file.", Toast.LENGTH_LONG).show();
+//
+//            }
+//        } catch (JSONException e) {
+//            Toast.makeText(getContext(), "Error while creating JSON File", Toast.LENGTH_LONG).show();
+//            e.printStackTrace();
+//
+//        }
+//    }
 
     private void addFilesToArrayAdapter() {
         File[] files = new File[0];
@@ -922,10 +918,9 @@ public class ManageControlSettingsDialog extends Dialog {
 
         builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                name = arrayAdapter.getItem(which);
-                getChosenConfiguration(name);
-                currentConfiguration.setText(name);
+            public void onClick(DialogInterface dialog, int clickedItem) {
+                name = arrayAdapter.getItem(clickedItem);
+                loadChosenConfiguration(name);
                 Toast.makeText(getContext(), "You selected a file: " + name, Toast.LENGTH_SHORT).show();
             }
         });
@@ -934,7 +929,7 @@ public class ManageControlSettingsDialog extends Dialog {
 
     private void checkIfTheSame() {
         if (comparingJSONs()) {
-            String text = name + "\n(current)";
+            String text = name; // + "\n(current)";
             currentConfiguration.setText(text);
         }
     }
