@@ -3,18 +3,19 @@ package com.addrone.model;
 import com.multicopter.java.data.ControlSettings;
 
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 
 public class ControlSettingsRepo {
 
     private ControlSettings controlSettings;
-    private JSONObject jsonObject = new JSONObject();
 
     public void setControlSettings(ControlSettings controlSettings) {
         this.controlSettings = controlSettings;
     }
 
     public JSONObject controlSettingsToJSON() throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+
         jsonObject.put("UavType", controlSettings.getUavType());
         jsonObject.put("InitialSolverMode", controlSettings.getInitialSolverMode());
         jsonObject.put("ManualThrottleMode", controlSettings.getManualThrottleMode());

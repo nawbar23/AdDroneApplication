@@ -112,5 +112,5 @@
     <string name="stick_movement_mode">Stick Movement Mode</string>
     <string name="battery_type">Battery Type</string>
     <string name="error_handling_action">Error Handling Action</string>
-    <string name="current_configuration">current configuration</string>
+    <string name="board_configuration">board_configuration</string>
 </resources>

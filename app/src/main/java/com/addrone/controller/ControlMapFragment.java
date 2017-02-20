@@ -159,7 +159,7 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
 
     public void updatePosition(boolean gpsFix, LatLng latLng) {
         if (gpsFix) {
-            Log.v(DEBUG_TAG, "updatePosition: GPS fix available. updating position");
+            //Log.v(DEBUG_TAG, "updatePosition: GPS fix available. updating position");
             if (droneMarker == null) {
                 droneMarker = googleMap.addMarker(new MarkerOptions()
                         .position(latLng)
