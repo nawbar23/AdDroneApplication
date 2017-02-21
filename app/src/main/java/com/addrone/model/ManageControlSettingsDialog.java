@@ -326,113 +326,48 @@ public class ManageControlSettingsDialog extends Dialog {
             Object obj = parser.parse(new FileReader(DIR.getPath() + File.separator + name));
             JSONObject jsonObject = (JSONObject) obj;
 
-            String uavType = String.valueOf(ControlSettings.UavType.getUavType(Integer.parseInt(String.valueOf(jsonObject.get("UavType")))));
-            uav_type.setText(uavType);
-
-            String initialSolverMode = String.valueOf(ControlData.SolverMode.getSolverMode((byte) Integer.parseInt(String.valueOf(jsonObject.get("InitialSolverMode")))));
-            initial_solver_mode.setText(initialSolverMode);
-
-            String manualThrottleMode = String.valueOf(ControlSettings.ThrottleMode.getThrottleMode(Integer.parseInt(String.valueOf(jsonObject.get("ManualThrottleMode")))));
-            manual_throttle_mode.setText(manualThrottleMode);
-
-            String autoLandingDescendRate = String.valueOf(jsonObject.get("AutoLandingDescendRate"));
-            auto_landing_descend_rate.setText(autoLandingDescendRate);
-
-            String maxAutoLandingTime = String.valueOf(jsonObject.get("MaxAutoLandingTime"));
-            max_auto_landing_time.setText(maxAutoLandingTime);
-
-            String maxRollPitchControlValue = String.valueOf(jsonObject.get("MaxRollPitchControlValue"));
-            max_roll_pitch_control_value.setText(maxRollPitchControlValue);
-
-            String maxYawControlValue = String.valueOf(jsonObject.get("MaxYawControlValue"));
-            max_yaw_control_value.setText(maxYawControlValue);
-
-            String pidRollRateX = String.valueOf(jsonObject.get("PidRollRateX"));
-            pid_roll_rateX.setText(pidRollRateX);
-
-            String pidRollRateY = String.valueOf(jsonObject.get("PidRollRateY"));
-            pid_roll_rateY.setText(pidRollRateY);
-
-            String pidRollRateZ = String.valueOf(jsonObject.get("PidRollRateZ"));
-            pid_roll_rateZ.setText(pidRollRateZ);
-
-            String pidPitchRateX = String.valueOf(jsonObject.get("PidPitchRateX"));
-            pid_pitch_rateX.setText(pidPitchRateX);
-
-            String pidPitchRateY = String.valueOf(jsonObject.get("PidPitchRateY"));
-            pid_pitch_rateY.setText(pidPitchRateY);
-
-            String pidPitchRateZ = String.valueOf(jsonObject.get("PidPitchRateZ"));
-            pid_pitch_rateZ.setText(pidPitchRateZ);
-
-            String pidYawRateX = String.valueOf(jsonObject.get("PidYawRateX"));
-            pid_yaw_rateX.setText(pidYawRateX);
-
-            String pidYawRateY = String.valueOf(jsonObject.get("PidYawRateY"));
-            pid_yaw_rateY.setText(pidYawRateY);
-
-            String pidYawRateZ = String.valueOf(jsonObject.get("PidYawRateZ"));
-            pid_yaw_rateZ.setText(pidYawRateZ);
-
-            String rollProp = String.valueOf(jsonObject.get("RollProp"));
-            pid_roll_prop.setText(rollProp);
-
-            String pitchProp = String.valueOf(jsonObject.get("PitchProp"));
-            pid_pitch_prop.setText(pitchProp);
-
-            String yawProp = String.valueOf(jsonObject.get("YawProp"));
-            pid_yaw_prop.setText(yawProp);
-
-            String altPositionProp = String.valueOf(jsonObject.get("AltPositionProp"));
-            alt_position_prop.setText(altPositionProp);
-
-            String altVelocityProp = String.valueOf(jsonObject.get("AltVelocityProp"));
-            alt_velocity_prop.setText(altVelocityProp);
-
-            String pidThrottleAccelX = String.valueOf(jsonObject.get("PidThrottleAccelX"));
-            pid_throttle_accelX.setText(pidThrottleAccelX);
-
-            String pidThrottleAccelY = String.valueOf(jsonObject.get("PidThrottleAccelY"));
-            pid_throttle_accelY.setText(pidThrottleAccelY);
-
-            String pidThrottleAccelZ = String.valueOf(jsonObject.get("PidThrottleAccelZ"));
-            pid_throttle_accelZ.setText(pidThrottleAccelZ);
-
-            String throttleAltRateProp = String.valueOf(jsonObject.get("ThrottleAltRateProp"));
-            throttle_alt_rate_prop.setText(throttleAltRateProp);
-
-            String maxAutoAngle = String.valueOf(jsonObject.get("MaxAutoAngle"));
-            max_auto_angle.setText(maxAutoAngle);
-
-            String maxAutoVelocity = String.valueOf(jsonObject.get("MaxAutoVelocity"));
-            max_auto_velocity.setText(maxAutoVelocity);
-
-            String autoPositionProp = String.valueOf(jsonObject.get("AutoPositionProp"));
-            auto_position_prop.setText(autoPositionProp);
-
-            String autoVelocityProp = String.valueOf(jsonObject.get("AutoVelocityProp"));
-            auto_velocity_prop.setText(autoVelocityProp);
-
-            String pidAutoAccelX = String.valueOf(jsonObject.get("PidAutoAccelX"));
-            pid_auto_accelX.setText(pidAutoAccelX);
-
-            String pidAutoAccelY = String.valueOf(jsonObject.get("PidAutoAccelY"));
-            pid_auto_accelY.setText(pidAutoAccelY);
-
-            String pidAutoAccelZ = String.valueOf(jsonObject.get("PidAutoAccelZ"));
-            pid_auto_accelZ.setText(pidAutoAccelZ);
-
-            String stickPositionRateProp = String.valueOf(jsonObject.get("StickPositionRateProp"));
-            stick_position_rate_prop.setText(stickPositionRateProp);
-
-            String stickMovementMode = String.valueOf(ControlSettings.StickMovementMode.getStickMovementMode(Integer.parseInt(String.valueOf(jsonObject.get("StickMovementMode")))));
-            stick_movement_mode.setText(stickMovementMode);
-
-            String batteryType = String.valueOf(ControlSettings.BatteryType.getBatteryType(Integer.parseInt(String.valueOf(jsonObject.get("BatteryType")))));
-            battery_type.setText(batteryType);
-
-            String errorHandlingAction = String.valueOf(ControlData.ControllerCommand.getControllerCommand((short) Integer.parseInt(String.valueOf(jsonObject.get("ErrorHandlingAction")))));
-            error_handling_action.setText(errorHandlingAction);
+            uav_type.setText(String.valueOf(ControlSettings.UavType.getUavType(
+                    Integer.parseInt(String.valueOf(jsonObject.get("UavType"))))));
+            initial_solver_mode.setText(String.valueOf(ControlData.SolverMode.getSolverMode(
+                    (byte) Integer.parseInt(String.valueOf(jsonObject.get("InitialSolverMode"))))));
+            manual_throttle_mode.setText(String.valueOf(ControlSettings.ThrottleMode.getThrottleMode(
+                    Integer.parseInt(String.valueOf(jsonObject.get("ManualThrottleMode"))))));
+            auto_landing_descend_rate.setText(String.valueOf(jsonObject.get("AutoLandingDescendRate")));
+            max_auto_landing_time.setText(String.valueOf(jsonObject.get("MaxAutoLandingTime")));
+            max_roll_pitch_control_value.setText(String.valueOf(jsonObject.get("MaxRollPitchControlValue")));
+            max_yaw_control_value.setText(String.valueOf(jsonObject.get("MaxYawControlValue")));
+            pid_roll_rateX.setText(String.valueOf(jsonObject.get("PidRollRateX")));
+            pid_roll_rateY.setText(String.valueOf(jsonObject.get("PidRollRateY")));
+            pid_roll_rateZ.setText(String.valueOf(jsonObject.get("PidRollRateZ")));
+            pid_pitch_rateX.setText(String.valueOf(jsonObject.get("PidPitchRateX")));
+            pid_pitch_rateY.setText(String.valueOf(jsonObject.get("PidPitchRateY")));
+            pid_pitch_rateZ.setText(String.valueOf(jsonObject.get("PidPitchRateZ")));
+            pid_yaw_rateX.setText(String.valueOf(jsonObject.get("PidYawRateX")));
+            pid_yaw_rateY.setText(String.valueOf(jsonObject.get("PidYawRateY")));
+            pid_yaw_rateZ.setText(String.valueOf(jsonObject.get("PidYawRateZ")));
+            pid_roll_prop.setText(String.valueOf(jsonObject.get("RollProp")));
+            pid_pitch_prop.setText(String.valueOf(jsonObject.get("PitchProp")));
+            pid_yaw_prop.setText(String.valueOf(jsonObject.get("YawProp")));
+            alt_position_prop.setText(String.valueOf(jsonObject.get("AltPositionProp")));
+            alt_velocity_prop.setText(String.valueOf(jsonObject.get("AltVelocityProp")));
+            pid_throttle_accelX.setText(String.valueOf(jsonObject.get("PidThrottleAccelX")));
+            pid_throttle_accelY.setText(String.valueOf(jsonObject.get("PidThrottleAccelY")));
+            pid_throttle_accelZ.setText(String.valueOf(jsonObject.get("PidThrottleAccelZ")));
+            throttle_alt_rate_prop.setText(String.valueOf(jsonObject.get("ThrottleAltRateProp")));
+            max_auto_angle.setText(String.valueOf(jsonObject.get("MaxAutoAngle")));
+            max_auto_velocity.setText(String.valueOf(jsonObject.get("MaxAutoVelocity")));
+            auto_position_prop.setText(String.valueOf(jsonObject.get("AutoPositionProp")));
+            auto_velocity_prop.setText(String.valueOf(jsonObject.get("AutoVelocityProp")));
+            pid_auto_accelX.setText(String.valueOf(jsonObject.get("PidAutoAccelX")));
+            pid_auto_accelY.setText(String.valueOf(jsonObject.get("PidAutoAccelY")));
+            pid_auto_accelZ.setText(String.valueOf(jsonObject.get("PidAutoAccelZ")));
+            stick_position_rate_prop.setText(String.valueOf(jsonObject.get("StickPositionRateProp")));
+            stick_movement_mode.setText(String.valueOf(ControlSettings.StickMovementMode
+                    .getStickMovementMode(Integer.parseInt(String.valueOf(jsonObject.get("StickMovementMode"))))));
+            battery_type.setText(String.valueOf(ControlSettings.BatteryType.getBatteryType(
+                    Integer.parseInt(String.valueOf(jsonObject.get("BatteryType"))))));
+            error_handling_action.setText(String.valueOf(ControlData.ControllerCommand.getControllerCommand(
+                    (short) Integer.parseInt(String.valueOf(jsonObject.get("ErrorHandlingAction"))))));
 
             currentConfiguration.setText(name);
         } catch (Exception e) {
@@ -471,21 +406,26 @@ public class ManageControlSettingsDialog extends Dialog {
         controlSettingsObject.setMaxAutoLandingTime(Float.parseFloat(String.valueOf(max_auto_landing_time.getText())));
         controlSettingsObject.setMaxRollPitchControlValue(Float.parseFloat(String.valueOf(max_roll_pitch_control_value.getText())));
         controlSettingsObject.setMaxYawControlValue(Float.parseFloat(String.valueOf(max_yaw_control_value.getText())));
-        controlSettingsObject.setPidRollRate(new float[]{Float.parseFloat(String.valueOf(pid_roll_rateX.getText())), Float.parseFloat(String.valueOf(pid_roll_rateY.getText())), Float.parseFloat(String.valueOf(pid_roll_rateZ.getText()))});
-        controlSettingsObject.setPidPitchRate(new float[]{Float.parseFloat(String.valueOf(pid_pitch_rateX.getText())), Float.parseFloat(String.valueOf(pid_pitch_rateY.getText())), Float.parseFloat(String.valueOf(pid_pitch_rateZ.getText()))});
-        controlSettingsObject.setPidYawRate(new float[]{Float.parseFloat(String.valueOf(pid_yaw_rateX.getText())), Float.parseFloat(String.valueOf(pid_yaw_rateY.getText())), Float.parseFloat(String.valueOf(pid_yaw_rateZ.getText()))});
+        controlSettingsObject.setPidRollRate(new float[]{Float.parseFloat(String.valueOf(pid_roll_rateX.getText())),
+                Float.parseFloat(String.valueOf(pid_roll_rateY.getText())), Float.parseFloat(String.valueOf(pid_roll_rateZ.getText()))});
+        controlSettingsObject.setPidPitchRate(new float[]{Float.parseFloat(String.valueOf(pid_pitch_rateX.getText())),
+                Float.parseFloat(String.valueOf(pid_pitch_rateY.getText())), Float.parseFloat(String.valueOf(pid_pitch_rateZ.getText()))});
+        controlSettingsObject.setPidYawRate(new float[]{Float.parseFloat(String.valueOf(pid_yaw_rateX.getText())),
+                Float.parseFloat(String.valueOf(pid_yaw_rateY.getText())), Float.parseFloat(String.valueOf(pid_yaw_rateZ.getText()))});
         controlSettingsObject.setRollProp(Float.parseFloat(String.valueOf(pid_roll_prop.getText())));
         controlSettingsObject.setPitchProp(Float.parseFloat(String.valueOf(pid_pitch_prop.getText())));
         controlSettingsObject.setYawProp(Float.parseFloat(String.valueOf(pid_yaw_prop.getText())));
         controlSettingsObject.setAltPositionProp(Float.parseFloat(String.valueOf(alt_position_prop.getText())));
         controlSettingsObject.setAltVelocityProp(Float.parseFloat(String.valueOf(alt_velocity_prop.getText())));
-        controlSettingsObject.setPidThrottleAccel(new float[]{Float.parseFloat(String.valueOf(pid_throttle_accelX.getText())), Float.parseFloat(String.valueOf(pid_throttle_accelY.getText())), Float.parseFloat(String.valueOf(pid_throttle_accelZ.getText()))});
+        controlSettingsObject.setPidThrottleAccel(new float[]{Float.parseFloat(String.valueOf(pid_throttle_accelX.getText())),
+                Float.parseFloat(String.valueOf(pid_throttle_accelY.getText())), Float.parseFloat(String.valueOf(pid_throttle_accelZ.getText()))});
         controlSettingsObject.setThrottleAltRateProp(Float.parseFloat(String.valueOf(throttle_alt_rate_prop.getText())));
         controlSettingsObject.setMaxAutoAngle(Float.parseFloat(String.valueOf(max_auto_angle.getText())));
         controlSettingsObject.setMaxAutoVelocity(Float.parseFloat(String.valueOf(max_auto_velocity.getText())));
         controlSettingsObject.setAutoPositionProp(Float.parseFloat(String.valueOf(auto_position_prop.getText())));
         controlSettingsObject.setAutoVelocityProp(Float.parseFloat(String.valueOf(auto_velocity_prop.getText())));
-        controlSettingsObject.setPidAutoAccel(new float[]{Float.parseFloat(String.valueOf(pid_auto_accelX.getText())), Float.parseFloat(String.valueOf(pid_auto_accelY.getText())), Float.parseFloat(String.valueOf(pid_auto_accelZ.getText()))});
+        controlSettingsObject.setPidAutoAccel(new float[]{Float.parseFloat(String.valueOf(pid_auto_accelX.getText())),
+                Float.parseFloat(String.valueOf(pid_auto_accelY.getText())), Float.parseFloat(String.valueOf(pid_auto_accelZ.getText()))});
         controlSettingsObject.setStickPositionRateProp(Float.parseFloat(String.valueOf(stick_position_rate_prop.getText())));
         controlSettingsObject.setStickMovementMode(ControlSettings.StickMovementMode.valueOf(stick_movement_mode.getText().toString()).getValue());
         controlSettingsObject.setBatteryType(ControlSettings.BatteryType.valueOf(battery_type.getText().toString()).getValue());
@@ -862,7 +802,8 @@ public class ManageControlSettingsDialog extends Dialog {
 
         boolean result = false;
         addFilesToArrayAdapter();
-        byte[] currentConfigByte = toArrayByte(new File(DIR.getPath() + File.separator + getContext().getString(R.string.board_configuration)));
+        byte[] currentConfigByte = toArrayByte(new File(DIR.getPath() + File.separator +
+                getContext().getString(R.string.board_configuration)));
 
         for (int i = 0; i < arrayAdapter.getCount(); i++) {
             name = arrayAdapter.getItem(i);
