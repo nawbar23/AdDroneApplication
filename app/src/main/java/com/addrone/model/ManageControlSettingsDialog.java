@@ -44,130 +44,91 @@ import butterknife.OnClick;
 public class ManageControlSettingsDialog extends Dialog {
 
     private static final int TEXT_VIEW_ARRAY_SIZE = 36;
-    private String name;
+    private final String BORD_CONF_NAME;
     private final ControlSettingsRepo controlSettingsRepo = new ControlSettingsRepo();
-    private ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(super.getContext(), android.R.layout.select_dialog_singlechoice);
-    private UavManager uavManager;
-    private ControlSettings controlSettingsObject;
-
-    private InputFilterMinMax filter = new InputFilterMinMax("0", String.valueOf(Double.POSITIVE_INFINITY)) {
+    private final File DIR = new File(getContext().getFilesDir().getPath() + File.separator + "controlSettings");
+    private final UavManager uavManager;
+    private final ControlSettings controlSettingsObject;
+    private final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(super.getContext(), android.R.layout.select_dialog_singlechoice);
+    private final InputFilterMinMax filter = new InputFilterMinMax("0", String.valueOf(Double.POSITIVE_INFINITY)) {
     };
 
     @BindView(R.id.uav_type)
     public TextView uav_type;
-
     @BindView(R.id.initial_solver_mode)
     public TextView initial_solver_mode;
-
     @BindView(R.id.manual_throttle_mode)
     public TextView manual_throttle_mode;
-
     @BindView(R.id.auto_landing_descend_rate)
     public TextView auto_landing_descend_rate;
-
     @BindView(R.id.max_auto_landing_time)
     public TextView max_auto_landing_time;
-
     @BindView(R.id.max_roll_pitch_control_value)
     public TextView max_roll_pitch_control_value;
-
     @BindView(R.id.max_yaw_control_value)
     public TextView max_yaw_control_value;
-
     @BindView(R.id.pid_roll_rateX)
     public TextView pid_roll_rateX;
-
     @BindView(R.id.pid_roll_rateY)
     public TextView pid_roll_rateY;
-
     @BindView(R.id.pid_roll_rateZ)
     public TextView pid_roll_rateZ;
-
     @BindView(R.id.pid_pitch_rateX)
     public TextView pid_pitch_rateX;
-
     @BindView(R.id.pid_pitch_rateY)
     public TextView pid_pitch_rateY;
-
     @BindView(R.id.pid_pitch_rateZ)
     public TextView pid_pitch_rateZ;
-
     @BindView(R.id.pid_yaw_rateX)
     public TextView pid_yaw_rateX;
-
     @BindView(R.id.pid_yaw_rateY)
     public TextView pid_yaw_rateY;
-
     @BindView(R.id.pid_yaw_rateZ)
     public TextView pid_yaw_rateZ;
-
     @BindView(R.id.pid_roll_prop)
     public TextView pid_roll_prop;
-
     @BindView(R.id.pid_pitch_prop)
     public TextView pid_pitch_prop;
-
     @BindView(R.id.pid_yaw_prop)
     public TextView pid_yaw_prop;
-
     @BindView(R.id.alt_position_prop)
     public TextView alt_position_prop;
-
     @BindView(R.id.alt_velocity_prop)
     public TextView alt_velocity_prop;
-
     @BindView(R.id.pid_throttle_accelX)
     public TextView pid_throttle_accelX;
-
     @BindView(R.id.pid_throttle_accelY)
     public TextView pid_throttle_accelY;
-
     @BindView(R.id.pid_throttle_accelZ)
     public TextView pid_throttle_accelZ;
-
     @BindView(R.id.throttle_alt_rate_prop)
     public TextView throttle_alt_rate_prop;
-
     @BindView(R.id.max_auto_angle)
     public TextView max_auto_angle;
-
     @BindView(R.id.max_auto_velocity)
     public TextView max_auto_velocity;
-
     @BindView(R.id.auto_position_prop)
     public TextView auto_position_prop;
-
     @BindView(R.id.auto_velocity_prop)
     public TextView auto_velocity_prop;
-
     @BindView(R.id.pid_auto_accelX)
     public TextView pid_auto_accelX;
-
     @BindView(R.id.pid_auto_accelY)
     public TextView pid_auto_accelY;
-
     @BindView(R.id.pid_auto_accelZ)
     public TextView pid_auto_accelZ;
-
     @BindView(R.id.stick_position_rate_prop)
     public TextView stick_position_rate_prop;
-
     @BindView(R.id.stick_movement_mode)
     public TextView stick_movement_mode;
-
     @BindView(R.id.battery_type)
     public TextView battery_type;
-
     @BindView(R.id.error_handling_action)
     public TextView error_handling_action;
-
     @BindView(R.id.btn_cc_configurations_list)
     public Button currentConfiguration;
-
     @BindView(R.id.btn_cc_delete)
     public Button delete;
-
-    private final File DIR = new File(getContext().getFilesDir().getPath() + File.separator + "controlSettings");
 
     public ManageControlSettingsDialog(Context context, ControlSettings controlSettingsFromBoard, UavManager uavManager) {
         super(context, android.R.style.Theme_Dialog);
@@ -176,6 +137,7 @@ public class ManageControlSettingsDialog extends Dialog {
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         setCancelable(true);
         ButterKnife.bind(this);
+        BORD_CONF_NAME = context.getString(R.string.board_configuration);
 
         this.uavManager = uavManager;
         this.controlSettingsObject = controlSettingsFromBoard;
@@ -183,8 +145,8 @@ public class ManageControlSettingsDialog extends Dialog {
 
         prepareSettingsViews();
 
-        saveCurrentConfigAsJSON(context.getString(R.string.board_configuration));
-        loadChosenConfiguration(context.getString(R.string.board_configuration));
+        saveCurrentConfigAsJSON(BORD_CONF_NAME);
+        loadChosenConfiguration(BORD_CONF_NAME);
 
         checkIfTheSame();
     }
@@ -274,7 +236,7 @@ public class ManageControlSettingsDialog extends Dialog {
 
     private void makeParticularFieldsEditable(TextView[] textViewArray) {
         for (int i = 0; i < TEXT_VIEW_ARRAY_SIZE; i++) {
-            //TODO: REF switch
+
             if (textViewArray[i] == uav_type) {
                 continue;
             }
@@ -468,7 +430,7 @@ public class ManageControlSettingsDialog extends Dialog {
     @OnClick(R.id.btn_cc_delete)
     public void clickButtonDelete() {
         String name = currentConfiguration.getText().toString();
-        if (name.equals(getContext().getString(R.string.board_configuration))) {
+        if (name.equals(BORD_CONF_NAME)) {
             Toast.makeText(getContext(), "Can't delete board configuration!", Toast.LENGTH_LONG).show();
             return;
         }
@@ -481,7 +443,7 @@ public class ManageControlSettingsDialog extends Dialog {
             public void onClick(DialogInterface dialog, int clickedItem) {
                 String name = currentConfiguration.getText().toString();
                 if (deleteConfiguration(name)) {
-                    loadChosenConfiguration(getContext().getString(R.string.board_configuration));
+                    loadChosenConfiguration(BORD_CONF_NAME);
                     Toast.makeText(getContext(), "You deleted a file: " + name, Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), "Can't delete file!", Toast.LENGTH_SHORT).show();
@@ -594,7 +556,7 @@ public class ManageControlSettingsDialog extends Dialog {
             //arrayAdapter.add(saveConfigurationToJSONFile().getName());
             for (File file : files) {
 //                if (!file.getName().equals(getContext().getString(R.string.current_configuration))) {
-                    arrayAdapter.add(file.getName());
+                arrayAdapter.add(file.getName());
 //                }
             }
         } catch (Exception e) {
@@ -783,39 +745,36 @@ public class ManageControlSettingsDialog extends Dialog {
         builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int clickedItem) {
-                name = arrayAdapter.getItem(clickedItem);
-                loadChosenConfiguration(name);
-                Toast.makeText(getContext(), "You selected a file: " + name, Toast.LENGTH_SHORT).show();
+                String itemName = arrayAdapter.getItem(clickedItem);
+                loadChosenConfiguration(itemName);
+                Toast.makeText(getContext(), "You selected a file: " + itemName, Toast.LENGTH_SHORT).show();
             }
         });
         builderSingle.show();
     }
 
     private void checkIfTheSame() {
-        if (comparingJSONs()) {
-            String text = name; // + "\n(current)";
+        String text = comparingJSONs();
+        if (text != null) {
             currentConfiguration.setText(text);
         }
     }
 
-    private boolean comparingJSONs() {
-
-        boolean result = false;
+    private String comparingJSONs() {
+        String name;
         addFilesToArrayAdapter();
-        byte[] currentConfigByte = toArrayByte(new File(DIR.getPath() + File.separator +
-                getContext().getString(R.string.board_configuration)));
+        byte[] currentConfigByte = toArrayByte(new File(DIR.getPath() + File.separator + BORD_CONF_NAME));
 
         for (int i = 0; i < arrayAdapter.getCount(); i++) {
             name = arrayAdapter.getItem(i);
-            if (!name.equals(getContext().getString(R.string.board_configuration))) {
+            if (name != null && !name.equals(BORD_CONF_NAME)) {
                 byte[] memoryConfig = toArrayByte(new File(DIR.getPath() + File.separator + name));
                 if (Arrays.equals(currentConfigByte, memoryConfig)) {
-                    result = true;
-                    break;
+                    return name;
                 }
             }
         }
-        return result;
+        return null;
     }
 
 
@@ -832,12 +791,10 @@ public class ManageControlSettingsDialog extends Dialog {
         return bytes;
     }
 
-    class InputFilterMinMax implements InputFilter {
-
+    private class InputFilterMinMax implements InputFilter {
         private float min, max;
 
-
-        public InputFilterMinMax(String min, String max) {
+        private InputFilterMinMax(String min, String max) {
             this.min = Float.parseFloat(min);
             this.max = Float.parseFloat(max);
         }
