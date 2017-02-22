@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class ControlViewModel implements ViewModel,
         ControlPadView.OnControlPadChangedListener,
-        ControlThrottleView.setOnControlThrottlePadChangedListener,
+        ControlThrottleView.OnControlThrottlePadChanged,
         UavManager.UavManagerListener {
 
     private static final String TAG = "ControlViewModel";
@@ -97,7 +97,7 @@ public class ControlViewModel implements ViewModel,
     }
 
     @Override
-    public void onControlThrottlePadChangedListener(float x, float y) {
+    public void onControlThrottlePadChanged(float x, float y) {
         Log.v("CONTROLS_UPDATE", "Received throttle update: " + x + " " + y);
         controlDataLock.lock();
         // TODO temporary trim yaw control for only big changes
@@ -109,6 +109,15 @@ public class ControlViewModel implements ViewModel,
         controlData.setThrottle(y);
         setTimeStamp();
         controlDataLock.unlock();
+    }
+
+    private void resetControlData() {
+        controlData.setRoll(0.0f);
+        controlData.setPitch(0.0f);
+        controlData.setYaw(0.0f);
+        controlData.setThrottle(0.0f);
+        controlData.setCommand(ControlData.ControllerCommand.MANUAL);
+        controlData.setMode(ControlData.SolverMode.ANGLE_NO_YAW);
     }
 
     public void onActionClick() {
@@ -165,6 +174,7 @@ public class ControlViewModel implements ViewModel,
             public void run() {
                 switch (event.getType()) {
                     case FLIGHT_STARTED:
+                        resetControlData();
                         activity.notifyFlightStarted();
                         setTimeStamp();
                         break;

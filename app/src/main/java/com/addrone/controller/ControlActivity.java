@@ -182,6 +182,7 @@ public class ControlActivity extends AppCompatActivity {
     public void notifyFlightStarted() {
         buttonAction.setText(R.string.end_fly);
         controlPadView.setVisibility(View.VISIBLE);
+        controlThrottleView.reset();
         controlThrottleView.setVisibility(View.VISIBLE);
 
         buttonAction.setOnClickListener(new View.OnClickListener() {
