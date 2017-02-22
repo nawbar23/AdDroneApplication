@@ -15,16 +15,6 @@ import com.addrone.R;
 
 public abstract class ActionDialog extends Dialog {
 
-    public enum ButtonId {
-        FLY,
-        CALIB_ACCEL,
-        CALIB_MAGNET,
-        DISCONNECT,
-        VIEW_CALIB,
-        VIEW_CONTROL,
-        CHANGE_VIEW
-    }
-
     public ActionDialog(Context context) {
         super(context, android.R.style.Theme_Dialog);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -74,6 +64,23 @@ public abstract class ActionDialog extends Dialog {
                 onButtonClick(ButtonId.CHANGE_VIEW);
             }
         });
+        findViewById(R.id.btnManageControlSettings).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onButtonClick(ButtonId.MANAGE_CONTROL_SETTINGS);
+            }
+        });
+    }
+
+    public enum ButtonId {
+        FLY,
+        CALIB_ACCEL,
+        CALIB_MAGNET,
+        DISCONNECT,
+        VIEW_CALIB,
+        VIEW_CONTROL,
+        CHANGE_VIEW,
+        MANAGE_CONTROL_SETTINGS
     }
 
     public abstract void onButtonClick(ButtonId buttonId);

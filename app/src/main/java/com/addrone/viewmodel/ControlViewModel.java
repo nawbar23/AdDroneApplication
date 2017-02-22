@@ -1,9 +1,7 @@
 package com.addrone.viewmodel;
 
 import android.util.Log;
-import android.widget.ImageView;
 
-import com.addrone.R;
 import com.addrone.controller.ControlActivity;
 import com.addrone.controller.ControlPadFragment;
 import com.addrone.controller.ControlPadView;
@@ -11,6 +9,7 @@ import com.addrone.controller.ControlThrottleView;
 import com.addrone.model.ActionDialog;
 import com.addrone.model.CalibrationInfoDialog;
 import com.addrone.model.MagnetCalibDialog;
+import com.addrone.model.ManageControlSettingsDialog;
 import com.addrone.model.UIDataPack;
 import com.addrone.settings.SettingsActivity;
 import com.multicopter.java.UavEvent;
@@ -18,6 +17,7 @@ import com.multicopter.java.UavManager;
 import com.multicopter.java.data.AutopilotData;
 import com.multicopter.java.data.CalibrationSettings;
 import com.multicopter.java.data.ControlData;
+import com.multicopter.java.data.ControlSettings;
 import com.multicopter.java.data.DebugData;
 
 import java.sql.Timestamp;
@@ -145,7 +145,7 @@ public class ControlViewModel implements ViewModel,
     }
 
     @Override
-    public void handleUavEvent(final UavEvent event, UavManager uavManager) {
+    public void handleUavEvent(final UavEvent event, final UavManager uavManager) {
         uiDataLock.lock();
         switch (event.getType()) {
             case DEBUG_UPDATED:
@@ -174,11 +174,23 @@ public class ControlViewModel implements ViewModel,
                     case MAGNETOMETER_CALIBRATION_STARTED:
                         startMagnetCalibDialog();
                         break;
+                    case CONTROL_UPDATED:
+                        startDownloadControlSettingsDialog(uavManager.getControlSettings());
+                        break;
                 }
             }
         });
 
     }
+
+    private void startDownloadControlSettingsDialog(final ControlSettings controlSettings) {
+        if (!activity.isFinishing()) {
+            Log.d(TAG, "showControlSettingsDialog");
+            ManageControlSettingsDialog dialog = new ManageControlSettingsDialog(activity, controlSettings, uavManager);
+            dialog.show();
+        }
+    }
+
 
     private void showCalibration(final CalibrationSettings calibrationSettings) {
         activity.runOnUiThread(new Runnable() {
@@ -234,6 +246,9 @@ public class ControlViewModel implements ViewModel,
                     break;
                 case VIEW_CALIB:
                     showCalibration(uavManager.getCalibrationSettings());
+                    break;
+                case MANAGE_CONTROL_SETTINGS:
+                    uavManager.downloadControlSettings();
                     break;
             }
         }

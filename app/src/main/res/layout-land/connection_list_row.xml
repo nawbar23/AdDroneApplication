@@ -55,7 +55,7 @@
             android:background="@drawable/remove_button"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginLeft="5dp"
+            android:layout_marginLeft="150dp"
             android:layout_below="@+id/layout_decription"
             android:layout_toStartOf="@+id/connection_edit"/>
 
