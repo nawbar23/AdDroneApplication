@@ -88,7 +88,7 @@ public class ControlViewModel implements ViewModel,
 
     @Override
     public void onControlPadChanged(float x, float y) {
-        Log.v("CONTROLS_UPDATE", "Received pad update: " + x + " " + y);
+        //Log.v("CONTROLS_UPDATE", "Received pad update: " + x + " " + y);
         controlDataLock.lock();
         controlData.setRoll(x);
         controlData.setPitch(y);
@@ -98,7 +98,7 @@ public class ControlViewModel implements ViewModel,
 
     @Override
     public void onControlThrottlePadChanged(float x, float y) {
-        Log.v("CONTROLS_UPDATE", "Received throttle update: " + x + " " + y);
+        //Log.v("CONTROLS_UPDATE", "Received throttle update: " + x + " " + y);
         controlDataLock.lock();
         // TODO temporary trim yaw control for only big changes
         if (Math.abs(x) > 0.95) {
