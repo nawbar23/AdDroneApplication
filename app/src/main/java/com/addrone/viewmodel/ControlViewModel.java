@@ -1,5 +1,6 @@
 package com.addrone.viewmodel;
 
+import android.app.ProgressDialog;
 import android.util.Log;
 
 import com.addrone.controller.ControlActivity;
@@ -44,6 +45,7 @@ public class ControlViewModel implements ViewModel,
     private Lock uiDataLock = new ReentrantLock();
 
     private UavManager uavManager;
+    private volatile boolean connecting=false;
 
     private long lastUpdate;
 
@@ -187,6 +189,9 @@ public class ControlViewModel implements ViewModel,
                     case CONTROL_UPDATED:
                         startDownloadControlSettingsDialog(uavManager.getControlSettings());
                         break;
+                    case ACCEL_CALIB_DONE:
+                        connecting=true;
+                        break;
                 }
             }
         });
@@ -227,6 +232,31 @@ public class ControlViewModel implements ViewModel,
         }
     }
 
+    private void progressDialog() {
+        activity.runOnUiThread(new Runnable() {
+            ProgressDialog dialog;
+            @Override
+            public void run() {
+                dialog = new ProgressDialog(activity);
+                dialog.setMessage("Connecting...");
+                dialog.setCancelable(false);
+                dialog.show();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (true){
+                            if (connecting){
+                                dialog.dismiss();
+                                break;
+                            }
+                        }
+                    }
+                }).start();
+
+            }
+        });
+    }
+
     private class ActionMenu implements Runnable {
 
         private ActionDialog.ButtonId buttonId;
@@ -242,6 +272,7 @@ public class ControlViewModel implements ViewModel,
                     uavManager.startFlightLoop();
                     break;
                 case CALIB_ACCEL:
+                    progressDialog();
                     uavManager.startAccelerometerCalibration();
                     break;
                 case CALIB_MAGNET:
