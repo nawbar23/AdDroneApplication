@@ -137,9 +137,9 @@ public class CalibrationInfoDialog extends Dialog {
     }
 
     private void fillGyro(float[] gyroOffset) {
-        gyroX.setText(String.format("%.4f", gyroOffset[0]));
-        gyroY.setText(String.format("%.4f", gyroOffset[1]));
-        gyroZ.setText(String.format("%.4f", gyroOffset[2]));
+        gyroX.setText(String.format("%.3f", gyroOffset[0]));
+        gyroY.setText(String.format("%.3f", gyroOffset[1]));
+        gyroZ.setText(String.format("%.3f", gyroOffset[2]));
     }
 
     private void fillAcceleration(float[] accCalibration) {

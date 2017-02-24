@@ -26,6 +26,9 @@ public class TcpClientSocket extends CommInterface {
 
     private DataOutputStream outputStream;
 
+    private String ipAddress;
+    private int port;
+
     public TcpClientSocket() {
         this.state = State.DISCONNECTED;
     }
@@ -34,7 +37,15 @@ public class TcpClientSocket extends CommInterface {
         return state;
     }
 
-    public void connect(String ipAddress, int port) {
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void connect() {
         state = State.CONNECTING;
         SocketConnection connection = new SocketConnection();
         connection.execute(new ConnectionInfo(ipAddress, port));
@@ -50,6 +61,7 @@ public class TcpClientSocket extends CommInterface {
             outputStream.write(packet, 0, packet.length);
         } catch (IOException e) {
             Log.e(DEBUG_TAG, "Error while sending: " + e.getMessage());
+            e.printStackTrace();
             disconnect();
         }
     }

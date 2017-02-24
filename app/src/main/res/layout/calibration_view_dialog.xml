@@ -417,7 +417,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="3dp"
-                android:text="@string/celcius" />
+                android:text="@string/celsius" />
 
         </LinearLayout>
 
