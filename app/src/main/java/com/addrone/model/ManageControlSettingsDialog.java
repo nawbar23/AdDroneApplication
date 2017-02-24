@@ -573,14 +573,14 @@ public class ManageControlSettingsDialog extends Dialog {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
         builderSingle.setTitle("Select Configuration: ");
 
-        arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(1000)));
-        arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(2000)));
-        arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(2500)));
-        arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(3000)));
-        arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(3500)));
-        arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(4000)));
-        arrayAdapter.add(String.valueOf(ControlSettings.UavType.getUavType(4500)));
-
+        arrayAdapter.add(String.valueOf(ControlSettings.UavType.TRICOPTER_REAR));
+        arrayAdapter.add(String.valueOf(ControlSettings.UavType.TRICOPTER_FRONT));
+        arrayAdapter.add(String.valueOf(ControlSettings.UavType.QUADROCOPTER_X));
+        arrayAdapter.add(String.valueOf(ControlSettings.UavType.QUADROCOPTER_PLUS));
+        arrayAdapter.add(String.valueOf(ControlSettings.UavType.HEXACOPTER_X));
+        arrayAdapter.add(String.valueOf(ControlSettings.UavType.HEXACOPTER_PLUS));
+        arrayAdapter.add(String.valueOf(ControlSettings.UavType.OCTOCOPTER_X));
+        arrayAdapter.add(String.valueOf(ControlSettings.UavType.OCTOCOPTER_PLUS));
 
         builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -604,9 +604,10 @@ public class ManageControlSettingsDialog extends Dialog {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
         builderSingle.setTitle("Select Configuration: ");
 
-        arrayAdapter.add(String.valueOf(ControlData.SolverMode.getSolverMode((byte) 0)));
-        arrayAdapter.add(String.valueOf(ControlData.SolverMode.getSolverMode((byte) 1)));
-        arrayAdapter.add(String.valueOf(ControlData.SolverMode.getSolverMode((byte) 3)));
+        arrayAdapter.add(String.valueOf(ControlData.SolverMode.STABILIZATION));
+        arrayAdapter.add(String.valueOf(ControlData.SolverMode.ANGLE_NO_YAW));
+        arrayAdapter.add(String.valueOf(ControlData.SolverMode.ANGLE));
+        arrayAdapter.add(String.valueOf(ControlData.SolverMode.HEADLESS));
 
         builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -630,8 +631,8 @@ public class ManageControlSettingsDialog extends Dialog {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
         builderSingle.setTitle("Select Configuration: ");
 
-        arrayAdapter.add(String.valueOf(ControlSettings.ThrottleMode.getThrottleMode(10)));
-        arrayAdapter.add(String.valueOf(ControlSettings.ThrottleMode.getThrottleMode(20)));
+        arrayAdapter.add(String.valueOf(ControlSettings.ThrottleMode.STATIC));
+        arrayAdapter.add(String.valueOf(ControlSettings.ThrottleMode.DYNAMIC));
 
         builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -655,9 +656,9 @@ public class ManageControlSettingsDialog extends Dialog {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
         builderSingle.setTitle("Select Configuration: ");
 
-        arrayAdapter.add(String.valueOf(ControlSettings.StickMovementMode.getStickMovementMode(0)));
-        arrayAdapter.add(String.valueOf(ControlSettings.StickMovementMode.getStickMovementMode(1)));
-        arrayAdapter.add(String.valueOf(ControlSettings.StickMovementMode.getStickMovementMode(2)));
+        arrayAdapter.add(String.valueOf(ControlSettings.StickMovementMode.COPTER));
+        arrayAdapter.add(String.valueOf(ControlSettings.StickMovementMode.GEOGRAPHIC));
+        arrayAdapter.add(String.valueOf(ControlSettings.StickMovementMode.BASE_POINT));
 
         builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -681,12 +682,12 @@ public class ManageControlSettingsDialog extends Dialog {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext());
         builderSingle.setTitle("Select Configuration: ");
 
-        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.getBatteryType(0)));
-        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.getBatteryType(2)));
-        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.getBatteryType(3)));
-        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.getBatteryType(4)));
-        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.getBatteryType(5)));
-        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.getBatteryType(6)));
+        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.UNDEFINED));
+        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.BATTERY_2S));
+        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.BATTERY_3S));
+        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.BATTERY_4S));
+        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.BATTERY_5S));
+        arrayAdapter.add(String.valueOf(ControlSettings.BatteryType.BATTERY_6S));
 
         builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -710,9 +711,9 @@ public class ManageControlSettingsDialog extends Dialog {
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(super.getContext(), R.style.DarkAlertDialog);
         builderSingle.setTitle("Select Configuration: ");
 
-        arrayAdapter.add(String.valueOf(ControlData.ControllerCommand.getControllerCommand((short) 1100)));
-        arrayAdapter.add(String.valueOf(ControlData.ControllerCommand.getControllerCommand((short) 1200)));
-        arrayAdapter.add(String.valueOf(ControlData.ControllerCommand.getControllerCommand((short) 1500)));
+        arrayAdapter.add(String.valueOf(ControlData.ControllerCommand.AUTOLANDING));
+        arrayAdapter.add(String.valueOf(ControlData.ControllerCommand.AUTOLANDING_AP));
+        arrayAdapter.add(String.valueOf(ControlData.ControllerCommand.BACK_TO_BASE));
 
         builderSingle.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
