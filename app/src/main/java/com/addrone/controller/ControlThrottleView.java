@@ -15,8 +15,8 @@ import com.addrone.R;
  */
 public class ControlThrottleView extends View {
 
-    public interface setOnControlThrottlePadChangedListener {
-        void onControlThrottlePadChangedListener(float x, float y);
+    public interface OnControlThrottlePadChanged {
+        void onControlThrottlePadChanged(float x, float y);
     }
 
     Bitmap bitmapPadLayout;
@@ -35,7 +35,7 @@ public class ControlThrottleView extends View {
 
     float y;
 
-    private setOnControlThrottlePadChangedListener listener;
+    private OnControlThrottlePadChanged listener;
 
     public ControlThrottleView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -46,6 +46,12 @@ public class ControlThrottleView extends View {
         pointerWidth2 = bitmapPadPointer.getWidth() / 2;
         pointerHeight2 = bitmapPadPointer.getHeight() / 2;
 
+        y = 1.f;
+    }
+
+    public void reset() {
+        currentPointerX = width2;
+        currentPointerY = height;
         y = 1.f;
     }
 
@@ -91,7 +97,7 @@ public class ControlThrottleView extends View {
             currentPointerX = width2;
 
             if(listener != null) {
-                listener.onControlThrottlePadChangedListener(0.f, 1.f - y);
+                listener.onControlThrottlePadChanged(0.f, 1.f - y);
             }
 
         } else if(action == MotionEvent.ACTION_BUTTON_PRESS ||
@@ -115,7 +121,7 @@ public class ControlThrottleView extends View {
             currentPointerY = y * height;
 
             if(listener != null) {
-                listener.onControlThrottlePadChangedListener(x, 1 - y);
+                listener.onControlThrottlePadChanged(x, 1 - y);
             }
         }
 
@@ -124,7 +130,7 @@ public class ControlThrottleView extends View {
         return true;
     }
 
-    public void setOnControlThrottlePadChangedListener(setOnControlThrottlePadChangedListener listener) {
+    public void setOnControlThrottlePadChangedListener(OnControlThrottlePadChanged listener) {
         this.listener = listener;
     }
 }

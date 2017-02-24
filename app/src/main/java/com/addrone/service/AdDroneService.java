@@ -40,6 +40,8 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
     private Handler handler;
     private long errorJoystickTime;
 
+    private TcpClientSocket tcpClientSocket;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -53,9 +55,10 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
 
         double pingFreq = sharedPref.getFloat(SettingsFragment.PREF_KEY_PING_FREQ, SettingsFragment.DEFAULT_PING_FREQ);
 
-        errorJoystickTime=(long)(sharedPref.getFloat(SettingsFragment.PREF_ERROR_JOYSTICK_TIME,SettingsFragment.DEFAULT_ERROR_JOYSTICK_TIME)*1000);
+        this.errorJoystickTime = (long)(sharedPref.getFloat(SettingsFragment.PREF_ERROR_JOYSTICK_TIME,SettingsFragment.DEFAULT_ERROR_JOYSTICK_TIME)*1000);
 
-        this.uavManager = new UavManager(new TcpClientSocket(), controlFreq, pingFreq);
+        this.tcpClientSocket = new TcpClientSocket();
+        this.uavManager = new UavManager(tcpClientSocket, controlFreq, pingFreq);
         this.uavManager.registerListener(this);
 
         this.state = State.DISABLED;
@@ -101,7 +104,9 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
                 state = State.CONNECTING;
                 progressDialog = dialog;
                 actualConnection = connectionInfo;
-                uavManager.getCommHandler().connectSocket(connectionInfo.getIpAddress(), connectionInfo.getPort());
+                tcpClientSocket.setIpAddress(connectionInfo.getIpAddress());
+                tcpClientSocket.setPort(connectionInfo.getPort());
+                uavManager.getCommHandler().connectInterface();
                 break;
         }
     }
@@ -214,17 +219,17 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
 
         @Override
         public ControlData getControlData() {
-
-            if (controlViewModel.getCurrentControlData().getCommand().getValue() == ControlData.ControllerCommand.MANUAL.getValue()) {
-                if (System.currentTimeMillis() - controlViewModel.getLastUpdate() > errorJoystickTime) {
-                    ControlData controlData = new ControlData();
-                    ControlData.ControllerCommand command = ControlData.ControllerCommand.ERROR_JOYSTICK;
-                    controlData.setCommand(command);
-                    return controlData;
-                } else
-                    return controlViewModel.getCurrentControlData();
-            } else
-                return controlViewModel.getCurrentControlData();
+            ControlData controlData = controlViewModel.getCurrentControlData();
+            if (controlData.getCommand().getValue() == ControlData.ControllerCommand.MANUAL.getValue()) {
+                long updateTime = System.currentTimeMillis() - controlViewModel.getLastUpdate();
+                if (updateTime > errorJoystickTime) {
+                    System.out.println("Control data no updated for "
+                            + updateTime + " ms, setting "
+                            + ControlData.ControllerCommand.ERROR_JOYSTICK);
+                    controlData.setCommand(ControlData.ControllerCommand.ERROR_JOYSTICK);
+                }
+            }
+            return controlData;
         }
     }
 }

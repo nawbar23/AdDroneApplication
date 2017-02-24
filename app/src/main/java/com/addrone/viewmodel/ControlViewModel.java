@@ -17,6 +17,7 @@ import com.multicopter.java.UavManager;
 import com.multicopter.java.data.AutopilotData;
 import com.multicopter.java.data.CalibrationSettings;
 import com.multicopter.java.data.ControlData;
+import com.multicopter.java.data.ControlSettings;
 import com.multicopter.java.data.DebugData;
 
 import java.sql.Timestamp;
@@ -28,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class ControlViewModel implements ViewModel,
         ControlPadView.OnControlPadChangedListener,
-        ControlThrottleView.setOnControlThrottlePadChangedListener,
+        ControlThrottleView.OnControlThrottlePadChanged,
         UavManager.UavManagerListener {
 
     private static final String TAG = "ControlViewModel";
@@ -87,7 +88,7 @@ public class ControlViewModel implements ViewModel,
 
     @Override
     public void onControlPadChanged(float x, float y) {
-        Log.v("CONTROLS_UPDATE", "Received pad update: " + x + " " + y);
+        //Log.v("CONTROLS_UPDATE", "Received pad update: " + x + " " + y);
         controlDataLock.lock();
         controlData.setRoll(x);
         controlData.setPitch(y);
@@ -96,8 +97,8 @@ public class ControlViewModel implements ViewModel,
     }
 
     @Override
-    public void onControlThrottlePadChangedListener(float x, float y) {
-        Log.v("CONTROLS_UPDATE", "Received throttle update: " + x + " " + y);
+    public void onControlThrottlePadChanged(float x, float y) {
+        //Log.v("CONTROLS_UPDATE", "Received throttle update: " + x + " " + y);
         controlDataLock.lock();
         // TODO temporary trim yaw control for only big changes
         if (Math.abs(x) > 0.95) {
@@ -108,6 +109,15 @@ public class ControlViewModel implements ViewModel,
         controlData.setThrottle(y);
         setTimeStamp();
         controlDataLock.unlock();
+    }
+
+    private void resetControlData() {
+        controlData.setRoll(0.0f);
+        controlData.setPitch(0.0f);
+        controlData.setYaw(0.0f);
+        controlData.setThrottle(0.0f);
+        controlData.setCommand(ControlData.ControllerCommand.MANUAL);
+        controlData.setMode(ControlData.SolverMode.ANGLE_NO_YAW);
     }
 
     public void onActionClick() {
@@ -144,7 +154,7 @@ public class ControlViewModel implements ViewModel,
     }
 
     @Override
-    public void handleUavEvent(final UavEvent event, UavManager uavManager) {
+    public void handleUavEvent(final UavEvent event, final UavManager uavManager) {
         uiDataLock.lock();
         switch (event.getType()) {
             case DEBUG_UPDATED:
@@ -164,6 +174,7 @@ public class ControlViewModel implements ViewModel,
             public void run() {
                 switch (event.getType()) {
                     case FLIGHT_STARTED:
+                        resetControlData();
                         activity.notifyFlightStarted();
                         setTimeStamp();
                         break;
@@ -173,24 +184,21 @@ public class ControlViewModel implements ViewModel,
                     case MAGNETOMETER_CALIBRATION_STARTED:
                         startMagnetCalibDialog();
                         break;
-//                    case CONTROL_SETTINGS_DOWNLOAD_STARTED:
-//                        startDownloadControlSettingsDialog();
-//                        break;
+                    case CONTROL_UPDATED:
+                        startDownloadControlSettingsDialog(uavManager.getControlSettings());
+                        break;
                 }
             }
         });
 
     }
 
-    private void startDownloadControlSettingsDialog() {
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "showControlSettingsDialog");
-                ManageControlSettingsDialog dialog = new ManageControlSettingsDialog(activity);
-                dialog.show();
-            }
-        });
+    private void startDownloadControlSettingsDialog(final ControlSettings controlSettings) {
+        if (!activity.isFinishing()) {
+            Log.d(TAG, "showControlSettingsDialog");
+            ManageControlSettingsDialog dialog = new ManageControlSettingsDialog(activity, controlSettings, uavManager);
+            dialog.show();
+        }
     }
 
 
@@ -250,8 +258,7 @@ public class ControlViewModel implements ViewModel,
                     showCalibration(uavManager.getCalibrationSettings());
                     break;
                 case MANAGE_CONTROL_SETTINGS:
-                    startDownloadControlSettingsDialog();
-//                    uavManager.downloadControlSettings();
+                    uavManager.downloadControlSettings();
                     break;
             }
         }
