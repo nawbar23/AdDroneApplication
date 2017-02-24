@@ -45,7 +45,8 @@ public class ControlViewModel implements ViewModel,
     private Lock uiDataLock = new ReentrantLock();
 
     private UavManager uavManager;
-    private volatile boolean connecting=false;
+
+    private ProgressDialog dialog;
 
     private long lastUpdate;
 
@@ -190,7 +191,10 @@ public class ControlViewModel implements ViewModel,
                         startDownloadControlSettingsDialog(uavManager.getControlSettings());
                         break;
                     case ACCEL_CALIB_DONE:
-                        connecting=true;
+                        killProgressDialog();
+                        break;
+                    case ERROR:
+                        killProgressDialog();
                         break;
                 }
             }
@@ -232,29 +236,22 @@ public class ControlViewModel implements ViewModel,
         }
     }
 
-    private void progressDialog() {
+    private void startProgressDialog(final String message) {
         activity.runOnUiThread(new Runnable() {
-            ProgressDialog dialog;
             @Override
             public void run() {
                 dialog = new ProgressDialog(activity);
-                dialog.setMessage("Connecting...");
+                dialog.setMessage(message);
                 dialog.setCancelable(false);
                 dialog.show();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (true){
-                            if (connecting){
-                                dialog.dismiss();
-                                break;
-                            }
-                        }
-                    }
-                }).start();
-
             }
         });
+    }
+
+    private void killProgressDialog() {
+        if (dialog != null) {
+            dialog.dismiss();
+        }
     }
 
     private class ActionMenu implements Runnable {
@@ -272,7 +269,7 @@ public class ControlViewModel implements ViewModel,
                     uavManager.startFlightLoop();
                     break;
                 case CALIB_ACCEL:
-                    progressDialog();
+                    startProgressDialog("Calibrating...");
                     uavManager.startAccelerometerCalibration();
                     break;
                 case CALIB_MAGNET:
