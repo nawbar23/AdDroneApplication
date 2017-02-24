@@ -138,6 +138,7 @@ public class ManageControlSettingsDialog extends Dialog {
         setCancelable(true);
         ButterKnife.bind(this);
         BORD_CONF_NAME = context.getString(R.string.board_configuration);
+        DIR.mkdirs();
 
         this.uavManager = uavManager;
         this.controlSettingsObject = controlSettingsFromBoard;
@@ -399,7 +400,7 @@ public class ManageControlSettingsDialog extends Dialog {
     public void clickButtonUpdate() {
         String name = currentConfiguration.getText().toString();
         if (name.equals(getContext().getString(R.string.board_configuration))) {
-            Toast.makeText(getContext(), "Can't update current configuration!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Can't update board configuration!", Toast.LENGTH_LONG).show();
             return;
         }
 
