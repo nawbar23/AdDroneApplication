@@ -161,6 +161,7 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
                 Log.e(DEBUG_TAG, "Error event: " + event.getMessage() + " at state: " + state.toString());
                 if (state == State.CONNECTING) {
                     progressDialog.dismiss();
+                    state = State.DISCONNECTED;
                 } else if (state == State.CONNECTED) {
                     state = State.DISCONNECTING;
                 }
