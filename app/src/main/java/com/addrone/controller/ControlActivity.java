@@ -28,7 +28,7 @@ import com.addrone.service.AdDroneService;
 import com.addrone.settings.SettingsFragment;
 import com.addrone.viewmodel.ControlViewModel;
 import com.google.android.gms.maps.model.LatLng;
-import com.multicopter.java.data.AutopilotData;
+import com.skydive.java.data.AutopilotData;
 
 import java.util.Timer;
 import java.util.TimerTask;

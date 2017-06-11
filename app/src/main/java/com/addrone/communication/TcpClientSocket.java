@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.addrone.model.ConnectionInfo;
-import com.multicopter.java.CommInterface;
+import com.skydive.java.CommInterface;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

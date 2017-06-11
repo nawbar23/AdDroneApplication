@@ -20,9 +20,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.addrone.R;
-import com.multicopter.java.UavManager;
-import com.multicopter.java.data.ControlData;
-import com.multicopter.java.data.ControlSettings;
+import com.skydive.java.UavManager;
+import com.skydive.java.data.ControlData;
+import com.skydive.java.data.ControlSettings;
 
 import org.json.JSONException;
 import org.json.simple.JSONObject;

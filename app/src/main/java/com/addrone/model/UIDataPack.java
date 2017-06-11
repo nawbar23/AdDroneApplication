@@ -1,7 +1,7 @@
 package com.addrone.model;
 
-import com.multicopter.java.data.AutopilotData;
-import com.multicopter.java.data.DebugData;
+import com.skydive.java.data.AutopilotData;
+import com.skydive.java.data.DebugData;
 
 /**
  * Created by Kamil on 8/25/2016.
@@ -40,7 +40,7 @@ public class UIDataPack {
         this.yaw = debugData.getNormalYaw();
 
         this.altitude = debugData.getRelativeAltitude();
-        this.velocity = debugData.getVLoc();
+        this.velocity = debugData.getVelocity();
 
         this.gpsFix = (debugData.getFlagState(DebugData.FlagId.GPS_FIX) || debugData.getFlagState(DebugData.FlagId.GPS_FIX_3D));
 

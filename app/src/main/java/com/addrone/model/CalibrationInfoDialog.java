@@ -8,7 +8,7 @@ import android.view.Window;
 import android.widget.TextView;
 
 import com.addrone.R;
-import com.multicopter.java.data.CalibrationSettings;
+import com.skydive.java.data.CalibrationSettings;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

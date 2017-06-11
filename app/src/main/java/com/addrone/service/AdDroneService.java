@@ -16,9 +16,9 @@ import com.addrone.communication.TcpClientSocket;
 import com.addrone.model.ConnectionInfo;
 import com.addrone.settings.SettingsFragment;
 import com.addrone.viewmodel.ControlViewModel;
-import com.multicopter.java.UavEvent;
-import com.multicopter.java.UavManager;
-import com.multicopter.java.data.ControlData;
+import com.skydive.java.UavEvent;
+import com.skydive.java.UavManager;
+import com.skydive.java.data.ControlData;
 
 /**
  * Created by nbar on 2016-08-19.

@@ -1,6 +1,6 @@
 package com.addrone.model;
 
-import com.multicopter.java.data.ControlSettings;
+import com.skydive.java.data.ControlSettings;
 
 import org.json.JSONException;
 import org.json.simple.JSONObject;
