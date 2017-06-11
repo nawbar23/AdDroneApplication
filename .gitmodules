@@ -1,0 +1,3 @@
+[submodule "app/src/main/java/com/skydive"]
+	path = app/src/main/java/com/skydive
+	url = https://github.com/skydiveuavs/skydive.git
