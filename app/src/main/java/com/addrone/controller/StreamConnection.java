@@ -35,7 +35,7 @@ public class StreamConnection extends Thread {
 
         Socket clientSocket = null;
         try {
-            clientSocket = new Socket(address, 25505);
+            clientSocket = new Socket(address, 6667);
             Log.i("DDD", "connected, address: " + address);
             connected = true;
             DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
