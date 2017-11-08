@@ -122,6 +122,18 @@
                 android:textStyle="bold"
                 style="@style/Widget.AppCompat.Button.Borderless" />
 
+            <Button
+                android:id="@+id/btnManageRoute"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/manage_route"
+                android:padding="5dp"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                style="@style/Widget.AppCompat.Button.Borderless" />
+
         </TableRow>
 
     </TableLayout>

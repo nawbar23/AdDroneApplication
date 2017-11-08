@@ -75,6 +75,7 @@
     <string name="update">Update</string>
     <string name="upload">Upload</string>
     <string name="manage_control_settings">Manage control settings</string>
+    <string name="manage_route">Manage route</string>
     
     <string name="uav_type">Uav Type</string>
     <string name="initial_solver_mode">Initial Solver Mode</string>

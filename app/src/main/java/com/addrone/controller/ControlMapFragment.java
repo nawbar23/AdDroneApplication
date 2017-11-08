@@ -40,7 +40,7 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
 
     private static final String DEBUG_TAG = ControlMapFragment.class.getSimpleName();
     private final LatLng WADOWICKA_6 = new LatLng(50.034, 19.940);
-    private final int ZOOM_VAL = 15;
+    private final int ZOOM_VAL = 16;
     MapView mapView;
     private boolean followDrone = false;
     private GoogleMap googleMap;
@@ -69,9 +69,9 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
 
         mapView = (MapView) root.findViewById(R.id.map_view);
         mapView.onCreate(savedInstanceState);
-        points = new ArrayList<LatLng>();
-        translucentPoints = new ArrayList<LatLng>();
-        transparentPoints = new ArrayList<LatLng>();
+        points = new ArrayList<>();
+        translucentPoints = new ArrayList<>();
+        transparentPoints = new ArrayList<>();
         timestampArrayList = new ArrayList<>();
 
         SharedPreferences sharedPref =getActivity().getSharedPreferences(SettingsFragment.PREFERENCES_KEY, Context.MODE_PRIVATE);
@@ -159,7 +159,7 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
 
     public void updatePosition(boolean gpsFix, LatLng latLng) {
         if (gpsFix) {
-            //Log.v(DEBUG_TAG, "updatePosition: GPS fix available. updating position");
+            Log.v(DEBUG_TAG, "updatePosition: GPS fix available. updating position");
             if (droneMarker == null) {
                 droneMarker = googleMap.addMarker(new MarkerOptions()
                         .position(latLng)
@@ -171,42 +171,42 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
             if (followDrone) {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             }
-        } else {
-            Log.v(DEBUG_TAG, "updatePosition: GPS not available.");
-        }
-        if(set == true) {
-            PolylineOptions options = new PolylineOptions().width(10).color(color).geodesic(true);
-            PolylineOptions translucentOptions = new PolylineOptions().width(13).color(translucentColor).geodesic(true);
-            PolylineOptions transparentOptions = new PolylineOptions().width(18).color(transparentColor).geodesic(true);
-            line = googleMap.addPolyline(options);
-            translucentLine = googleMap.addPolyline(translucentOptions);
-            transparentLine = googleMap.addPolyline(transparentOptions);
-            set = false;
-        }
-
-        points.add(latLng);
-        timestampArrayList.add(new Timestamp(System.currentTimeMillis()).getTime());
-        if (System.currentTimeMillis() - timestampArrayList.get(0) >= cometLengthTime*0.3){ //hardcode
-            points.remove(0);
-            translucentPoints.add(points.get(0));
-            line.setPoints(points);
-            if (System.currentTimeMillis() - timestampArrayList.get(0) >= cometLengthTime*0.6){ //hardcode
-                translucentPoints.remove(0);
-                transparentPoints.add(translucentPoints.get(0));
-                translucentLine.setPoints(translucentPoints);
-                if (System.currentTimeMillis() - timestampArrayList.get(0) >= cometLengthTime){ //hardcode
-                    transparentPoints.remove(0);
-                    transparentLine.setPoints(transparentPoints);
-                }
-                else {
-                    transparentLine.setPoints(transparentPoints);
-                }
+            if(set) {
+                PolylineOptions options = new PolylineOptions().width(10).color(color).geodesic(true);
+                PolylineOptions translucentOptions = new PolylineOptions().width(13).color(translucentColor).geodesic(true);
+                PolylineOptions transparentOptions = new PolylineOptions().width(18).color(transparentColor).geodesic(true);
+                line = googleMap.addPolyline(options);
+                translucentLine = googleMap.addPolyline(translucentOptions);
+                transparentLine = googleMap.addPolyline(transparentOptions);
+                set = false;
             }
-            else
-                translucentLine.setPoints(translucentPoints);
-        }
-        else{
-            line.setPoints(points);
+
+            points.add(latLng);
+            timestampArrayList.add(new Timestamp(System.currentTimeMillis()).getTime());
+            if (System.currentTimeMillis() - timestampArrayList.get(0) >= cometLengthTime*0.3){ //hardcode
+                points.remove(0);
+                translucentPoints.add(points.get(0));
+                line.setPoints(points);
+                if (System.currentTimeMillis() - timestampArrayList.get(0) >= cometLengthTime*0.6){ //hardcode
+                    translucentPoints.remove(0);
+                    transparentPoints.add(translucentPoints.get(0));
+                    translucentLine.setPoints(translucentPoints);
+                    if (System.currentTimeMillis() - timestampArrayList.get(0) >= cometLengthTime){ //hardcode
+                        transparentPoints.remove(0);
+                        transparentLine.setPoints(transparentPoints);
+                    }
+                    else {
+                        transparentLine.setPoints(transparentPoints);
+                    }
+                }
+                else
+                    translucentLine.setPoints(translucentPoints);
+            }
+            else{
+                line.setPoints(points);
+            }
+        } else {
+            Log.e(DEBUG_TAG, "updatePosition: GPS not available.");
         }
     }
 
