@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 26
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "com.ericsson.addroneapplication"
         minSdkVersion 19
-        targetSdkVersion 23
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
     }
@@ -22,9 +22,9 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.2.1'
-    compile 'com.android.support:design:23.2.1'
-    compile 'com.google.android.gms:play-services-maps:9.4.0'
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:design:26.1.0'
+    compile 'com.google.android.gms:play-services-maps:15.0.1'
     compile 'com.jakewharton:butterknife:8.4.0'
     compile 'com.googlecode.json-simple:json-simple:1.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'

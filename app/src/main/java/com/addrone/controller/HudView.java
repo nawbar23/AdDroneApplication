@@ -233,10 +233,11 @@ public class HudView extends View {
     }
 
     private void updateAltitudeBar(Canvas canvas) {
-        float upperBound = uiDataPack.altitude + 25;
+        final float alt = uiDataPack.altitude * -1.f;
+        float upperBound = alt + 25;
         int firstBarNumber = (int)(upperBound / 10);
 
-        float delta = Math.abs(firstBarNumber * 10 - uiDataPack.altitude) / 50f;
+        float delta = Math.abs(firstBarNumber * 10 - alt) / 50f;
 
         String[] labels = new String[6];
         for (int i = 0; i < 6; i++) {
@@ -244,7 +245,7 @@ public class HudView extends View {
         }
 
         drawVerticalDividedLine(.75f, .25f, .75f, .5f - delta * .5f, .5f * (10f / 50f), labels, 0, canvas);
-        String altText = hudTextFactory.getAltText(uiDataPack.altitude);
+        String altText = hudTextFactory.getAltText(alt);
         drawTextWithBorder(altText, .685f * width - textHeight, height * .5f, Paint.Align.RIGHT, canvas);
     }
 
