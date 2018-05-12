@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.addrone.R;
 import com.addrone.communication.TcpClientSocket;
+import com.addrone.communication.UsbOtgPort;
 import com.addrone.model.ConnectionInfo;
 import com.addrone.settings.SettingsFragment;
 import com.addrone.viewmodel.ControlViewModel;
@@ -40,8 +41,6 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
     private Handler handler;
     private long errorJoystickTime;
 
-    private TcpClientSocket tcpClientSocket;
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -57,8 +56,7 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
 
         this.errorJoystickTime = (long)(sharedPref.getFloat(SettingsFragment.PREF_ERROR_JOYSTICK_TIME,SettingsFragment.DEFAULT_ERROR_JOYSTICK_TIME)*1000);
 
-        this.tcpClientSocket = new TcpClientSocket();
-        this.uavManager = new UavManager(tcpClientSocket, controlFreq, pingFreq);
+        this.uavManager = new UavManager(controlFreq, pingFreq);
         this.uavManager.registerListener(this);
 
         this.state = State.DISABLED;
@@ -104,9 +102,15 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
                 state = State.CONNECTING;
                 progressDialog = dialog;
                 actualConnection = connectionInfo;
-                tcpClientSocket.setIpAddress(connectionInfo.getIpAddress());
-                tcpClientSocket.setPort(connectionInfo.getPort());
-                uavManager.getCommHandler().connectInterface();
+
+//                TcpClientSocket tcpClientSocket = new TcpClientSocket();
+//                tcpClientSocket.setIpAddress(connectionInfo.getIpAddress());
+//                tcpClientSocket.setPort(connectionInfo.getPort());
+//                uavManager.connect(tcpClientSocket);
+
+                UsbOtgPort usbOtgPort = new UsbOtgPort(this);
+                uavManager.connect(usbOtgPort);
+
                 break;
         }
     }

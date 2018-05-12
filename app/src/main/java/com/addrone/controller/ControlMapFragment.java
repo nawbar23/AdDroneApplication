@@ -206,7 +206,7 @@ public class ControlMapFragment extends Fragment implements OnMapReadyCallback, 
                 line.setPoints(points);
             }
         } else {
-            Log.e(DEBUG_TAG, "updatePosition: GPS not available.");
+            //Log.e(DEBUG_TAG, "updatePosition: GPS not available.");
         }
     }
 

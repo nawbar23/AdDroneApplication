@@ -19,7 +19,7 @@ import java.net.Socket;
  */
 
 public class TcpClientSocket extends CommInterface {
-    private static final String DEBUG_TAG = "AdDrone:" + TcpClientSocket.class.getSimpleName();
+    private static final String DEBUG_TAG = TcpClientSocket.class.getSimpleName();
 
     private State state;
     private Socket socket;
@@ -45,16 +45,19 @@ public class TcpClientSocket extends CommInterface {
         this.port = port;
     }
 
+    @Override
     public void connect() {
         state = State.CONNECTING;
         SocketConnection connection = new SocketConnection();
         connection.execute(new ConnectionInfo(ipAddress, port));
     }
 
+    @Override
     public void disconnect() {
         state = State.DISCONNECTING;
     }
 
+    @Override
     public void send(byte[] packet) {
         try {
             //Log.e(DEBUG_TAG, "Sending: 0x" + StreamProcessor.byteArrayToHexString(packet));
