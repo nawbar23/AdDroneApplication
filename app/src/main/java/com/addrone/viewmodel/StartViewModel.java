@@ -56,8 +56,7 @@ public class StartViewModel implements ViewModel {
          return preferences.getString("last_chosen_connection", null);
     }
 
-    public void addConnection(String name, String ip, int port) {
-        ConnectionInfo connectionInfo = new ConnectionInfo(ip, port);
+    public void addConnection(String name, ConnectionInfo connectionInfo) {
         connectionInfoMap.put(name, connectionInfo);
 
         try {
@@ -93,9 +92,9 @@ public class StartViewModel implements ViewModel {
         }
     }
 
-    public void modifyConnection(String name, String newName, String ip, int port) {
+    public void modifyConnection(String name, String newName, ConnectionInfo connectionInfo) {
         removeConnection(name);
-        addConnection(newName, ip, port);
+        addConnection(newName, connectionInfo);
     }
 
     public Map<String, ConnectionInfo> getConnectionInfoMap() {

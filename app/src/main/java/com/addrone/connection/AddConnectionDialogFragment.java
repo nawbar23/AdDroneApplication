@@ -8,11 +8,15 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.addrone.R;
@@ -23,7 +27,10 @@ import java.util.regex.Pattern;
 /**
  * Created by Kamil on 8/22/2016.
  */
-public class AddConnectionDialogFragment extends DialogFragment {
+public class AddConnectionDialogFragment extends DialogFragment implements
+        AdapterView.OnItemSelectedListener {
+
+    private static final String DEBUG_TAG = "AdDrone:" + AddConnectionDialogFragment.class.getSimpleName();
 
     private AddConnectionDialogListener listener = null;
     private EditText editTextName;
@@ -96,6 +103,7 @@ public class AddConnectionDialogFragment extends DialogFragment {
             return null;
         }
     };
+    private Spinner spinnerType;
 
     public void setInitialConnection(String name, ConnectionInfo connectionInfo) {
         this.name = name;
@@ -144,13 +152,15 @@ public class AddConnectionDialogFragment extends DialogFragment {
                                     listener.onModifyConnection(
                                             name,
                                             editTextName.getText().toString(),
-                                            editTextIp.getText().toString(),
-                                            Integer.parseInt(editTextPort.getText().toString()));
+                                            new ConnectionInfo(ConnectionInfo.Type.TCP_CLIENT,
+                                                    editTextIp.getText().toString(),
+                                                    Integer.parseInt(editTextPort.getText().toString())));
                                 } else {
                                     listener.onAddConnection(
                                             editTextName.getText().toString(),
-                                            editTextIp.getText().toString(),
-                                            Integer.parseInt(editTextPort.getText().toString()));
+                                            new ConnectionInfo(ConnectionInfo.Type.TCP_CLIENT,
+                                                    editTextIp.getText().toString(),
+                                                    Integer.parseInt(editTextPort.getText().toString())));
                                 }
                                 alertDialog.dismiss();
                             }
@@ -163,13 +173,23 @@ public class AddConnectionDialogFragment extends DialogFragment {
         });
 
         editTextName = (EditText) root.findViewById(R.id.edit_text_name);
+        spinnerType = (Spinner) root.findViewById(R.id.spinner_type);
         editTextIp = (EditText) root.findViewById(R.id.edit_text_ip_address);
         editTextPort = (EditText) root.findViewById(R.id.edit_text_port);
 
+        String[] items = new String[]{ConnectionInfo.Type.TCP_CLIENT.toString(),
+                ConnectionInfo.Type.USB.toString()};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, items);
+        spinnerType.setAdapter(adapter);
+        spinnerType.setOnItemSelectedListener(this);
+
         if (name != null && connectionInfo != null){
             editTextName.setText(name);
+            spinnerType.setSelection(connectionInfo.getType().equals(ConnectionInfo.Type.TCP_CLIENT) ? 1 : 0);
             editTextIp.setText(connectionInfo.getIpAddress());
             editTextPort.setText(String.valueOf(connectionInfo.getPort()));
+            editTextIp.setEnabled(false);
+            editTextPort.setEnabled(false);
         }
 
         editTextIp.setFilters(new InputFilter[]{ipFilter});
@@ -178,8 +198,29 @@ public class AddConnectionDialogFragment extends DialogFragment {
         return alertDialog;
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+        switch (position) {
+            case 0:
+                Log.e(DEBUG_TAG, "Selected: " + position);
+                editTextIp.setEnabled(true);
+                editTextPort.setEnabled(true);
+                break;
+
+            case 1:
+                Log.e(DEBUG_TAG, "Selected: " + position);
+                editTextIp.setEnabled(false);
+                editTextPort.setEnabled(false);
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+    }
+
     interface AddConnectionDialogListener {
-        void onAddConnection(String name, String ip, int port);
-        void onModifyConnection(String name, String newName, String ip, int port);
+        void onAddConnection(String name, ConnectionInfo connectionInfo);
+        void onModifyConnection(String name, String newName, ConnectionInfo connectionInfo);
     }
 }

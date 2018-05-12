@@ -209,14 +209,14 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
     }
 
     @Override
-    public void onAddConnection(String name, String ip, int port) {
-        startViewModel.addConnection(name, ip, port);
+    public void onAddConnection(String name, ConnectionInfo connectionInfo) {
+        startViewModel.addConnection(name, connectionInfo);
         connectionsListAdapter.add(name);
     }
 
     @Override
-    public void onModifyConnection(String name, String newName, String ip, int port) {
-        startViewModel.modifyConnection(name, newName, ip, port);
+    public void onModifyConnection(String name, String newName, ConnectionInfo connectionInfo) {
+        startViewModel.modifyConnection(name, newName, connectionInfo);
         connectionsListAdapter.remove(name);
         connectionsListAdapter.add(newName);
     }

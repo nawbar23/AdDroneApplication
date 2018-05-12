@@ -49,7 +49,7 @@ public class TcpClientSocket extends CommInterface {
     public void connect() {
         state = State.CONNECTING;
         SocketConnection connection = new SocketConnection();
-        connection.execute(new ConnectionInfo(ipAddress, port));
+        connection.execute(new ConnectionInfo(ConnectionInfo.Type.TCP_CLIENT, ipAddress, port));
     }
 
     @Override

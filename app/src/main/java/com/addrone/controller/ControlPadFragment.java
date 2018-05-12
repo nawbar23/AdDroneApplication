@@ -51,8 +51,8 @@ public class ControlPadFragment extends Fragment implements StreamConnection.OnN
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_camera, container, false);
 
-        streamConnection = new StreamConnection(AdDroneService.actualConnection.getIpAddress(), this);
-        imageView = (ImageView) root.findViewById(R.id.image_view);
+        streamConnection = new StreamConnection(AdDroneService.currentIp, this);
+        imageView = root.findViewById(R.id.image_view);
 
         timer = new Timer();
 
@@ -64,13 +64,7 @@ public class ControlPadFragment extends Fragment implements StreamConnection.OnN
         super.onResume();
         streamConnection.start();
         timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask(){
-                @Override
-                public void run() {
-                    bitmapLock.lock();
-                    ControlPadFragment.this.getActivity().runOnUiThread(setImageBitmapRunnable);
-                    bitmapLock.unlock();}
-        }, 0, 40);
+        timer.scheduleAtFixedRate(timerUpdateTask, 0, 40);
     }
 
     @Override

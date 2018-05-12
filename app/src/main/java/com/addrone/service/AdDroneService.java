@@ -17,6 +17,7 @@ import com.addrone.communication.UsbOtgPort;
 import com.addrone.model.ConnectionInfo;
 import com.addrone.settings.SettingsFragment;
 import com.addrone.viewmodel.ControlViewModel;
+import com.skydive.java.CommInterface;
 import com.skydive.java.UavEvent;
 import com.skydive.java.UavManager;
 import com.skydive.java.data.ControlData;
@@ -28,10 +29,13 @@ import com.skydive.java.data.ControlData;
  */
 
 public class AdDroneService extends Service implements UavManager.UavManagerListener {
+
     public final static String START_ACTIVITY = "START_CONTROL_ACTIVITY";
     public final static String CONTROL_ACTIVITY = "START_START_ACTIVITY";
     private static final String DEBUG_TAG = "AdDrone:" + AdDroneService.class.getSimpleName();
-    public static ConnectionInfo actualConnection;
+
+    public static String currentIp;
+
     private final IBinder mBinder = new LocalBinder();
     ProgressDialog progressDialog;
     private State state;
@@ -101,15 +105,25 @@ public class AdDroneService extends Service implements UavManager.UavManagerList
                 Log.d(DEBUG_TAG, "attemptConnection at default, connecting...");
                 state = State.CONNECTING;
                 progressDialog = dialog;
-                actualConnection = connectionInfo;
 
-//                TcpClientSocket tcpClientSocket = new TcpClientSocket();
-//                tcpClientSocket.setIpAddress(connectionInfo.getIpAddress());
-//                tcpClientSocket.setPort(connectionInfo.getPort());
-//                uavManager.connect(tcpClientSocket);
+                CommInterface commInterface;
+                switch (connectionInfo.getType()) {
+                    case USB:
+                        currentIp = null;
+                        commInterface = new UsbOtgPort(this);
+                        break;
 
-                UsbOtgPort usbOtgPort = new UsbOtgPort(this);
-                uavManager.connect(usbOtgPort);
+                    case TCP_CLIENT:
+                    default:
+                        currentIp = connectionInfo.getIpAddress();
+                        TcpClientSocket tcpClientSocket = new TcpClientSocket();
+                        tcpClientSocket.setIpAddress(connectionInfo.getIpAddress());
+                        tcpClientSocket.setPort(connectionInfo.getPort());
+                        commInterface = tcpClientSocket;
+                        break;
+                }
+
+                uavManager.connect(commInterface);
 
                 break;
         }
