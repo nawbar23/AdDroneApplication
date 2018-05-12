@@ -45,6 +45,7 @@ public abstract class ConnectionsListAdapter extends ArrayAdapter<String> {
 
     public void setChosenRowValue(String chosenRowValue) {
         this.chosenRowValue = chosenRowValue;
+        notifyDataSetChanged();
     }
 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -117,7 +118,11 @@ public abstract class ConnectionsListAdapter extends ArrayAdapter<String> {
         if (connectionInfoName != null && connectionInfo != null) {
             Holder holder = (Holder) rowView.getTag();
             holder.name.setText(connectionInfoName);
-            holder.description.setText(connectionInfo.toString());
+            if (connectionInfo.getType() == ConnectionInfo.Type.USB) {
+                holder.description.setText("USB OTG");
+            } else {
+                holder.description.setText(connectionInfo.toString());
+            }
 
             if (connectionInfoName.equalsIgnoreCase(chosenRowValue)) {
                 rowView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.connection_chosen_color));

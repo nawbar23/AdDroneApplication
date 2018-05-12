@@ -92,7 +92,7 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         setContentView(R.layout.activity_start);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // initialize view
@@ -210,12 +210,15 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
 
     @Override
     public void onAddConnection(String name, ConnectionInfo connectionInfo) {
+        Log.i(DEBUG_TAG, "onAddConnection" + connectionInfo.toString());
         startViewModel.addConnection(name, connectionInfo);
         connectionsListAdapter.add(name);
+        connectionsListAdapter.setChosenRowValue(name);
     }
 
     @Override
     public void onModifyConnection(String name, String newName, ConnectionInfo connectionInfo) {
+        Log.i(DEBUG_TAG, "onModifyConnection" + connectionInfo.toString());
         startViewModel.modifyConnection(name, newName, connectionInfo);
         connectionsListAdapter.remove(name);
         connectionsListAdapter.add(newName);

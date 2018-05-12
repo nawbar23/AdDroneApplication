@@ -142,40 +142,25 @@ public class AddConnectionDialogFragment extends DialogFragment implements
                 alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
-                        if (editTextName.length() > 0 && editTextIp.length() > 0 && editTextPort.length() > 0) {
-
-                            if (! ipPattern.matcher(editTextIp.getText().toString()).matches()) {
-                                Toast.makeText(getActivity(), R.string.invalid_ip_format, Toast.LENGTH_LONG).show();
+                        if (editTextName.length() > 0) {
+                            String name = editTextName.getText().toString();
+                            if (spinnerType.getSelectedItemPosition() == 0) {
+                                addTcpClientConnection(name, editTextIp, editTextPort, alertDialog);
                             } else {
-                                if (getTag().equalsIgnoreCase("MODIFY_DIALOG")) {
-                                    listener.onModifyConnection(
-                                            name,
-                                            editTextName.getText().toString(),
-                                            new ConnectionInfo(ConnectionInfo.Type.TCP_CLIENT,
-                                                    editTextIp.getText().toString(),
-                                                    Integer.parseInt(editTextPort.getText().toString())));
-                                } else {
-                                    listener.onAddConnection(
-                                            editTextName.getText().toString(),
-                                            new ConnectionInfo(ConnectionInfo.Type.TCP_CLIENT,
-                                                    editTextIp.getText().toString(),
-                                                    Integer.parseInt(editTextPort.getText().toString())));
-                                }
-                                alertDialog.dismiss();
+                                addUsbConnection(name, alertDialog);
                             }
                         } else {
-                            Toast.makeText(AddConnectionDialogFragment.this.getActivity(), R.string.fill_all_fields, Toast.LENGTH_LONG).show();
+                            Toast.makeText(AddConnectionDialogFragment.this.getActivity(), "Name mst be provided", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
             }
         });
 
-        editTextName = (EditText) root.findViewById(R.id.edit_text_name);
-        spinnerType = (Spinner) root.findViewById(R.id.spinner_type);
-        editTextIp = (EditText) root.findViewById(R.id.edit_text_ip_address);
-        editTextPort = (EditText) root.findViewById(R.id.edit_text_port);
+        editTextName = root.findViewById(R.id.edit_text_name);
+        spinnerType = root.findViewById(R.id.spinner_type);
+        editTextIp = root.findViewById(R.id.edit_text_ip_address);
+        editTextPort = root.findViewById(R.id.edit_text_port);
 
         String[] items = new String[]{ConnectionInfo.Type.TCP_CLIENT.toString(),
                 ConnectionInfo.Type.USB.toString()};
@@ -196,6 +181,39 @@ public class AddConnectionDialogFragment extends DialogFragment implements
         editTextPort.setFilters(new InputFilter[]{portFilter});
 
         return alertDialog;
+    }
+
+    private void addTcpClientConnection(String name, EditText ip, EditText port, AlertDialog alertDialog) {
+        if (editTextIp.length() > 0 && editTextPort.length() > 0) {
+            if (!ipPattern.matcher(editTextIp.getText().toString()).matches()) {
+                Toast.makeText(getActivity(), R.string.invalid_ip_format, Toast.LENGTH_LONG).show();
+            } else {
+                if (getTag().equalsIgnoreCase("MODIFY_DIALOG")) {
+                    listener.onModifyConnection(
+                            name,
+                            editTextName.getText().toString(),
+                            new ConnectionInfo(ConnectionInfo.Type.TCP_CLIENT,
+                                    editTextIp.getText().toString(),
+                                    Integer.parseInt(editTextPort.getText().toString())));
+                } else {
+                    listener.onAddConnection(
+                            name,
+                            new ConnectionInfo(ConnectionInfo.Type.TCP_CLIENT,
+                                    editTextIp.getText().toString(),
+                                    Integer.parseInt(editTextPort.getText().toString())));
+                }
+                alertDialog.dismiss();
+            }
+        } else {
+            Toast.makeText(AddConnectionDialogFragment.this.getActivity(), R.string.fill_all_fields, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void addUsbConnection(String name, AlertDialog alertDialog) {
+        listener.onAddConnection(
+                name,
+                new ConnectionInfo(ConnectionInfo.Type.TCP_CLIENT, null, -1));
+        alertDialog.dismiss();
     }
 
     @Override
