@@ -40,9 +40,7 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
     private StartViewModel startViewModel;
 
     private AdDroneService service = null;
-
     private ProgressDialog progressDialog;
-
     private IntentReceiver mIntentReceiver;
 
     private ConnectionsListAdapter connectionsListAdapter;
@@ -242,7 +240,6 @@ public class StartActivity extends AppCompatActivity implements AddConnectionDia
     }
 
     public class IntentReceiver extends BroadcastReceiver {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             // TODO Auto-generated method stub

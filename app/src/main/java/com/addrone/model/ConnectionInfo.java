@@ -11,6 +11,8 @@ import org.json.JSONObject;
  * Stores IP, port and name of drone server
  */
 public class ConnectionInfo {
+    private static final String DEBUG_TAG = ConnectionInfo.class.getSimpleName();
+
     public enum Type {
         USB, TCP_CLIENT,
     }
@@ -24,14 +26,6 @@ public class ConnectionInfo {
         this.type = type;
         this.ipAddress = ipAddress;
         this.port = port;
-    }
-
-    public ConnectionInfo(JSONObject object) throws JSONException {
-        Log.e("TAG", object.toString());
-        this.type = object.getString("type").equalsIgnoreCase(Type.TCP_CLIENT.toString()) ?
-                Type.TCP_CLIENT : Type.USB;
-        this.ipAddress = object.getString("ipAddress");
-        this.port = object.getInt("port");
     }
 
     @Override
@@ -72,7 +66,19 @@ public class ConnectionInfo {
         jsonObject.put("type", type.toString());
         jsonObject.put("ipAddress", ipAddress);
         jsonObject.put("port", port);
-        Log.e("TAG", jsonObject.toString());
+        Log.e(DEBUG_TAG, jsonObject.toString());
         return jsonObject;
+    }
+
+    public static ConnectionInfo parse(JSONObject object) throws JSONException {
+        Log.e(DEBUG_TAG, "Parsing: " + object.toString());
+        ConnectionInfo.Type type = Type.valueOf(object.getString("type"));
+        if (type == Type.TCP_CLIENT) {
+            String ipAddress = object.getString("ipAddress");
+            int port = object.getInt("port");
+            return new ConnectionInfo(type, ipAddress, port);
+        } else {
+            return new ConnectionInfo(type, null, -1);
+        }
     }
 }

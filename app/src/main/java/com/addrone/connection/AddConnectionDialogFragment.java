@@ -41,6 +41,8 @@ public class AddConnectionDialogFragment extends DialogFragment implements
 
     private Pattern ipPattern = Pattern.compile("(?:[0-9]+\\.){3}[0-9]+");
 
+    ConnectionInfo.Type selectedType;
+
     InputFilter ipFilter = new InputFilter() {
         @Override
         public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
@@ -103,7 +105,6 @@ public class AddConnectionDialogFragment extends DialogFragment implements
             return null;
         }
     };
-    private Spinner spinnerType;
 
     public void setInitialConnection(String name, ConnectionInfo connectionInfo) {
         this.name = name;
@@ -124,6 +125,7 @@ public class AddConnectionDialogFragment extends DialogFragment implements
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Log.e(DEBUG_TAG, "OnCreateDialog: " + connectionInfo.toString());
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         final LayoutInflater inflater = getActivity().getLayoutInflater();
 
@@ -144,7 +146,7 @@ public class AddConnectionDialogFragment extends DialogFragment implements
                     public void onClick(View v) {
                         if (editTextName.length() > 0) {
                             String name = editTextName.getText().toString();
-                            if (spinnerType.getSelectedItemPosition() == 0) {
+                            if (selectedType == ConnectionInfo.Type.TCP_CLIENT) {
                                 addTcpClientConnection(name, editTextIp, editTextPort, alertDialog);
                             } else {
                                 addUsbConnection(name, alertDialog);
@@ -157,10 +159,10 @@ public class AddConnectionDialogFragment extends DialogFragment implements
             }
         });
 
-        editTextName = root.findViewById(R.id.edit_text_name);
-        spinnerType = root.findViewById(R.id.spinner_type);
-        editTextIp = root.findViewById(R.id.edit_text_ip_address);
-        editTextPort = root.findViewById(R.id.edit_text_port);
+        editTextName = (EditText) root.findViewById(R.id.edit_text_name);
+        Spinner spinnerType = (Spinner) root.findViewById(R.id.spinner_type);
+        editTextIp = (EditText) root.findViewById(R.id.edit_text_ip_address);
+        editTextPort = (EditText) root.findViewById(R.id.edit_text_port);
 
         String[] items = new String[]{ConnectionInfo.Type.TCP_CLIENT.toString(),
                 ConnectionInfo.Type.USB.toString()};
@@ -170,7 +172,8 @@ public class AddConnectionDialogFragment extends DialogFragment implements
 
         if (name != null && connectionInfo != null){
             editTextName.setText(name);
-            spinnerType.setSelection(connectionInfo.getType().equals(ConnectionInfo.Type.TCP_CLIENT) ? 1 : 0);
+            selectedType = connectionInfo.getType();
+            spinnerType.setSelection(selectedType.equals(ConnectionInfo.Type.TCP_CLIENT) ? 0 : 1);
             editTextIp.setText(connectionInfo.getIpAddress());
             editTextPort.setText(String.valueOf(connectionInfo.getPort()));
             editTextIp.setEnabled(false);
@@ -184,6 +187,7 @@ public class AddConnectionDialogFragment extends DialogFragment implements
     }
 
     private void addTcpClientConnection(String name, EditText ip, EditText port, AlertDialog alertDialog) {
+        Log.e(DEBUG_TAG, "Adding TCP connection:" + name + " " + ip + " " + port);
         if (editTextIp.length() > 0 && editTextPort.length() > 0) {
             if (!ipPattern.matcher(editTextIp.getText().toString()).matches()) {
                 Toast.makeText(getActivity(), R.string.invalid_ip_format, Toast.LENGTH_LONG).show();
@@ -210,9 +214,10 @@ public class AddConnectionDialogFragment extends DialogFragment implements
     }
 
     private void addUsbConnection(String name, AlertDialog alertDialog) {
+        Log.e(DEBUG_TAG, "Adding USB connection:" + name);
         listener.onAddConnection(
                 name,
-                new ConnectionInfo(ConnectionInfo.Type.TCP_CLIENT, null, -1));
+                new ConnectionInfo(ConnectionInfo.Type.USB, null, -1));
         alertDialog.dismiss();
     }
 
@@ -221,12 +226,14 @@ public class AddConnectionDialogFragment extends DialogFragment implements
         switch (position) {
             case 0:
                 Log.e(DEBUG_TAG, "Selected: " + position);
+                selectedType = ConnectionInfo.Type.TCP_CLIENT;
                 editTextIp.setEnabled(true);
                 editTextPort.setEnabled(true);
                 break;
 
             case 1:
                 Log.e(DEBUG_TAG, "Selected: " + position);
+                selectedType = ConnectionInfo.Type.USB;
                 editTextIp.setEnabled(false);
                 editTextPort.setEnabled(false);
                 break;

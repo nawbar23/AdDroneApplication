@@ -3,6 +3,7 @@ package com.addrone.viewmodel;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.addrone.model.ConnectionInfo;
 
@@ -20,6 +21,7 @@ import java.util.Map;
  * Contains list of saved configurations and handles loading them from internal repo
  */
 public class StartViewModel implements ViewModel {
+    private static final String DEBUG_TAG = StartViewModel.class.getSimpleName();
 
     private SharedPreferences preferences;
 
@@ -30,20 +32,29 @@ public class StartViewModel implements ViewModel {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
         connectionInfoMap = new HashMap<>();
 
+        jsonArray = null;
         try {
             jsonArray = new JSONArray(preferences.getString("saved_connections", "[]"));
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                String name = jsonObject.getString("name");
-                ConnectionInfo connectionInfo = new ConnectionInfo(jsonObject.getJSONObject("connectionInfo"));
-
-                connectionInfoMap.put(name, connectionInfo);
-            }
-
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+
+        if (jsonArray != null) {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                try {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String name = jsonObject.getString("name");
+                    try {
+                        ConnectionInfo connectionInfo = ConnectionInfo.parse(jsonObject.getJSONObject("connectionInfo"));
+                        connectionInfoMap.put(name, connectionInfo);
+                    } catch (JSONException e) {
+                        removeConnection(name);
+                        e.printStackTrace();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -53,12 +64,12 @@ public class StartViewModel implements ViewModel {
         editor.apply();
     }
     public String getLastChosenConnectionName() {
-         return preferences.getString("last_chosen_connection", null);
+        return preferences.getString("last_chosen_connection", null);
     }
 
     public void addConnection(String name, ConnectionInfo connectionInfo) {
+        Log.e(DEBUG_TAG, "Remove connection: " + name);
         connectionInfoMap.put(name, connectionInfo);
-
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("name", name);
@@ -74,8 +85,8 @@ public class StartViewModel implements ViewModel {
     }
 
     public void removeConnection(String connectionInfoName) {
+        Log.e(DEBUG_TAG, "Remove connection: " + connectionInfoName);
         connectionInfoMap.remove(connectionInfoName);
-
         try {
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
