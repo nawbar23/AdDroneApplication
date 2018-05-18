@@ -80,9 +80,9 @@ public class UsbOtgPort extends CommInterface implements Runnable {
     }
 
     @Override
-    public void send(byte[] data) {
+    public void send(final byte[] data, final int dataSize) {
         //Log.e(DEBUG_TAG, "Sending: 0x" + CommMessage.byteArrayToHexString(data));
-        connection.bulkTransfer(usbCdcWrite, data, data.length, 200);
+        connection.bulkTransfer(usbCdcWrite, data, dataSize, 200);
     }
 
     private void open(UsbDevice usbDevice) throws IOException

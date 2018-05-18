@@ -58,10 +58,10 @@ public class TcpClientSocket extends CommInterface {
     }
 
     @Override
-    public void send(byte[] packet) {
+    public void send(final byte[] data, final int dataSize) {
         try {
             //Log.e(DEBUG_TAG, "Sending: 0x" + StreamProcessor.byteArrayToHexString(packet));
-            outputStream.write(packet, 0, packet.length);
+            outputStream.write(data, 0, dataSize);
         } catch (IOException e) {
             Log.e(DEBUG_TAG, "Error while sending: " + e.getMessage());
             e.printStackTrace();
