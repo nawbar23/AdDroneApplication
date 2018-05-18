@@ -125,7 +125,7 @@ public class AddConnectionDialogFragment extends DialogFragment implements
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Log.e(DEBUG_TAG, "OnCreateDialog: " + connectionInfo.toString());
+        Log.e(DEBUG_TAG, "OnCreateDialog");
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         final LayoutInflater inflater = getActivity().getLayoutInflater();
 
